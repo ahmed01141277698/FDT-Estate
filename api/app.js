@@ -1,38 +1,30 @@
-const express = require('express')
-const mongoose = require('mongoose');
-const app = express()
-const connectLivereload = require("connect-livereload");
-const dataEsta = require('./data/Shema');
-const path = require("path");
-const livereload = require("livereload");
-const liveReloadServer = livereload.createServer();
-const port = process.env.PORT || 3000
-const dotenv = require('dotenv');
-// Live Reload Setup  
-dotenv.config();
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import path from 'path';
+import connectLivereload from 'connect-livereload';
+import livereload from 'livereload';
+import userRoute from './Routes/userRoute.js';
 
-liveReloadServer.watch(path.join(__dirname, 'public'));
+dotenv.config();
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Live Reload
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(path.join(process.cwd(), 'public'));
 app.use(connectLivereload());
 liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
+  setTimeout(() => liveReloadServer.refresh("/"), 100);
 });
 
-
-console.log(dataEsta);
-app.use(express.json())
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-
-// Connecting to MongoDB and starting the server
+// MongoDB Connection
 mongoose.connect(process.env.Mongo).then(() => {
-
     app.listen(port, () => {
-        console.log(`http://localhost:${port}`)
+        console.log(`http://localhost:${port}`);
         console.log('Connected to MongoDB');    
     })
-}).catch((err) => {
-    console.error('Error connecting to MongoDB', err);
-});
+}).catch(err => console.error('Error connecting to MongoDB', err));
+
+// Routes
+app.use('/api/user', userRoute);

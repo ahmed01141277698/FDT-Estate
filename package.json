@@ -1,0 +1,23 @@
+{
+  "name": "fdt-estate",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node api/app.js",
+    "dev": "nodemon api/app.js",
+    "type": "module"
+  },
+  "keywords": [],
+  "author": "Ahmed badawy",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "connect-livereload": "^0.6.1",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "livereload": "^0.10.3",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.2.1",
+    "nodemon": "^3.1.11"
+  }
+}

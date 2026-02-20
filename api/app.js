@@ -34,3 +34,15 @@ mongoose.connect(process.env.Mongo).then(() => {
 // Routes
 app.use('/api/user', userRoute);
 app.use('/api/signUp', authRoute);
+
+
+// Error Handling Middleware
+app.use((err,req ,res, next)=>{
+    const stautesCode = err.statusCode || 500 ; 
+    const message = err.message || 'Internal Server Error';
+    return res.status(stautesCode).json({
+        success: false,
+        status: stautesCode,
+        message: message
+    });
+});                                                                                   

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaAlignJustify, FaTimes } from "react-icons/fa";
 import { useState } from "react";
+
 const Header = () => {
   const [open, setOpen] = useState(false);
   return (

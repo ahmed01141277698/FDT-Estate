@@ -51,7 +51,7 @@ const Header = () => {
         >
           Profile
         </Link>
-        {false ? (
+        {true ? (
           <Link
             to="/signin"
             className="text-sm font-medium text-gray-700 hover:text-blue-600"

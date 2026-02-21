@@ -34,6 +34,7 @@ mongoose.connect(process.env.Mongo).then(() => {
 // Routes
 app.use('/api/user', userRoute);
 app.use('/api/signUp', authRoute);
+app.use('/api/signIn', authRoute);
 
 
 // Error Handling Middleware

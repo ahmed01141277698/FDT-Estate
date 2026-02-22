@@ -2,11 +2,18 @@ import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  signInstart,
+  signInSuccess,
+  signInFailure,
+} from "../../redux/user/userSlice";
+import { useSelector } from "react-redux";
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handelChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -15,37 +22,34 @@ const SignIn = () => {
     // preventDefault is used to prevent the default form submission behavior, which would cause a page reload. By calling e.preventDefault(), we can handle the form submission in JavaScript, allowing us to perform actions like sending data to a server without refreshing the page.
     e.preventDefault();
     try {
-      setLoading(true);
-
-      const response = await fetch("api/signUp/signIn", {
+      dispatch(signInstart());
+      const response = await fetch("/api/signUp/signIn", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // This option is used to include cookies in the request, which is necessary for authentication purposes when the server sets an HTTP-only cookie containing a JWT token upon successful sign-in.
         body: JSON.stringify(formData),
       });
       const data = await response.json();
       if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setError(null);
-      setLoading(false);
+      dispatch(signInSuccess(data.user));
       navigate("/");
     } catch (err) {
-      setError(err.message);
-      setLoading(false);
+      dispatch(signInFailure(err.message));
     }
 
     // this is where you would typically handle form submission, e.g., send data to a server
   };
   return (
-    <div className="min-h-screen  bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className=" min-h-screen   bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <section className="rounded-md p-2 bg-white">
-        <div className="flex items-center justify-center my-3">
+        <div className="  flex items-center justify-center my-3">
           <div className="xl:mx-auto shadow-md p-4 xl:w-full xl:max-w-sm 2xl:max-w-md">
             <div className="mb-2"></div>
             <h2 className="text-2xl font-bold leading-tight">
-              Sign in to FDT-State
+              Sign in to FDT<span className="text-yellow-500">Estate</span>
             </h2>
 
             <form className="mt-5" onSubmit={handleSubmit}>

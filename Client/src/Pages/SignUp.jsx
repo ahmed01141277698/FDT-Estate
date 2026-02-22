@@ -17,7 +17,7 @@ const SignUp = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("api/signUp/signUp", {
+      const response = await fetch("/api/signUp/signUp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

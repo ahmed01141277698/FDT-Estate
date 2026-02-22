@@ -125,11 +125,11 @@ const Header = () => {
             </Link>
 
             <Link
-              to="/signup"
+              to="/signin"
               onClick={() => setOpen(false)}
               className="text-lg font-medium text-gray-700 hover:text-blue-600 transition"
             >
-              Sign Up
+              Sign In
             </Link>
           </div>
         </div>

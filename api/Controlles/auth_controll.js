@@ -36,7 +36,6 @@ export const signIn = async (req, res, next) => {
         // Exclude the password from the response
         // Here we are using destructuring to exclude the password field from the user object before sending the response
         const { password: pass, ...rest } = user._doc;
-        res.status(200).json({ user: rest });
         // Generate JWT token
         // Here we are generating a JWT token using the jsonwebtoken library. The token includes the user's ID and is signed with a secret key from the environment variables. The token is then sent back to the client in an HTTP-only cookie for security.
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);

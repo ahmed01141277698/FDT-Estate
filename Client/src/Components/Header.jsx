@@ -1,138 +1,191 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaAlignJustify, FaTimes } from "react-icons/fa";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const { currentUser } = useSelector((state) => state.user || {});
+  const isAuthenticated = Boolean(currentUser);
+
   return (
-    <header className="p-4 flex items-center justify-between bg-white shadow-md sticky top-0 z-10 sm:gap-2 sm:flex-row ">
-      <Link to="/" className=" text-xs sm:text-2xl  font-bold">
-        <span className="from-neutral-500">FDT</span>
-        <span className=" text-yellow-500 ">Estate</span>
+    <header className="p-4 flex items-center justify-between bg-white shadow-md sticky top-0 z-10 gap-4">
+      {/* Logo */}
+      <Link to="/" className="text-xl sm:text-2xl font-bold flex-shrink-0">
+        <span className="text-slate-700">FDT</span>
+        <span className="text-yellow-500">Estate</span>
       </Link>
-      <div>
-        <form
-          action=""
-          className=" flex items-center text-sm sm:2xl:w-[500px] w-[200px] relative"
-        >
+
+      {/* Desktop Search Bar */}
+      <div className="hidden md:block flex-1 max-w-md">
+        <form className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Search for properties..."
-            className=" w-25 bg-gray-100 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 sm:text-sm text-xs "
+            placeholder="ابحث عن عقارات..."
+            className="w-full bg-gray-100 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
           />
-          <span className="text-gray-500 relative right-6">
-            <FaSearch />
-          </span>
           <button
             type="submit"
-            className="hidden sm:block bg-slate-500 flex items-center gap-1 relative right-3 text-white px-2 py-0.5 rounded hover:bg-slate-600 transition-colors duration-300 sm:text-sm text-xs font-medium"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
           >
-            Search
+            <FaSearch /> بحث
           </button>
         </form>
       </div>
-      <div className=" hidden sm:flex items-center gap-6">
+
+      {/* Desktop Navigation */}
+      <nav className="hidden md:flex items-center gap-8">
         <Link
           to="/"
-          className="text-sm font-medium text-gray-700 hover:text-blue-600"
+          className="text-sm font-medium text-gray-700 hover:text-blue-600 transition"
         >
-          Home
+          الرئيسية
         </Link>
         <Link
           to="/about"
-          className="text-sm font-medium text-gray-700 hover:text-blue-600"
+          className="text-sm font-medium text-gray-700 hover:text-blue-600 transition"
         >
-          About
+          حول
         </Link>
-        <Link
-          to="/profile"
-          className="text-sm font-medium text-gray-700 hover:text-blue-600"
-        >
-          Profile
-        </Link>
-        {true ? (
+
+        {isAuthenticated ? (
           <Link
-            to="/signin"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600"
+            to="/profile"
+            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition"
           >
-            Sign In
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
+              <img
+                src={
+                  currentUser?.avatar ||
+                  "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423"
+                }
+                alt={currentUser?.username || currentUser?.email || "Profile"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {currentUser?.username || "ملفي"}
           </Link>
         ) : (
-          <Link
-            to="/signup"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600"
-          >
-            Sign Up
-          </Link>
+          <>
+            <Link
+              to="/signin"
+              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition"
+            >
+              دخول
+            </Link>
+            <Link
+              to="/signup"
+              className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              إنشاء حساب
+            </Link>
+          </>
         )}
+      </nav>
+
+      {/* Mobile Menu Button */}
+      <div className="md:hidden">
+        <FaAlignJustify
+          className="text-gray-700 cursor-pointer text-xl hover:text-blue-600 transition"
+          onClick={() => setOpen(true)}
+        />
       </div>
 
-      <div className="relative z-50">
-        {/* Mobile Icon */}
-        <div className="sm:hidden">
-          <FaAlignJustify
-            className="text-gray-700 cursor-pointer text-xl"
-            onClick={() => setOpen(true)}
+      {/* Mobile Menu Overlay */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        />
+      )}
+
+      {/* Mobile Menu Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Close Button */}
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-lg font-bold text-slate-700">القائمة</h2>
+          <FaTimes
+            className="text-gray-700 cursor-pointer text-2xl hover:text-red-600 transition"
+            onClick={() => setOpen(false)}
           />
         </div>
 
-        {/* Overlay */}
-        <div
-          onClick={() => setOpen(false)}
-          className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 sm:hidden ${
-            open ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
-        ></div>
-        {/* Drawer Menu */}
-        <div
-          className={`fixed top-0 right-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-500 ease-in-out sm:hidden ${
-            open ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          {/* Close Button */}
-          <div className="flex justify-end p-4">
-            <FaTimes
-              className="text-gray-600 cursor-pointer text-xl"
-              onClick={() => setOpen(false)}
+        {/* Mobile Search */}
+        <div className="p-4 border-b">
+          <form className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="ابحث..."
+              className="flex-1 bg-gray-100 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
-          </div>
-
-          {/* Links */}
-          <div className="flex flex-col gap-6 px-6 mt-6">
-            <Link
-              to="/"
-              onClick={() => setOpen(false)}
-              className="text-lg font-medium text-gray-700 hover:text-blue-600 transition"
+            <button
+              type="submit"
+              className="text-blue-600 hover:text-blue-700 transition"
             >
-              Home
-            </Link>
+              <FaSearch />
+            </button>
+          </form>
+        </div>
 
-            <Link
-              to="/about"
-              onClick={() => setOpen(false)}
-              className="text-lg font-medium text-gray-700 hover:text-blue-600 transition"
-            >
-              About
-            </Link>
+        {/* Mobile Links */}
+        <nav className="flex flex-col gap-1 p-4">
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition"
+          >
+            الرئيسية
+          </Link>
 
+          <Link
+            to="/about"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition"
+          >
+            حول
+          </Link>
+
+          {isAuthenticated ? (
             <Link
               to="/profile"
               onClick={() => setOpen(false)}
-              className="text-lg font-medium text-gray-700 hover:text-blue-600 transition"
+              className="flex items-center gap-2 px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition"
             >
-              Profile
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
+                <img
+                  src={
+                    currentUser?.avatar ||
+                    "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423"
+                  }
+                  alt={currentUser?.username || currentUser?.email || "Profile"}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {currentUser?.username || "ملفي"}
             </Link>
-
-            <Link
-              to="/signin"
-              onClick={() => setOpen(false)}
-              className="text-lg font-medium text-gray-700 hover:text-blue-600 transition"
-            >
-              Sign In
-            </Link>
-          </div>
-        </div>
+          ) : (
+            <>
+              <Link
+                to="/signin"
+                onClick={() => setOpen(false)}
+                className="block px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition"
+              >
+                دخول
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setOpen(false)}
+                className="block px-4 py-3 text-lg font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center"
+              >
+                إنشاء حساب
+              </Link>
+            </>
+          )}
+        </nav>
       </div>
     </header>
   );

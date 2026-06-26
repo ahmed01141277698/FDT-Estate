@@ -2,48 +2,134 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import net from 'net';
 import connectLivereload from 'connect-livereload';
 import livereload from 'livereload';
+import cors from 'cors';
 import userRoute from './Routes/userRoute.js';
 import authRoute from './Routes/auth_route.js';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const app = express();
 const port = process.env.PORT || 3000;
 
-const __dirname = path.resolve();
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// CORS
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.static(path.join(__dirname, 'public')));
-// Live Reload
-const liveReloadServer = livereload.createServer();
-liveReloadServer.watch(path.join(process.cwd(), 'public'));
-app.use(connectLivereload());
-liveReloadServer.server.once("connection", () => {
-  setTimeout(() => liveReloadServer.refresh("/"), 100);
+
+const checkPortAvailable = (port) =>
+  new Promise((resolve) => {
+    const tester = net.createServer();
+    tester.once('error', () => {
+      tester.close();
+      resolve(false);
+    });
+    tester.once('listening', () => {
+      tester.close();
+      resolve(true);
+    });
+    tester.listen(port, '127.0.0.1');
+  });
+
+// Live Reload (development only)
+if (process.env.NODE_ENV === 'development') {
+  const liveReloadPort = Number(process.env.LIVERELOAD_PORT) || 35729;
+
+  checkPortAvailable(liveReloadPort).then((available) => {
+    if (!available) {
+      console.warn(`⚠️ LiveReload port ${liveReloadPort} is already in use. Skipping live reload.`);
+      return;
+    }
+
+    const liveReloadServer = livereload.createServer({ port: liveReloadPort });
+    liveReloadServer.watch(path.join(process.cwd(), 'public'));
+    app.use(connectLivereload());
+    liveReloadServer.server.once('connection', () => {
+      setTimeout(() => liveReloadServer.refresh('/'), 100);
+    });
+  });
+}
+
+// Request logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
 });
 
+// Required environment variables
+const requiredEnv = ['Mongo', 'JWT_SECRET'];
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
+if (missingEnv.length > 0) {
+  console.error('✗ Missing required environment variables:', missingEnv.join(', '));
+  console.error('تأكد من إعداد المتغيرات المطلوبة في ملف .env');
+  process.exit(1);
+}
+
 // MongoDB Connection
-mongoose.connect(process.env.Mongo).then(() => {
+mongoose
+  .connect(process.env.Mongo, {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 5000,
+  })
+  .then(() => {
     app.listen(port, () => {
-        console.log(`http://localhost:${port}`);
-        console.log('Connected to MongoDB');    
-    })
-}).catch(err => console.error('Error connecting to MongoDB', err));
+      console.log(`✓ Server running at http://localhost:${port}`);
+      console.log('✓ Connected to MongoDB');
+    });
+  })
+  .catch((err) => {
+    console.error('✗ Error connecting to MongoDB:', err.message);
+    console.error('تأكد من أن URL MongoDB صحيح في ملف .env');
+    process.exit(1);
+  });
 
 // Routes
 app.use('/api/user', userRoute);
-app.use('/api/signUp', authRoute);
-app.use('/api/signIn', authRoute);
+app.use('/api/auth', authRoute);
 
+// 404 Not Found Middleware
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    statusCode: 404,
+    message: `المسار ${req.method} ${req.path} غير موجود`,
+  });
+});
 
-// Error Handling Middleware
-app.use((err,req ,res, next)=>{
-    const stautesCode = err.statusCode || 500 ; 
-    const message = err.message || 'Internal Server Error';
-    return res.status(stautesCode).json({
-        success: false,
-        status: stautesCode,
-        message: message
-    });
+// Error Handling Middleware (MUST be last)
+app.use((err, req, res, next) => {
+  console.error('✗ Error:', {
+    message: err.message,
+    statusCode: err.statusCode,
+  });
+
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'حدث خطأ في الخادم';
+
+  res.status(statusCode).json({
+    success: false,
+    statusCode: statusCode,
+    message: message,
+  });
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n✓ Server shutting down gracefully...');
+  mongoose.connection.close();
+  process.exit(0);
 });                                                                                   

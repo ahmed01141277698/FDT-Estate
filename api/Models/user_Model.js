@@ -14,7 +14,12 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,   
         required: true
-    }
+    },
+    avatar: {
+        type: String,
+        default: "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423"
+    },
+    
 }, { timestamps: true });  
 const User = mongoose.model('User', userSchema);
 

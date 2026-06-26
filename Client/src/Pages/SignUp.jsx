@@ -1,116 +1,167 @@
-import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import OAuth_Googal from "../Components/OAuth_Googal";
+
 const SignUp = () => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handelChange = (e) => {
+
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const validateForm = () => {
+    if (!formData.username || !formData.email || !formData.password) {
+      setError("جميع الحقول مطلوبة");
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setError("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError("البريد الإلكتروني غير صحيح");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
-    // preventDefault is used to prevent the default form submission behavior, which would cause a page reload. By calling e.preventDefault(), we can handle the form submission in JavaScript, allowing us to perform actions like sending data to a server without refreshing the page.
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setLoading(true);
+      setError(null);
 
-      const response = await fetch("/api/signUp/signUp", {
+      const response = await fetch("/api/auth/signUp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       const data = await response.json();
-      if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
+
+      if (!response.ok || data.success === false) {
+        setError(data.message || "فشل إنشاء الحساب");
         return;
       }
-      setError(null);
+
       setLoading(false);
       navigate("/signin");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "حدث خطأ، حاول مرة أخرى");
+    } finally {
       setLoading(false);
     }
-
-    // this is where you would typically handle form submission, e.g., send data to a server
   };
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <section className="rounded-md p-2 bg-white">
-        <div className="flex items-center justify-center my-3">
-          <div className="xl:mx-auto shadow-md p-4 xl:w-full xl:max-w-sm 2xl:max-w-md">
-            <div className="mb-2"></div>
-            <h2 className="text-2xl font-bold leading-tight">
-              Sign up to create account
-            </h2>
 
-            <form className="mt-5" onSubmit={handleSubmit}>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <section className="rounded-lg p-4 bg-white shadow-xl">
+        <div className="flex items-center justify-center my-3">
+          <div className="xl:mx-auto shadow-lg p-6 xl:w-full xl:max-w-sm 2xl:max-w-md rounded-lg border border-gray-200">
+            <div className="text-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-900">
+                إنشاء حساب جديد
+              </h2>
+              <p className="text-gray-600 text-sm mt-2">انضم إلينا اليوم</p>
+            </div>
+
+            <form className="mt-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
+                {/* Username */}
                 <div>
-                  <label className="text-base font-medium text-gray-900">
-                    User Name
+                  <label className="text-sm font-semibold text-gray-700 block mb-2">
+                    اسم المستخدم
                   </label>
-                  <div className="mt-2">
-                    <input
-                      placeholder="Full Name"
-                      type="text"
-                      id="username"
-                      className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      onChange={handelChange}
-                    />
-                  </div>
+                  <input
+                    placeholder="أدخل اسم المستخدم"
+                    type="text"
+                    id="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  />
                 </div>
+
+                {/* Email */}
                 <div>
-                  <label className="text-base font-medium text-gray-900">
-                    Email address
+                  <label className="text-sm font-semibold text-gray-700 block mb-2">
+                    البريد الإلكتروني
                   </label>
-                  <div className="mt-2">
-                    <input
-                      placeholder="Email"
-                      type="email"
-                      id="email"
-                      className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      onChange={handelChange}
-                    />
-                  </div>
+                  <input
+                    placeholder="أدخل بريدك الإلكتروني"
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  />
                 </div>
+
+                {/* Password */}
                 <div>
-                  <div className="flex items-center justify-between">
-                    <label className="text-base font-medium text-gray-900">
-                      Password
-                    </label>
+                  <label className="text-sm font-semibold text-gray-700 block mb-2">
+                    كلمة المرور
+                  </label>
+                  <input
+                    placeholder="أدخل كلمة المرور (6 أحرف على الأقل)"
+                    type="password"
+                    id="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-400 disabled:cursor-not-allowed"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "جاري الإنشاء..." : "إنشاء حساب"}
+                </button>
+
+                {/* OAuth */}
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300"></div>
                   </div>
-                  <div className="mt-2">
-                    <input
-                      placeholder="Password"
-                      type="password"
-                      id="password"
-                      className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      onChange={handelChange}
-                    />
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">أو</span>
                   </div>
                 </div>
-                <div>
-                  <button
-                    className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? "Signing Up..." : "Sign Up"}
-                  </button>
-                </div>
+
+                <OAuth_Googal />
               </div>
             </form>
 
-            {error && <p className="text-red-500 mt-2">{error}</p>}
-            <p className="mt-2 text-base text-gray-600">
-              Already have an account?
-              <Link to="/signin" className="text-blue-500 hover:underline">
-                Sign In
+            {/* Error Message */}
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Sign In Link */}
+            <p className="mt-4 text-center text-gray-600">
+              هل لديك حساب بالفعل؟
+              <Link
+                to="/signin"
+                className="text-blue-600 hover:underline font-semibold ml-1"
+              >
+                تسجيل الدخول
               </Link>
             </p>
           </div>

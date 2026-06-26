@@ -2,18 +2,19 @@
   "name": "fdt-estate",
   "version": "1.0.0",
   "main": "app.js",
+  "type": "module",
   "scripts": {
-    "start": "node api/app.js",
-    "dev": "nodemon api/app.js",
-    "type": "module"
+    "start": "set NODE_ENV=production&& node api/app.js",
+    "dev": "nodemon api/app.js"
   },
-  "keywords": [],
+  "keywords": [ ],
   "author": "Ahmed badawy",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "connect-livereload": "^0.6.1",
+    "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",

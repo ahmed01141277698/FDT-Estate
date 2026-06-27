@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import OAuth_Googal from "../Components/OAuth_Googal";
 import {
   signInstart,
@@ -9,17 +10,24 @@ import {
 } from "../../redux/user/userSlice";
 
 const SignIn = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const savedEmail = localStorage.getItem("savedEmail") || "";
+  // const [formData, setFormData] = useState({
+  //   email: savedEmail,
+  //   password: "",
+  // });
   const [localError, setLocalError] = useState("");
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
     if (localError) setLocalError("");
   };
-
+  const location = useLocation();
+  const [formData, setFormData] = useState({
+    email: location.state?.email || "",
+    password: location.state?.password || "",
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -45,6 +53,7 @@ const SignIn = () => {
       }
 
       dispatch(signInSuccess(data.user));
+      localStorage.setItem("token", data.token); // ← ضيف
       navigate("/");
     } catch (err) {
       dispatch(signInFailure(err.message || "فشل الاتصال بالخادم"));
@@ -52,7 +61,10 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+      dir="rtl"
+    >
       <div className="w-full max-w-md space-y-8 rounded-3xl bg-white p-8 shadow-xl">
         <div className="text-center">
           <p className="text-sm text-gray-500">مرحبا بك في</p>

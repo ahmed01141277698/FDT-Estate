@@ -51,9 +51,9 @@ const Header = () => {
         {isAuthenticated ? (
           <Link
             to="/profile"
-            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition"
+            className="flex items-center gap-3 text-sm font-medium text-gray-700 hover:text-blue-600 transition"
           >
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
+            <div className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-300 ring-2 ring-blue-500">
               <img
                 src={
                   currentUser?.avatar ||
@@ -62,6 +62,7 @@ const Header = () => {
                 alt={currentUser?.username || currentUser?.email || "Profile"}
                 className="w-full h-full object-cover"
               />
+              <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full border-2 border-white bg-green-400" />
             </div>
             {currentUser?.username || "ملفي"}
           </Link>
@@ -155,7 +156,7 @@ const Header = () => {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition"
             >
-              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
+              <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-300 ring-2 ring-blue-500">
                 <img
                   src={
                     currentUser?.avatar ||
@@ -164,6 +165,7 @@ const Header = () => {
                   alt={currentUser?.username || currentUser?.email || "Profile"}
                   className="w-full h-full object-cover"
                 />
+                <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full border-2 border-white bg-green-400" />
               </div>
               {currentUser?.username || "ملفي"}
             </Link>

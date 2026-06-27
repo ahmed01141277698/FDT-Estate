@@ -8,14 +8,14 @@ const initialState = {
 
 const userSlice = createSlice({
     name: 'user',
-    initialState,   
+    initialState,
     reducers: {
         signInstart: (state) => {
             state.loading = true;
         },
         signInSuccess: (state, action) => {
             state.loading = false;
-            state.currentUser = action.payload; 
+            state.currentUser = action.payload;
             state.error = null;
         },
         signInFailure: (state, action) => {
@@ -27,13 +27,28 @@ const userSlice = createSlice({
             state.currentUser = null;
             state.error = null;
             state.loading = false;
-        }   
-    }
-
+        },
+        updateUserSuccess: (state, action) => {
+            state.loading = false;
+            state.currentUser = action.payload;
+            state.error = null;
+        },
+        updateUserFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+    },
 });
 
 
 
-export const { signInstart, signInSuccess, signInFailure, signOut } = userSlice.actions;
+export const {
+  signInstart,
+  signInSuccess,
+  signInFailure,
+  signOut,
+  updateUserSuccess,
+  updateUserFailure,
+} = userSlice.actions;
 
-export default userSlice.reducer;   
+export default userSlice.reducer;

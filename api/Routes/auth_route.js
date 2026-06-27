@@ -1,10 +1,12 @@
 import express from 'express';
-import { signUp , signIn ,google} from '../Controlles/auth_controll.js';
+import { signUp, signIn, google} from '../Controlles/auth_controll.js';
 
 const router = express.Router();
 
 router.post('/signUp', signUp);
 router.post('/signIn', signIn);
 router.post('/google', google);
+// router.post('/resend-verification', resendVerification);
+// router.get('/verify-email', verifyEmail);
 
 export default router;

@@ -152,6 +152,7 @@ import livereload from 'livereload';
 import cors from 'cors';
 import userRoute from './Routes/userRoute.js';
 import authRoute from './Routes/auth_route.js';
+import listingRoute from './Routes/listingRoutong.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -237,6 +238,7 @@ mongoose
 // Routes
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
+app.use('/api/listing', listingRoute);
 
 // 404
 app.use((req, res) => {

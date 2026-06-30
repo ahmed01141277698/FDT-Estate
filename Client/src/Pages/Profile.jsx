@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../../redux/user/userSlice";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user || {});
@@ -180,7 +181,7 @@ const Profile = () => {
         </div>
       )}
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md ">
         <h1 className="text-2xl font-semibold text-gray-900 mb-8 text-center">
           الملف الشخصي
         </h1>
@@ -334,7 +335,7 @@ const Profile = () => {
         </div>
 
         {/* Divider */}
-        <div className="my-5 border-t border-gray-200" />
+        <div className="my-5 border-t border-gray-200 gap-4" />
 
         {/* Sign out */}
         <button
@@ -379,6 +380,9 @@ const Profile = () => {
           </svg>
           حذف الحساب
         </button>
+        <div className="w-full h-10 rounded-lg border border-yellow-200 text-yellow-500 text-sm font-medium hover:bg-yellow-50 transition-colors flex items-center justify-center mt-2 ">
+          <Link to="/create-listing">Creating Listing</Link>
+        </div>
       </div>
     </div>
   );

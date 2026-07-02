@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.10.0",
     "connect-livereload": "^0.6.1",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
@@ -23,6 +24,7 @@
     "mongoose": "^9.2.1",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.1",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "streamifier": "^0.1.1"
   }
 }

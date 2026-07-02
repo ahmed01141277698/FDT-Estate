@@ -43,18 +43,19 @@ const ListingSchema = new mongoose.Schema(
             required : true ,
         }, 
         type: { 
-            type: String,    
+            type: String,
+            enum: ['rent', 'sale'],
             required: true},
         offer: {
             type: Boolean,
             required: true,
         },
-        imageUrl: {
-            type: Array,
-            required: true,
-        },
+        imageUrl: [
+            {url: { type: String, required: true }, public_id: { type: String, required: true }}
+        ],
         userRef:{
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            raef: 'User',
             required: true,
         }
 

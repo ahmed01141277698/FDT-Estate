@@ -18,13 +18,16 @@
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "framer-motion": "^12.42.2",
     "jsonwebtoken": "^9.0.3",
     "livereload": "^0.10.3",
+    "lucide-react": "^1.23.0",
     "mongodb": "^7.1.0",
     "mongoose": "^9.2.1",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.1",
     "nodemon": "^3.1.11",
+    "react-hot-toast": "^2.6.0",
     "streamifier": "^0.1.1"
   }
 }

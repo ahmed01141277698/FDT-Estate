@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
+    "axios": "^1.18.1",
     "connect-livereload": "^0.6.1",
     "firebase": "^12.15.0",
+    "framer-motion": "^12.42.2",
     "livereload": "^0.10.3",
+    "lucide-react": "^1.23.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icon": "^1.0.0",

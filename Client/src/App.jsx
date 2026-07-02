@@ -9,7 +9,7 @@ import About from "./Pages/About";
 import Home from "./Pages/Home";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
-import Listing from "./Pages/Listing";
+import Listing from "./Pages/CreateListing";
 import { signInSuccess, signOut } from "../redux/user/userSlice";
 
 const App = () => {

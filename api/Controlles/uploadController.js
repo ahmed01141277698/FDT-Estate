@@ -5,14 +5,27 @@ const uploadToCloudinary = (file, folder) => {
     cloudinary.uploader
       .upload_stream(
         {
-          folder,
+         folder,
+          transformation: [
+            {  width: 1600,
+          height: 1200,
+              crop: "limit"
+            },
+            {  quality: "auto",
+          fetch_format: "auto"}
+          ]
         },
         (error, result) => {
           if (error) return reject(error);
 
           resolve({
+            
             url: result.secure_url,
             public_id: result.public_id,
+            width: result.width,
+            height: result.height,
+            format: result.format,
+            bytes: result.bytes,
           });
         }
       )

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import axios from "axios";
 const initialForm = {
   name: "",
@@ -21,17 +22,26 @@ const initialForm = {
 export default function useListingForm() {
   const navigate = useNavigate();
 
+
   const { currentUser } = useSelector((state) => state.user);
 
   // ===========================
   // Form States
   // ===========================
 
-  const [form, setForm] = useState(initialForm);
+  // const [form, setForm] = useState(initialForm);
 
-  const [errors, setErrors] = useState({});
+  const savedform = localStorage.getItem("listingForm");
+  const [form, setForm] = useState(() => {const savedForm = localStorage.getItem("listingForm");
+    return savedForm ? JSON.parse(savedForm) : initialForm;
+  });
+  useEffect(() => {
+    localStorage.setItem("listingForm", JSON.stringify(form));
+  }, [form]);
 
-  // ===========================
+
+    const [errors, setErrors] = useState({});
+    // ===========================
   // Images
   // ===========================
 
@@ -65,21 +75,13 @@ export default function useListingForm() {
     let completed = 0;
 
     if (form.name.trim()) completed++;
-
     if (form.description.trim()) completed++;
-
     if (form.address.trim()) completed++;
-
     if (form.price) completed++;
-
     if (form.bedrooms) completed++;
-
     if (form.bathrooms) completed++;
-
     if (form.area) completed++;
-
     if (imageFiles.length > 0) completed++;
-
     if (form.offer) {
       if (form.discountPrice) completed++;
     } else {
@@ -168,19 +170,12 @@ export default function useListingForm() {
 
   const resetForm = () => {
     imagePreviews.forEach((url) => URL.revokeObjectURL(url));
-
     setForm(initialForm);
-
     setErrors({});
-
     setImageFiles([]);
-
     setImagePreviews([]);
-
     setLoading(false);
-
     setUploading(false);
-
     setUploadProgress(0);
 
     setError("");
@@ -211,9 +206,10 @@ export default function useListingForm() {
         formData,
         {
             headers: {
-              Authorization: `Bearer ${currentUser.token}`,
-            "Content-Type": "multipart/form-data",
-          },
+              Authorization: `Bearer ${ localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
 
           onUploadProgress: (progressEvent) => {
             const percent = Math.round(
@@ -228,7 +224,7 @@ export default function useListingForm() {
 
       setUploading(false);
 
-      return data.images.map((image) => image.url);
+      return data.images;
     } catch (error) {
       setUploading(false);
       setUploadProgress(0);
@@ -299,6 +295,7 @@ export default function useListingForm() {
   // ===========================
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     setError("");
@@ -312,6 +309,7 @@ export default function useListingForm() {
       const imageUrls = await uploadImages();
 
       const payload = {
+
         ...form,
         price: Number(form.price),
         discountPrice: form.offer
@@ -323,13 +321,17 @@ export default function useListingForm() {
         imageUrl: imageUrls,
         userRef: currentUser._id,
       };
-
       const response = await axios.post(
         "/api/listing/createListing",
         payload,
         {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           withCredentials: true,
-        }
+        },
+         
       );
 
       resetForm();
@@ -345,7 +347,6 @@ export default function useListingForm() {
       setLoading(false);
     }
   };
-
   // ===========================
   // Return
   // ===========================

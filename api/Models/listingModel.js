@@ -44,7 +44,7 @@ const ListingSchema = new mongoose.Schema(
         }, 
         type: { 
             type: String,
-            enum: ['rent', 'sale'],
+            enum: ['rent', 'sell'],
             required: true},
         offer: {
             type: Boolean,
@@ -55,7 +55,7 @@ const ListingSchema = new mongoose.Schema(
         ],
         userRef:{
             type: mongoose.Schema.Types.ObjectId,
-            raef: 'User',
+            ref: 'User',
             required: true,
         }
 

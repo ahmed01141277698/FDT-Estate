@@ -6,6 +6,7 @@ export default function SubmitSection({
   uploading,
   progress = 0,
   error,
+  isEdit = false,
 }) {
   return (
     <motion.div
@@ -13,12 +14,9 @@ export default function SubmitSection({
       animate={{ opacity: 1 }}
       className="mt-10"
     >
-      {/* Progress */}
-
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex justify-between items-center mb-3">
           <span className="font-semibold text-gray-700">اكتمال البيانات</span>
-
           <span className="font-bold text-blue-600">{progress}%</span>
         </div>
 
@@ -32,15 +30,11 @@ export default function SubmitSection({
         </div>
       </div>
 
-      {/* Error */}
-
       {error && (
         <div className="mb-5 rounded-xl border border-red-300 bg-red-50 px-4 py-3">
           <p className="text-red-600">{error}</p>
         </div>
       )}
-
-      {/* Submit */}
 
       <button
         type="submit"
@@ -50,13 +44,16 @@ export default function SubmitSection({
         {loading || uploading ? (
           <>
             <Loader2 className="animate-spin" size={22} />
-
-            {uploading ? "جارى رفع الصور..." : "جارى نشر العقار..."}
+            {uploading
+              ? "جارى رفع الصور..."
+              : isEdit
+                ? "جارى تحديث العقار..."
+                : "جارى نشر العقار..."}
           </>
         ) : (
           <>
             <CheckCircle2 size={22} />
-            نشر العقار
+            {isEdit ? "تحديث العقار" : "نشر العقار"}
           </>
         )}
       </button>

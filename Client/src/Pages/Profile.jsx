@@ -1,8 +1,27 @@
-import React, { useState, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { signOut } from "../../redux/user/userSlice";
-import { Link } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertTriangle,
+  Bath,
+  BedDouble,
+  Building2,
+  Camera,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  DollarSign,
+  Eye,
+  Home,
+  Pencil,
+  Plus,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+  Upload,
+} from "lucide-react";
+import { signOut, updateUserSuccess } from "../../redux/user/userSlice";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user || {});
@@ -18,34 +37,61 @@ const Profile = () => {
   const [avatar, setAvatar] = useState(currentUser?.avatar || null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [listingsLoading, setListingsLoading] = useState(false);
+  const [userListings, setUserListings] = useState([]);
+  const [showListings, setShowListings] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState(null);
   const [toast, setToast] = useState({ message: "", type: "" });
+
+  useEffect(() => {
+    setAvatar(currentUser?.avatar || null);
+    setFormData({
+      username: currentUser?.username || "",
+      email: currentUser?.email || "",
+      password: "",
+    });
+  }, [currentUser]);
+
+  useEffect(() => {
+    const fetchUserListings = async () => {
+      if (!currentUser?._id) return;
+      setListingsLoading(true);
+      try {
+        const res = await fetch(`/api/listing/user/${currentUser._id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        setUserListings(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setUserListings([]);
+      } finally {
+        setListingsLoading(false);
+      }
+    };
+
+    fetchUserListings();
+  }, [currentUser]);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
-    setTimeout(() => setToast({ message: "", type: "" }), 3000);
+    window.setTimeout(() => setToast({ message: "", type: "" }), 3200);
   };
 
-  if (!currentUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-lg">لم تقم بتسجيل الدخول بعد.</p>
-      </div>
-    );
-  }
-  // ................................
-
-  // .............................................
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      showToast("يرجى اختيار ملف صورة صالح", "error");
+      showToast("يرجى اختيار صورة صالحة", "error");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
       showToast("حجم الصورة يجب أن يكون أقل من 5 ميجابايت", "error");
       return;
     }
+
     setAvatarFile(file);
     const reader = new FileReader();
     reader.onloadend = () => setAvatar(reader.result);
@@ -57,10 +103,6 @@ const Profile = () => {
   };
 
   const handleUpdate = async () => {
-    formData.username.trim() !== currentUser.username ||
-      formData.email.trim() !== currentUser.email ||
-      formData.password ||
-      avatarFile;
     if (!formData.username.trim() || !formData.email.trim()) {
       showToast("يرجى ملء الاسم والبريد الإلكتروني", "error");
       return;
@@ -69,58 +111,51 @@ const Profile = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      let uploadedAvatarUrl = currentUser.avatar;
+      let uploadedAvatarUrl = currentUser?.avatar || avatar;
 
-      // Upload new avatar if selected
-      // if (avatarFile) {
-      //   const data = new FormData();
-      //   data.append("avatar", avatarFile);
-      //   const uploadRes = await fetch("/api/user/profile", {
-      //     method: "POST",
-      //     headers: { Authorization: `Bearer ${token}` },
-      //     body: data,
-      //   });
-      //   if (!uploadRes.ok) throw new Error("فشل رفع الصورة");
-      //   const uploadData = await uploadRes.json();
-      //   uploadedAvatarUrl = uploadData.url;
-      // }
       if (avatarFile) {
-        const formDataImg = new FormData();
-        formDataImg.append("avatar", avatarFile);
+        const uploadPayload = new FormData();
+        uploadPayload.append("avatar", avatarFile);
         const uploadRes = await fetch("/api/user/profile/avatar", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
-          body: formDataImg,
+          body: uploadPayload,
         });
-        if (!uploadRes.ok) throw new Error("فشل رفع الصورة");
         const uploadData = await uploadRes.json();
+        if (!uploadRes.ok)
+          throw new Error(uploadData.message || "فشل رفع الصورة");
         uploadedAvatarUrl = uploadData.url;
       }
-      // Update profile
-      const body = {
-        username: formData.username,
-        email: formData.email,
-        ...(uploadedAvatarUrl && { avatar: uploadedAvatarUrl }),
-        ...(formData.password && { password: formData.password }),
-      };
 
-      const res = await fetch(`/api/user/profile`, {
+      const res = await fetch("/api/user/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          username: formData.username.trim(),
+          email: formData.email.trim(),
+          ...(formData.password && { password: formData.password }),
+          ...(uploadedAvatarUrl && { avatar: uploadedAvatarUrl }),
+        }),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "فشل تحديث البيانات");
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "فشل تحديث البيانات");
 
-      // Optionally update Redux store here with dispatch(updateUser(...))
-      setFormData((prev) => ({ ...prev, password: "" }));
+      const updatedUser = data.user || data;
+      dispatch(
+        updateUserSuccess({
+          ...currentUser,
+          ...updatedUser,
+          avatar:
+            updatedUser.avatar || uploadedAvatarUrl || currentUser?.avatar,
+        }),
+      );
+      setAvatar(updatedUser.avatar || uploadedAvatarUrl || currentUser?.avatar);
       setAvatarFile(null);
+      setFormData((prev) => ({ ...prev, password: "" }));
       showToast("تم حفظ التغييرات بنجاح");
     } catch (err) {
       showToast(err.message || "حدث خطأ أثناء التحديث", "error");
@@ -143,7 +178,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`/api/user/profile`, {
+      const res = await fetch("/api/user/profile", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -156,234 +191,551 @@ const Profile = () => {
     }
   };
 
+  const confirmDeleteListing = async () => {
+    if (!listingToDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/listing/${listingToDelete._id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "فشل حذف العقار");
+      setUserListings((prev) =>
+        prev.filter((item) => item._id !== listingToDelete._id),
+      );
+      setListingToDelete(null);
+      showToast("تم حذف العقار بنجاح");
+    } catch (err) {
+      showToast(err.message || "حدث خطأ أثناء حذف العقار", "error");
+    }
+  };
+
+  const profileCompletion = useMemo(() => {
+    let score = 0;
+    if (formData.username.trim()) score += 35;
+    if (formData.email.trim()) score += 35;
+    if (avatar) score += 20;
+    if (currentUser?.isVerified) score += 10;
+    return Math.min(100, score);
+  }, [avatar, currentUser?.isVerified, formData.email, formData.username]);
+
+  const stats = useMemo(
+    () => [
+      { label: "إجمالي العقارات", value: userListings.length, icon: Building2 },
+      {
+        label: "عقارات للبيع",
+        value: userListings.filter((listing) => listing.type === "sell").length,
+        icon: Home,
+      },
+      {
+        label: "عقارات للإيجار",
+        value: userListings.filter((listing) => listing.type === "rent").length,
+        icon: Sparkles,
+      },
+      {
+        label: "حالة الحساب",
+        value: currentUser?.isVerified ? "موثق" : "قيد المراجعة",
+        icon: ShieldCheck,
+      },
+    ],
+    [currentUser?.isVerified, userListings],
+  );
+
   const avatarSrc =
     avatar ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
       formData.username || "User",
-    )}&background=3b82f6&color=fff&size=128`;
+    )}&background=3b82f6&color=fff&size=160`;
 
-  return (
-    <div
-      className="min-h-screen bg-gray-50 flex items-start justify-center pt-12 pb-16 px-4"
-      dir="rtl"
-    >
-      {/* Toast */}
-      {toast.message && (
-        <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-lg shadow-lg text-sm font-medium transition-all
-            ${
-              toast.type === "error"
-                ? "bg-red-50 text-red-700 border border-red-200"
-                : "bg-green-50 text-green-700 border border-green-200"
-            }`}
-        >
-          {toast.message}
-        </div>
-      )}
-
-      <div className="w-full max-w-md ">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-8 text-center">
-          الملف الشخصي
-        </h1>
-
-        {/* Avatar */}
-        <div className="flex flex-col items-center mb-8">
-          <div
-            className="relative w-24 h-24 rounded-full cursor-pointer group"
-            onClick={() => fileRef.current.click()}
-          >
-            <img
-              src={avatarSrc}
-              alt={formData.username || "المستخدم"}
-              className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
-            />
-            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
-                />
-              </svg>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400 mt-2">اضغط على الصورة لتغييرها</p>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarChange}
-            className="hidden"
-          />
-        </div>
-
-        {/* Form */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-          {/* Username */}
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm text-gray-600 mb-1.5"
-            >
-              اسم المستخدم
-            </label>
-            <input
-              type="text"
-              id="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="أدخل اسم المستخدم"
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-400 transition-colors bg-gray-50 text-right"
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm text-gray-600 mb-1.5"
-            >
-              البريد الإلكتروني
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="أدخل البريد الإلكتروني"
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-400 transition-colors bg-gray-50 text-right"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm text-gray-600 mb-1.5"
-            >
-              كلمة مرور جديدة
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="اتركها فارغة إذا لم تريد التغيير"
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-400 transition-colors bg-gray-50 text-right"
-            />
-            <p className="text-xs text-gray-400 mt-1">
-              اتركها فارغة إذا لم تريد تغيير كلمة المرور
-            </p>
-          </div>
-
-          {/* Update button */}
-          <button
-            onClick={handleUpdate}
-            disabled={loading}
-            className="w-full h-10 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <svg
-                className="animate-spin w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17 16v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                />
-              </svg>
-            )}
-            {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
-          </button>
-        </div>
-
-        {/* Divider */}
-        <div className="my-5 border-t border-gray-200 gap-4" />
-
-        {/* Sign out */}
-        <button
-          onClick={handleSignOut}
-          className="w-full h-10 rounded-lg border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 mb-3"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
-            />
-          </svg>
-          تسجيل الخروج
-        </button>
-
-        {/* Delete account */}
-        <button
-          onClick={handleDeleteAccount}
-          className="w-full h-10 rounded-lg border border-red-200 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-            />
-          </svg>
-          حذف الحساب
-        </button>
-        <div className="w-full h-10 rounded-lg border border-yellow-200 text-yellow-500 text-sm font-medium hover:bg-yellow-50 transition-colors flex items-center justify-center mt-2 ">
-          <Link to="/create-listing">Creating Listing</Link>
+  if (!currentUser) {
+    return (
+      <div
+        className="flex min-h-screen items-center justify-center bg-slate-50 px-4"
+        dir="rtl"
+      >
+        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-10 text-center shadow-sm">
+          <p className="text-lg font-semibold text-slate-700">
+            لم تقم بتسجيل الدخول بعد.
+          </p>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-16" dir="rtl">
+      <AnimatePresence>
+        {toast.message && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed left-1/2 top-5 z-50 flex min-w-[280px] -translate-x-1/2 items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium shadow-lg backdrop-blur ${
+              toast.type === "error"
+                ? "border-red-200 bg-red-50 text-red-700"
+                : toast.type === "warning"
+                  ? "border-amber-200 bg-amber-50 text-amber-700"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-700"
+            }`}
+          >
+            {toast.type === "error" ? (
+              <AlertTriangle size={16} />
+            ) : (
+              <CheckCircle2 size={16} />
+            )}
+            <span>{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6 lg:py-8">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_28px_80px_-30px_rgba(15,23,42,0.24)]"
+        >
+          <div className="relative h-64 overflow-hidden md:h-80">
+            <img
+              src={avatarSrc}
+              alt="cover"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/30 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-6 md:flex-row md:items-end md:justify-between md:p-8">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                <div className="relative">
+                  <img
+                    src={avatarSrc}
+                    alt={formData.username || "المستخدم"}
+                    className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-2xl md:h-32 md:w-32"
+                  />
+                  <label className="absolute bottom-1 right-0 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white bg-blue-600 text-white shadow-lg transition hover:scale-105 hover:bg-blue-700">
+                    <Camera size={18} />
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <div className="text-white">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold md:text-3xl">
+                      {formData.username || currentUser?.username || "مستخدم"}
+                    </h1>
+                    {currentUser?.isVerified ? (
+                      <CheckCircle2 size={20} className="text-emerald-400" />
+                    ) : (
+                      <ShieldCheck size={20} className="text-slate-300" />
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm text-slate-200">
+                    {formData.email || currentUser?.email || "your@email.com"}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                    <span className="rounded-full border border-white/20 bg-white/15 px-3 py-1 text-slate-100">
+                      Verified Member
+                    </span>
+                    <span className="rounded-full border border-white/20 bg-white/15 px-3 py-1 text-slate-100">
+                      Joined{" "}
+                      {currentUser?.createdAt
+                        ? new Date(currentUser.createdAt).toLocaleDateString(
+                            "ar-EG",
+                            { month: "short", year: "numeric" },
+                          )
+                        : "Recently"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-right backdrop-blur-sm">
+                <p className="text-sm text-slate-200">عدد العقارات</p>
+                <p className="text-2xl font-semibold text-white">
+                  {userListings.length}
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-6">
+            <motion.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    Profile Completion
+                  </p>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-800">
+                    اكمل ملفك الشخصي
+                  </h2>
+                </div>
+                <div className="rounded-2xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700">
+                  {profileCompletion}%
+                </div>
+              </div>
+              <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${profileCompletion}%` }}
+                  transition={{ duration: 0.4 }}
+                  className="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600"
+                />
+              </div>
+              <p className="mt-4 text-sm leading-7 text-slate-600">
+                أكمل بياناتك لإظهار ملف شخصي احترافي وزيادة ثقة العملاء عند عرض
+                العقارات.
+              </p>
+            </motion.section>
+
+            <motion.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    Account Information
+                  </p>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-800">
+                    معلومات الحساب
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-600">
+                  <Sparkles size={16} />
+                  Premium Ready
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="mb-2 block text-sm font-medium text-slate-600"
+                  >
+                    اسم المستخدم
+                  </label>
+                  <input
+                    id="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="mb-2 block text-sm font-medium text-slate-600"
+                  >
+                    البريد الإلكتروني
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="mb-2 block text-sm font-medium text-slate-600"
+                  >
+                    كلمة المرور
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="اتركها فارغة إذا لم ترغب بتغييرها"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <button
+                  onClick={handleUpdate}
+                  disabled={loading}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:translate-y-[-1px] hover:shadow-xl disabled:opacity-70"
+                >
+                  {loading ? (
+                    <Upload size={16} className="animate-pulse" />
+                  ) : (
+                    <Upload size={16} />
+                  )}
+                  {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
+                </button>
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-slate-50"
+                >
+                  <Camera size={16} />
+                  تغيير الصورة
+                </button>
+              </div>
+            </motion.section>
+          </div>
+
+          <div className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {stats.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 + index * 0.04 }}
+                    className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-slate-500">
+                        {item.label}
+                      </p>
+                      <div className="rounded-2xl bg-slate-100 p-2 text-slate-600">
+                        <Icon size={18} />
+                      </div>
+                    </div>
+                    <p className="mt-4 text-2xl font-semibold text-slate-800">
+                      {item.value}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <motion.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 }}
+              className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    My Properties
+                  </p>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-800">
+                    العقارات الخاصة بي
+                  </h2>
+                </div>
+                <Link
+                  to="/create-listing"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:translate-y-[-1px] hover:shadow-xl"
+                >
+                  <Plus size={16} />
+                  إنشاء عقار
+                </Link>
+              </div>
+
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowListings((prev) => !prev)}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                >
+                  {showListings ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
+                  {showListings ? "إخفاء العقارات" : "مشاهدة عقاراتي"}
+                </button>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {showListings && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-6 space-y-4">
+                      {listingsLoading ? (
+                        <div className="space-y-3">
+                          {[1, 2].map((item) => (
+                            <div
+                              key={item}
+                              className="animate-pulse rounded-3xl border border-slate-200 p-4"
+                            >
+                              <div className="h-24 rounded-2xl bg-slate-100" />
+                              <div className="mt-3 h-4 w-1/3 rounded bg-slate-100" />
+                              <div className="mt-2 h-4 w-2/3 rounded bg-slate-100" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : userListings.length === 0 ? (
+                        <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
+                            <Home size={24} className="text-slate-500" />
+                          </div>
+                          <h3 className="mt-4 text-lg font-semibold text-slate-800">
+                            لا توجد عقارات حتى الآن
+                          </h3>
+                          <p className="mt-2 text-sm leading-7 text-slate-500">
+                            ابدأ بإضافة أول عقار لك وابدأ في عرض مشروعاتك بشكل
+                            احترافي.
+                          </p>
+                          <Link
+                            to="/create-listing"
+                            className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                          >
+                            <Plus size={16} />
+                            إضافة عقار جديد
+                          </Link>
+                        </div>
+                      ) : (
+                        userListings.map((listing) => (
+                          <motion.article
+                            key={listing._id}
+                            layout
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                          >
+                            <div className="grid gap-4 p-4 md:grid-cols-[180px_1fr]">
+                              <div className="relative h-40 overflow-hidden rounded-[20px]">
+                                <img
+                                  src={
+                                    listing.imageUrl?.[0]?.url ||
+                                    "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=80"
+                                  }
+                                  alt={listing.name}
+                                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                                />
+                              </div>
+                              <div className="flex flex-col justify-between">
+                                <div>
+                                  <div className="flex items-center gap-2 text-lg font-semibold text-slate-800">
+                                    {listing.name}
+                                    <Eye size={16} className="text-slate-400" />
+                                  </div>
+                                  <p className="mt-2 text-sm leading-7 text-slate-500">
+                                    {listing.address}
+                                  </p>
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                                      {listing.type === "sell"
+                                        ? "للبيع"
+                                        : "للايجار"}
+                                    </span>
+                                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                                      {listing.bedrooms || 0} غرف
+                                    </span>
+                                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                                      {listing.bathrooms || 0} حمامات
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2 text-lg font-semibold text-slate-800">
+                                    <DollarSign
+                                      size={18}
+                                      className="text-emerald-600"
+                                    />
+                                    {listing.price?.toLocaleString("ar-EG")} ج.م
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() =>
+                                        navigate(
+                                          `/create-listing?edit=${listing._id}`,
+                                        )
+                                      }
+                                      className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-slate-50"
+                                    >
+                                      <Pencil size={15} />
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        setListingToDelete(listing)
+                                      }
+                                      className="inline-flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+                                    >
+                                      <Trash2 size={15} />
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.article>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.section>
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {listingToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    حذف العقار
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    لن تتمكن من استرجاعه بعد الحذف
+                  </p>
+                </div>
+              </div>
+              <p className="mt-5 text-sm leading-7 text-slate-600">
+                هل أنت متأكد من حذف هذا العقار؟
+              </p>
+              <div className="mt-6 flex flex-wrap justify-end gap-3">
+                <button
+                  onClick={() => setListingToDelete(null)}
+                  className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={confirmDeleteListing}
+                  className="rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+                >
+                  حذف
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

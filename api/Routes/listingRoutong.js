@@ -1,13 +1,14 @@
 import express from 'express';
-import { createListing } from '../Controlles/listingControll.js';
- import { verifyToken } from '../Middleware/authMiddleware.js';
-// , getAllListings, getListingById, updateListing, deleteListing
+import { createListing, getUserListings, getListingById, updateListing, deleteListing } from '../Controlles/listingControll.js';
+import { verifyToken } from '../Middleware/authMiddleware.js';
+
 const ListingRouter = express.Router();
 
-ListingRouter.post('/createListing', verifyToken , createListing);   
-// ListingRouter.get('/all', getAllListings);
-// ListingRouter.get('/:id', getListingById);
-// ListingRouter.put('/:id', updateListing);
-// ListingRouter.delete('/:id', deleteListing);
+ListingRouter.post('/createListing', verifyToken, createListing);
+ListingRouter.get('/user/:id', verifyToken, getUserListings);
+ListingRouter.get('/:id', verifyToken, getListingById);
+ListingRouter.put('/:id', verifyToken, updateListing);
+ListingRouter.delete('/:id', verifyToken, deleteListing);
+// ListingRouter.get('/:id', verifyToken, getListingById);
 
 export default ListingRouter;

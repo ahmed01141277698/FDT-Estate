@@ -53,16 +53,16 @@ const Header = () => {
             to="/profile"
             className="flex items-center gap-3 text-sm font-medium text-gray-700 hover:text-blue-600 transition"
           >
-            <div className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-300 ring-2 ring-blue-500">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-sky-400 shadow-sm">
               <img
                 src={
                   currentUser?.avatar ||
-                  "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423"
+                  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"
                 }
                 alt={currentUser?.username || currentUser?.email || "Profile"}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
-              <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full border-2 border-white bg-green-400" />
+              <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
             </div>
             {currentUser?.username || "ملفي"}
           </Link>
@@ -156,16 +156,16 @@ const Header = () => {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition"
             >
-              <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-300 ring-2 ring-blue-500">
+              <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-sky-400 shadow-sm">
                 <img
                   src={
                     currentUser?.avatar ||
-                    "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423"
+                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"
                   }
                   alt={currentUser?.username || currentUser?.email || "Profile"}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
-                <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full border-2 border-white bg-green-400" />
+                <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
               </div>
               {currentUser?.username || "ملفي"}
             </Link>

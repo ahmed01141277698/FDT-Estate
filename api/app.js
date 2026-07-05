@@ -99,8 +99,8 @@ mongoose
 // Routes
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
-app.use('/api/listing', listingRoute);
 app.use('/api/upload', uploadRoute);
+app.use('/api/listing', listingRoute);
 
 // 404
 app.use((req, res) => {

@@ -611,19 +611,29 @@ const Profile = () => {
                           >
                             <div className="grid gap-4 p-4 md:grid-cols-[180px_1fr]">
                               <div className="relative h-40 overflow-hidden rounded-[20px]">
-                                <img
-                                  src={
-                                    listing.imageUrl?.[0]?.url ||
-                                    "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=80"
-                                  }
-                                  alt={listing.name}
-                                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                                />
+                                <Link
+                                  to={`/listing/${listing._id}`}
+                                  className="absolute inset-0"
+                                >
+                                  <img
+                                    src={
+                                      listing.imageUrl?.[0]?.url ||
+                                      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=80"
+                                    }
+                                    alt={listing.name}
+                                    className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                                  />
+                                </Link>
                               </div>
                               <div className="flex flex-col justify-between">
                                 <div>
                                   <div className="flex items-center gap-2 text-lg font-semibold text-slate-800">
-                                    {listing.name}
+                                    <Link
+                                      to={`/listing/${listing._id}`}
+                                      className="hover:underline"
+                                    >
+                                      {listing.name}
+                                    </Link>
                                     <Eye size={16} className="text-slate-400" />
                                   </div>
                                   <p className="mt-2 text-sm leading-7 text-slate-500">

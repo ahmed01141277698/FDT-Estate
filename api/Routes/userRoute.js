@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { getProfile, updateProfile, deleteProfile, uploadAvatar } from '../Controlles/userController.js';
+import { getProfile, updateProfile, deleteProfile, uploadAvatar ,getUserById } from '../Controlles/userController.js';
 import { verifyToken } from '../Middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -23,6 +23,7 @@ const upload = multer({
 });
 
 router.get('/profile', verifyToken, getProfile);
+router.get('/:id', getUserById);
 router.put('/profile', verifyToken, updateProfile);
 router.delete('/profile', verifyToken, deleteProfile);
 router.post('/profile/avatar', verifyToken, upload.single('avatar'), uploadAvatar);

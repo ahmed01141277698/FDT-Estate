@@ -163,6 +163,19 @@ export const getProfile = async (req, res, next) => {
     next(errorHandler(500, 'حدث خطأ أثناء جلب بيانات المستخدم'));
   }
 };
+export const getUserById = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+
+    if (!user) {
+      return next(errorHandler(404, "المستخدم غير موجود"));
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    next(errorHandler(500, "حدث خطأ أثناء جلب بيانات المستخدم"));
+  }
+};
 
 export const uploadAvatar = async (req, res, next) => {
   try {

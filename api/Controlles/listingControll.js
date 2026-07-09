@@ -42,7 +42,7 @@ export const updateListing = async (req, res, next) => {
     }
 
     const updatedListing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 
@@ -65,6 +65,18 @@ export const deleteListing = async (req, res, next) => {
 
     await Listing.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Listing deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const detailsListing = async (req, res, next) => {
+  try {
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+    res.status(200).json(listing);
   } catch (error) {
     next(error);
   }

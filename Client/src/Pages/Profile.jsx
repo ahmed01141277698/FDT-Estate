@@ -126,12 +126,11 @@ const Profile = () => {
           throw new Error(uploadData.message || "فشل رفع الصورة");
         uploadedAvatarUrl = uploadData.url;
       }
-
       const res = await fetch("/api/user/profile", {
-        method: "PUT",
+        method: "get",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           username: formData.username.trim(),

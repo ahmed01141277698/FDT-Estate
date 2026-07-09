@@ -10,7 +10,7 @@ import Home from "./Pages/Home";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import Listing from "./Pages/CreateListing";
-import ListingPage from "./Pages/DetailseListing";
+import ListingDetailsPage from "./Pages/ListingDetailsPage";
 import { signInSuccess, signOut } from "../redux/user/userSlice";
 
 const App = () => {
@@ -55,7 +55,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<About />} />
         <Route path="/create-listing" element={<Listing />} />
-        <Route path="/listing/:id" element={<ListingPage />} />
+        <Route path="/listing/:id" element={<ListingDetailsPage />} />
       </Routes>
 
       <Footer />

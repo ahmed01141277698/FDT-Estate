@@ -14,6 +14,7 @@ import {
   DollarSign,
   Eye,
   Home,
+  LogOut,
   Pencil,
   Plus,
   ShieldCheck,
@@ -481,11 +482,11 @@ const Profile = () => {
                   {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
                 </button>
                 <button
-                  onClick={() => fileRef.current?.click()}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-slate-50"
+                  onClick={handleSignOut}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:translate-y-[-1px] hover:shadow-xl disabled:opacity-70-to-r from-sky-600 to-blue-600 "
                 >
-                  <Camera size={16} />
-                  تغيير الصورة
+                  <LogOut size={20} />
+                  تسجيل الخروج
                 </button>
               </div>
             </motion.section>

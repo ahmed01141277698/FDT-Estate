@@ -268,7 +268,7 @@ export default function useListingForm({ editId = null, initialData = null } = {
             "Content-Type": "application/json",
           },
           withCredentials: true,
-        });
+        },[]);
       }
 
       resetForm();

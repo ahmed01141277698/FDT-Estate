@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { generateListingSearchData } from "../utils/keywordGenerator.js";
 const ListingSchema = new mongoose.Schema(
     {
         name: {
@@ -74,6 +74,25 @@ const ListingSchema = new mongoose.Schema(
 
 
     }, { timestamps: true });
+ListingSchema.index({ resolvedLocation: 1, type: 1 });
+ListingSchema.index({ type: 1, price: 1 });
+ListingSchema.index({ featured: -1, createdAt: -1 });
+ListingSchema.pre("save", function (next) {
+    const relevantFieldsChanged = ["name", "description", "address"].some((f) =>
+        this.isModified(f)
+    );
+
+    if (this.isNew || relevantFieldsChanged) {
+        const { searchKeywords, resolvedLocation } = generateListingSearchData({
+            name: this.name,
+            description: this.description,
+            address: this.address,
+        });
+        this.searchKeywords = searchKeywords;
+        this.resolvedLocation = resolvedLocation;
+    }
+    next();
+});
 
 const Listing = mongoose.model("Listing", ListingSchema);
     export default Listing;

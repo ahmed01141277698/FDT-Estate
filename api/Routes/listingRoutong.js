@@ -8,9 +8,9 @@ const ListingRouter = express.Router();
 ListingRouter.post('/createListing', verifyToken, createListing);
 ListingRouter.get('/details/:id', verifyToken, detailsListing);
 ListingRouter.get('/user/:id', verifyToken, getUserListings);
-ListingRouter.get('/search', verifyToken, smartSearchListings);
 ListingRouter.get('/:id', verifyToken, getListingById);
 ListingRouter.put('/:id', verifyToken, updateListing);
 ListingRouter.delete('/:id', verifyToken, deleteListing);
+ListingRouter.get('/search', verifyToken, smartSearchListings);
 
 export default ListingRouter;

@@ -8,8 +8,8 @@
  */
 
 import { ALIAS_INDEX, getPropertyTypeById } from '../dictionary/propertyTypeDictionary.js';
-import { buildNGrams } from '../utils/tokenizer.js';
-import { isFuzzyMatch, similarityRatio } from '../utils/levenshtein.js';
+import { buildNGrams } from '../../utils/tokenizer.js';
+import { isFuzzyMatch, similarityRatio } from '../../utils/levenshtein.js';
 
 const EXACT_ALIAS_MAP = new Map(ALIAS_INDEX.map((e) => [e.alias, e.propertyTypeId]));
 const MIN_FUZZY_SIMILARITY = 0.75;

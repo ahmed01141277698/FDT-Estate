@@ -4,8 +4,8 @@
  */
 
 import { ALIAS_INDEX, getLocationById } from '../dictionary/locationDictionary.js';
-import { buildNGrams } from '../utils/tokenizer.js';
-import { isFuzzyMatch, similarityRatio } from '../utils/levenshtein.js';
+import { buildNGrams } from '../../utils/tokenizer.js';
+import { isFuzzyMatch, similarityRatio } from '../../utils/levenshtein.js';
 
 const EXACT_ALIAS_MAP = new Map(ALIAS_INDEX.map((entry) => [entry.alias, entry.locationId]));
 const MIN_FUZZY_SIMILARITY = 0.72;

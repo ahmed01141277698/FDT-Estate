@@ -5,7 +5,7 @@
  */
 
 import { ALIAS_INDEX } from '../dictionary/purposeDictionary.js';
-import { buildNGrams } from '../utils/tokenizer.js';
+import { buildNGrams } from '../../utils/tokenizer.js';
 
 const EXACT_ALIAS_MAP = new Map(ALIAS_INDEX.map((e) => [e.alias, e.purposeId]));
 

@@ -11,7 +11,7 @@
 
 import Listing from '../Models/listingModel.js';
 import { cleanAndNormalize } from './normalize/textCleaner.js';
-import { tokenize } from './utils/tokenizer.js';
+import { tokenize } from '../utils/tokenizer.js';
 import { resolveLocation } from './resolvers/locationResolver.js';
 import { resolvePropertyType } from './resolvers/propertyResolver.js';
 import { resolvePurpose } from './resolvers/purposeResolver.js';

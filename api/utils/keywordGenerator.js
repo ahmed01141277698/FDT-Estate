@@ -16,11 +16,11 @@
  *     a listing whose title only says "فيلا", and vice versa.
  */
 
-import { cleanAndNormalize } from '../normalize/textCleaner.js';
+import { cleanAndNormalize } from '../searchEngine/normalize/textCleaner.js';
 import { tokenize } from './tokenizer.js';
-import { resolveLocation } from '../resolvers/locationResolver.js';
-import { getLocationById } from '../dictionary/locationDictionary.js';
-import { resolvePropertyType } from '../resolvers/propertyResolver.js';
+import { resolveLocation } from '../searchEngine/resolvers/locationResolver.js';
+import { getLocationById } from '../searchEngine/dictionary/locationDictionary.js';
+import { resolvePropertyType } from '../searchEngine/resolvers/propertyResolver.js';
 
 const STOPWORDS = new Set([
   'في', 'من', 'الى', 'إلى', 'على', 'مع', 'او', 'أو', 'و',

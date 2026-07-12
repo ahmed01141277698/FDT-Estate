@@ -93,6 +93,26 @@ ListingSchema.pre("save", function (next) {
     }
     next();
 });
+ListingSchema.pre("findOneAndUpdate", async function (next) {
+    const update = this.getUpdate();
+    const touchesRelevantField = ["name", "description", "address"].some(
+        (f) => update[f] !== undefined || update.$set?.[f] !== undefined
+    );
 
+    if (!touchesRelevantField) return next();
+
+    const existing = await this.model.findOne(this.getQuery());
+    if (!existing) return next();
+
+    const merged = {
+        name: update.name ?? update.$set?.name ?? existing.name,
+        description: update.description ?? update.$set?.description ?? existing.description,
+        address: update.address ?? update.$set?.address ?? existing.address,
+    };
+
+    const { searchKeywords, resolvedLocation } = generateListingSearchData(merged);
+    this.setUpdate({ ...update, searchKeywords, resolvedLocation });
+    next();
+});
 const Listing = mongoose.model("Listing", ListingSchema);
     export default Listing;

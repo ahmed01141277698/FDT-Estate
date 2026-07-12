@@ -109,6 +109,7 @@ Existing documents won't have `searchKeywords`/`resolvedLocation` until they're
 next saved. Run this once after applying the patch:
 
 ```js
+
 import Listing from "./Models/listingModel.js";
 import { generateListingSearchData } from "./searchEngine/utils/keywordGenerator.js";
 

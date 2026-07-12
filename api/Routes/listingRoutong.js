@@ -7,6 +7,7 @@ const ListingRouter = express.Router();
 
 ListingRouter.post('/createListing', verifyToken, createListing);
 ListingRouter.get('/search', smartSearchListings);
+
 ListingRouter.get('/details/:id', verifyToken, detailsListing);
 ListingRouter.get('/user/:id', verifyToken, getUserListings);
 ListingRouter.get('/:id', verifyToken, getListingById);

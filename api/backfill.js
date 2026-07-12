@@ -1,6 +1,7 @@
 
 import Listing from "./Models/listingModel.js";
-import { generateListingSearchData } from "./searchEngine/utils/keywordGenerator.js";
+import { generateListingSearchData } from "./utils/keywordGenerator.js";
+
 
 async function backfill() {
   const listings = await Listing.find({});

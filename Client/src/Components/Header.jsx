@@ -12,9 +12,11 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    if (!searchQuery.trim()) return;
+    const q = searchQuery.trim();
+    if (!q) return;
 
-    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    // Smart search backend expects `q`.
+    navigate(`/search?q=${encodeURIComponent(q)}`);
   };
   return (
     <header className="p-4 flex items-center justify-between bg-white shadow-md sticky top-0 z-10 gap-4">
@@ -127,9 +129,21 @@ const Header = () => {
 
         {/* Mobile Search */}
         <div className="p-4 border-b">
-          <form className="flex items-center gap-2">
+          <form
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const input = form.querySelector('input[type="text"]');
+              const q = input?.value?.trim();
+              if (!q) return;
+              navigate(`/search?q=${encodeURIComponent(q)}`);
+              setOpen(false);
+            }}
+          >
             <input
               type="text"
+              defaultValue={searchQuery}
               placeholder="ابحث..."
               className="flex-1 bg-gray-100 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />

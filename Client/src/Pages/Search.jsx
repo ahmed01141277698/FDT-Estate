@@ -30,12 +30,16 @@ const Search = () => {
         const data = await res.json();
 
         if (!res.ok || !data.success) {
-          throw new Error(data.message || "Search failed");
+          console.error("Search API error:", { status: res.status, data });
+          throw new Error(data?.message || "Search failed");
         }
 
-        setListings(data.results);
-        setIntent(data.intent);
-        setPagination(data.pagination);
+        // Backend returns aggregate results; keep it consistent.
+        setListings(Array.isArray(data.results) ? data.results : []);
+        setIntent(data.intent || {});
+        setPagination(
+          data.pagination || { page: page, limit: 20, total: 0, totalPages: 0 },
+        );
       } catch (err) {
         setError(err.message);
       } finally {

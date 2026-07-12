@@ -2,12 +2,20 @@ import { Link } from "react-router-dom";
 import { FaSearch, FaAlignJustify, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 const Header = () => {
   const [open, setOpen] = useState(false);
   const { currentUser } = useSelector((state) => state.user || {});
   const isAuthenticated = Boolean(currentUser);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = (e) => {
+    e.preventDefault();
 
+    if (!searchQuery.trim()) return;
+
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+  };
   return (
     <header className="p-4 flex items-center justify-between bg-white shadow-md sticky top-0 z-10 gap-4">
       {/* Logo */}
@@ -18,8 +26,10 @@ const Header = () => {
 
       {/* Desktop Search Bar */}
       <div className="hidden md:block flex-1 max-w-md">
-        <form className="flex items-center gap-2">
+        <form onSubmit={handleSearch} className="flex items-center gap-2">
           <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             type="text"
             placeholder="ابحث عن عقارات..."
             className="w-full bg-gray-100 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm"

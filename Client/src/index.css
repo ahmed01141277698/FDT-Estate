@@ -1,3 +1,87 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Alexandria:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-arabic: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+  --color-gold: #c9a227;
+  --color-gold-light: #e8c56d;
+  --color-gold-dark: #a07d18;
+  --color-orange: #e8833a;
+  --color-surface: #0e0e16;
+  --color-surface-2: #13131f;
+  --color-surface-3: #1a1a2e;
+  --color-glass: rgba(255, 255, 255, 0.04);
+  --color-glass-border: rgba(201, 162, 39, 0.2);
+  --color-text: #f0ede6;
+  --color-muted: #8a8696;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* direction: rtl; */
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0e0e16;
+  color: #f0ede6;
+  font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0e0e16; }
+::-webkit-scrollbar-thumb { background: #c9a227; border-radius: 2px; }
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #c9a227, #e8c56d, #e8833a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(201, 162, 39, 0.15);
+  border-radius: 1.25rem;
+}
+
+/* Gold border gradient */
+.border-gold-gradient {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.border-gold-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #c9a227, transparent, #e8833a);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Numbers remain LTR */
+.num { direction: ltr; display: inline-block; }
+
+/* Section fade-in */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

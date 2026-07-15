@@ -1,25 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Alexandria:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Alexandria:wght@300;400;500;600;700;800&display=swap');
-@import 'tailwindcss';
 
-@theme {
-  --font-arabic: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
-  --color-gold: #c9a227;
-  --color-gold-light: #e8c56d;
-  --color-gold-dark: #a07d18;
-  --color-orange: #e8833a;
-  --color-surface: #0e0e16;
-  --color-surface-2: #13131f;
-  --color-surface-3: #1a1a2e;
-  --color-glass: rgba(255, 255, 255, 0.04);
-  --color-glass-border: rgba(201, 162, 39, 0.2);
-  --color-text: #f0ede6;
-  --color-muted: #8a8696;
-}
 
 * {
   box-sizing: border-box;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-// import ListingItem from "../Components/Listing/";
+import ListingItem from "../Components/Listing/ListingItem";
 
 const Search = () => {
   const [searchParams] = useSearchParams();

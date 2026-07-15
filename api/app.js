@@ -112,11 +112,19 @@ app.use((req, res) => {
 });
 
 // Error Handling
+// app.use((err, req, res, next) => {
+//   console.error('✗ Error:', { message: err.message, statusCode: err.statusCode });
+//   const statusCode = err.statusCode || 500;
+//   const message = err.message || 'حدث خطأ في الخادم';
+//   res.status(statusCode).json({ success: false, statusCode, message });
+// });
+
 app.use((err, req, res, next) => {
-  console.error('✗ Error:', { message: err.message, statusCode: err.statusCode });
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'حدث خطأ في الخادم';
-  res.status(statusCode).json({ success: false, statusCode, message });
+  console.error(err.stack);
+
+  res.status(500).json({
+    message: err.message,
+  });
 });
 
 // Graceful shutdown

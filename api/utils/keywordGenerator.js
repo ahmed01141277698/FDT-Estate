@@ -40,6 +40,7 @@ function extractKeywordsFromText(text) {
  * @returns {{ searchKeywords: string[], resolvedLocation: string|null }}
  */
 export function generateListingSearchData(listing) {
+
   const { name, description, address } = listing;
 
   const keywordSet = new Set();
@@ -50,7 +51,7 @@ export function generateListingSearchData(listing) {
   });
 
   // --- Location expansion ---
-  const addressTokens = tokenize(cleanAndNormalize(`${address || ''} ${name || ''}`));
+  const addressTokens = tokenize(cleanAndNormalize(`${address || ''} ${name || ''} ${description ||''}`));
   const locationMatch = resolveLocation(addressTokens);
 
   let resolvedLocation = null;

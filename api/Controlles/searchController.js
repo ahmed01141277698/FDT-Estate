@@ -6,7 +6,6 @@
  */
 
 import { smartSearch } from "../searchEngine/searchService.js";
-
 export const smartSearchListings = async (req, res, next) => {
   try {
     const { q = "", page = "1", limit = "20" } = req.query;

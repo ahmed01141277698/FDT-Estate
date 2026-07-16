@@ -35,7 +35,7 @@ const Profile = () => {
     email: currentUser?.email || "",
     password: "",
   });
-  const [avatar, setAvatar] = useState(currentUser?.avatar || null);
+  const [avatar, setAvatar] = useState(currentUser?.avatar?.url || "");
   const [avatarFile, setAvatarFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [listingsLoading, setListingsLoading] = useState(false);
@@ -45,7 +45,7 @@ const Profile = () => {
   const [toast, setToast] = useState({ message: "", type: "" });
 
   useEffect(() => {
-    setAvatar(currentUser?.avatar || null);
+    setAvatar(currentUser?.avatar?.url || "");
     setFormData({
       username: currentUser?.username || "",
       email: currentUser?.email || "",
@@ -112,8 +112,7 @@ const Profile = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      let uploadedAvatarUrl = currentUser?.avatar || avatar;
-
+      let uploadedAvatar = currentUser?.avatar || null;
       if (avatarFile) {
         const uploadPayload = new FormData();
         uploadPayload.append("avatar", avatarFile);
@@ -125,10 +124,10 @@ const Profile = () => {
         const uploadData = await uploadRes.json();
         if (!uploadRes.ok)
           throw new Error(uploadData.message || "فشل رفع الصورة");
-        uploadedAvatarUrl = uploadData.url;
+        uploadedAvatar = uploadData.avatar;
       }
       const res = await fetch("/api/user/profile", {
-        method: "get",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -137,23 +136,23 @@ const Profile = () => {
           username: formData.username.trim(),
           email: formData.email.trim(),
           ...(formData.password && { password: formData.password }),
-          ...(uploadedAvatarUrl && { avatar: uploadedAvatarUrl }),
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "فشل تحديث البيانات");
-
       const updatedUser = data.user || data;
+      const finalAvatar =
+        uploadedAvatar || updatedUser.avatar || currentUser.avatar;
+
       dispatch(
         updateUserSuccess({
           ...currentUser,
           ...updatedUser,
-          avatar:
-            updatedUser.avatar || uploadedAvatarUrl || currentUser?.avatar,
+          avatar: finalAvatar,
         }),
       );
-      setAvatar(updatedUser.avatar || uploadedAvatarUrl || currentUser?.avatar);
+      setAvatar(finalAvatar?.url || "");
       setAvatarFile(null);
       setFormData((prev) => ({ ...prev, password: "" }));
       showToast("تم حفظ التغييرات بنجاح");
@@ -244,10 +243,12 @@ const Profile = () => {
   );
 
   const avatarSrc =
-    avatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      formData.username || "User",
-    )}&background=3b82f6&color=fff&size=160`;
+    typeof avatar === "string"
+      ? avatar
+      : avatar?.url ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          formData.username || "User",
+        )}&background=3b82f6&color=fff&size=160`;
 
   if (!currentUser) {
     return (

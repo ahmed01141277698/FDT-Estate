@@ -153,6 +153,10 @@ import bcrypt from 'bcryptjs';
 import { errorHandler } from '../utils/errors.js';
 import fs from 'fs';
 import path from 'path';
+import { uploadToCloudinary } from "./uploadController.js";
+import { deleteImage } from "../../config/cloudinary.js";
+
+
 
 export const getProfile = async (req, res, next) => {
   try {
@@ -179,26 +183,45 @@ export const getUserById = async (req, res, next) => {
 
 export const uploadAvatar = async (req, res, next) => {
   try {
-    if (!req.file) return next(errorHandler(400, 'لم يتم رفع أي صورة'));
-
-    const user = await User.findById(req.userId);
-    if (!user) return next(errorHandler(404, 'المستخدم غير موجود'));
-
-    // احذف الصورة القديمة لو موجودة على السيرفر
-    if (user.avatar && user.avatar.startsWith('/uploads/')) {
-      const oldPath = path.join(process.cwd(), user.avatar);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    if (!req.file) {
+      return next(errorHandler(400, "لم يتم اختيار صورة"));
     }
 
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
-    user.avatar = avatarUrl;
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return next(errorHandler(404, "المستخدم غير موجود"));
+    }
+
+    // حذف الصورة القديمة من Cloudinary (لو موجودة)
+    if (user.avatar?.public_id) {
+      await deleteImage(user.avatar.public_id);
+    }
+
+    // رفع الصورة الجديدة
+    const uploadedImage = await uploadToCloudinary(
+      req.file,
+      "RealEstate/avatars"
+    );
+
+    user.avatar = {
+      url: uploadedImage.url,
+      public_id: uploadedImage.public_id,
+    };
+
     await user.save();
 
-    const { password: pass, ...rest } = user._doc;
-    res.status(200).json({ success: true, url: avatarUrl, user: rest });
+    const { password, ...rest } = user._doc;
+
+    res.status(200).json({
+      success: true,
+      message: "تم رفع الصورة بنجاح",
+      avatar: user.avatar,
+      user: rest,
+    });
   } catch (error) {
-    console.error('Error uploading avatar:', error);
-    next(errorHandler(500, 'حدث خطأ أثناء رفع الصورة'));
+    console.error(error);
+    next(errorHandler(500, "حدث خطأ أثناء رفع الصورة"));
   }
 };
 

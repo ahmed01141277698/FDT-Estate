@@ -68,7 +68,7 @@ const Header = () => {
             <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-sky-400 shadow-sm">
               <img
                 src={
-                  currentUser?.avatar ||
+                  currentUser?.avatar.url ||
                   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"
                 }
                 alt={currentUser?.username || currentUser?.email || "Profile"}

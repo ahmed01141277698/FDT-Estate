@@ -15,9 +15,15 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     avatar: {
-        type: String,
-        default: "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423"
-    },
+  url: {
+    type: String,
+    default: "رابط الصورة الافتراضية"
+  },
+  public_id: {
+    type: String,
+    default: null
+  }
+},
     isVerified: {
         type: Boolean,
         default: false,

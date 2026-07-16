@@ -18,7 +18,7 @@ export default function Home() {
       className="flex flex-col min-h-screen"
       style={{ background: "#0e0e16", minHeight: "100vh" }}
     >
-      <Heroone />
+      {/* <Heroone /> */}
       <Hero />
       <FeaturedProperties />
       <PropertyTypes />

@@ -1,7 +1,7 @@
 import React from "react";
 // import HeroSearch from "../Components/Hero/HeroSearch.jsx";
 // import HeroButtons from "../components/Hero/HeroButtons";
-import Heroone from "../components/Hero/Hero";
+// import Heroone from "../components/Hero/Hero";
 // import HeroContent from "../components/Hero/HeroContent";
 import Hero from "../components/HomeSections/Hero.jsx";
 import FeaturedProperties from "../components/HomeSections/FeaturedProperties";

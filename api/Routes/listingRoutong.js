@@ -27,6 +27,7 @@ import {
   updateListing,
   deleteListing,
   detailsListing,
+  getCategoryCounts,
 } from '../Controlles/listingControll.js';
 import { smartSearchListings } from '../Controlles/searchController.js';
 import { verifyToken } from '../Middleware/authMiddleware.js';
@@ -39,6 +40,7 @@ ListingRouter.post('/createListing', verifyToken, createListing);
 // قبل /:id، وإلا هيتفهم "categories" على إنها قيمة الـ id.
 ListingRouter.get('/', getAllListings);
 ListingRouter.get('/categories', getListingCategories);
+ListingRouter.get("/category-counts", getCategoryCounts);
 ListingRouter.get('/search', smartSearchListings);
 
 // شيلت verifyToken من هنا عشان أي زائر (من غير تسجيل دخول) يقدر يفتح تفاصيل

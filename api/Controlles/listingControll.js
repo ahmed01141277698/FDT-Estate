@@ -230,3 +230,20 @@ export const detailsListing = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getCategoryCounts = async (req, res, next) => {
+  try {
+    const counts = await Listing.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+    ]);
+
+    const countsMap = counts.reduce((acc, item) => {
+      if (item._id) acc[item._id] = item.count;
+      return acc;
+    }, {});
+
+    res.status(200).json(countsMap);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -112,9 +112,9 @@ export default function Hero() {
           منصتك الأولى لفهم قصة كل بيت في مصر
         </div>
 
-        <h1 className="motion-safe:animate-[fadeInUp_0.6s_ease_0.1s_backwards] max-w-4xl text-5xl font-black leading-[1.55] tracking-tight sm:text-6xl lg:text-7xl">
+        <h1 className="motion-safe:animate-[fadeInUp_0.6s_ease_0.1s_backwards] max-w-4xl text-5xl font-black leading-[2] tracking-tight sm:text-6xl lg:text-7xl">
           <span className="block">ابحثْ، قارِنْ، واطمئن</span>
-          <span className="text-gold-gradient py-4 block sm:mt-4">
+          <span className="text-gold-gradient py-4 block sm:mt-4 text-wrap  ">
             فبيتك الحقيقي في انتظارك.
           </span>
         </h1>

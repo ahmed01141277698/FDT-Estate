@@ -4,7 +4,7 @@ import React from "react";
 // import Heroone from "../components/Hero/Hero";
 // import HeroContent from "../components/Hero/HeroContent";
 import Hero from "../components/HomeSections/Hero.jsx";
-import FeaturedProperties from "../components/HomeSections/FeaturedProperties";
+import FeaturedProperties from "../Components/HomeSections/FeaturedProperties.jsx";
 import PropertyTypes from "../components/HomeSections/PropertyTypes";
 import WhyUs from "../components/HomeSections/WhyUs";
 import MarketInsights from "../components/HomeSections/MarketInsights";

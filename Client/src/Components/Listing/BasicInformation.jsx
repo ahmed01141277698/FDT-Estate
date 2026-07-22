@@ -132,6 +132,39 @@ export default function BasicInfoSection({ form, handleChange, errors = {} }) {
             </span>
           </div>
         </div>
+        {/* Category */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            نوع العقار
+          </label>
+
+          <select
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            className={`w-full rounded-xl border py-3 px-4 outline-none transition bg-white
+
+    ${
+      errors.category
+        ? "border-red-500"
+        : "border-gray-300 focus:border-blue-500"
+    }`}
+          >
+            <option value="">اختر نوع العقار</option>
+            <option value="فيلا">فيلا</option>
+            <option value="شقة">شقة</option>
+            <option value="تاون هاوس">تاون هاوس</option>
+            <option value="دوبلكس">دوبلكس</option>
+            <option value="بنتهاوس">بنتهاوس</option>
+            <option value="مكتب">مكتب</option>
+            <option value="محل تجاري">محل تجاري</option>
+            <option value="أرض">أرض</option>
+          </select>
+
+          {errors.category && (
+            <p className="text-red-500 text-sm mt-2">{errors.category}</p>
+          )}
+        </div>
       </div>
     </motion.div>
   );

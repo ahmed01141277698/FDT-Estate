@@ -15,6 +15,7 @@ const initialForm = {
   furnished: false,
   parking: false,
   type: "rent",
+  category: "",
   offer: false,
   imageUrl: [],
 };
@@ -212,6 +213,8 @@ export default function useListingForm({ editId = null, initialData = null } = {
     if (!form.bedrooms) newErrors.bedrooms = "عدد الغرف مطلوب";
     if (!form.bathrooms) newErrors.bathrooms = "عدد الحمامات مطلوب";
     if (!form.area) newErrors.area = "المساحة مطلوبة";
+      if (!form.category) newErrors.category = "نوع العقار مطلوب"; 
+
 
     if (form.offer) {
       if (!form.discountPrice) {

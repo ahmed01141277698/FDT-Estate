@@ -13,6 +13,7 @@ import Listing from "./Pages/CreateListing";
 import Search from "./Pages/Search";
 import ListingDetailsPage from "./Pages/ListingDetailsPage";
 import { signInSuccess, signOut } from "../redux/user/userSlice";
+import AllListings from "./Pages/AllListings";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const App = () => {
 
         dispatch(signInSuccess(data.user));
       } catch (error) {
-        dispatch(signOut());
+        dispatch(signOut(error));
       }
     };
 
@@ -56,6 +57,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<About />} />
         <Route path="/create-listing" element={<Listing />} />
+        <Route path="/AllListings" element={<AllListings />} />
         <Route path="/search" element={<Search />} />
         <Route path="/listing/:id" element={<ListingDetailsPage />} />
       </Routes>

@@ -47,7 +47,22 @@ const ListingSchema = new mongoose.Schema(
         type: { 
             type: String,
             enum: ['rent', 'sell'],
-            required: true},
+            required: true
+        },
+        category: {
+  type: String,
+  enum: [
+    "فيلا",
+    "شقة",
+    "تاون هاوس",
+    "دوبلكس",
+    "بنتهاوس",
+    "مكتب",
+    "محل تجاري",
+    "أرض",
+  ],
+  required: true,
+},
         offer: {
             type: Boolean,
             required: true,
@@ -79,6 +94,7 @@ const ListingSchema = new mongoose.Schema(
 ListingSchema.index({ resolvedLocation: 1, type: 1 });
 ListingSchema.index({ type: 1, price: 1 });
 ListingSchema.index({ featured: -1, createdAt: -1 });
+ListingSchema.index({ category: 1, price: 1 });
 ListingSchema.pre("save", function () {
     const relevantFieldsChanged = ["name", "description", "address"].some((f) =>
         this.isModified(f)

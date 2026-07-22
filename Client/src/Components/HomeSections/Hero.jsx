@@ -226,10 +226,7 @@ export default function Hero() {
       </div>
 
       {/* دعوة للتمرير — إشارة هادئة نحو قوائم العقارات أسفل الصفحة. */}
-      <a
-        href="#listings"
-        className="absolute bottom-4 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-[11px] font-semibold text-[#a9beb5] transition hover:text-[#f2b17e] sm:flex"
-      >
+      <a className="absolute bottom-4 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-[11px] font-semibold text-[#a9beb5] transition hover:text-[#f2b17e] sm:flex">
         استكشف أحدث العقارات
         <ChevronDown size={16} className="motion-safe:animate-bounce" />
       </a>

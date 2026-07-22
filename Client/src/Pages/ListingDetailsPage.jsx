@@ -31,7 +31,6 @@ export default function ListingDetailsPage() {
       try {
         setLoading(true);
         setError(false);
-        const localListingId = localStorage.getItem("listingId");
         const res = await fetch(`/api/listing/details/${listingId}`, {
           headers: {
             "Content-Type": "application/json",
@@ -49,19 +48,10 @@ export default function ListingDetailsPage() {
         setListing(data);
         setLoading(false);
 
+        // userRef راجع من الباك إند بالفعل معبّى (username, avatar, accountType)
+        // بفضل populate() في detailsListing — مفيش داعي لطلب إضافي هنا.
         if (data.userRef) {
-          try {
-            const ownerRes = await fetch(`/api/user/${data.userRef}`, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            });
-            const ownerData = await ownerRes.json();
-            if (ownerData.success !== false) setOwner(ownerData);
-          } catch {
-            setOwner(null);
-          }
+          setOwner(data.userRef);
         }
       } catch (err) {
         setError(true);

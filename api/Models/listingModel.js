@@ -67,6 +67,11 @@ const ListingSchema = new mongoose.Schema(
             type: Boolean,
             required: true,
         },
+        status: {
+  type: String,
+  enum: ["available", "sold", "rented"],
+  default: "available",
+},
         imageUrl: [
             {url: { type: String, required: true }, public_id: { type: String, required: true }}
         ],
@@ -95,6 +100,8 @@ ListingSchema.index({ resolvedLocation: 1, type: 1 });
 ListingSchema.index({ type: 1, price: 1 });
 ListingSchema.index({ featured: -1, createdAt: -1 });
 ListingSchema.index({ category: 1, price: 1 });
+ListingSchema.index({ status: 1 });
+
 ListingSchema.pre("save", function () {
     const relevantFieldsChanged = ["name", "description", "address"].some((f) =>
         this.isModified(f)
@@ -112,16 +119,16 @@ ListingSchema.pre("save", function () {
     }
 });
  
-ListingSchema.pre("findOneAndUpdate", async function (next) {
+ListingSchema.pre("findOneAndUpdate", async function () {
     const update = this.getUpdate();
     const touchesRelevantField = ["name", "description", "address"].some(
         (f) => update[f] !== undefined || update.$set?.[f] !== undefined
     );
 
-    if (!touchesRelevantField) return next();
+    if (!touchesRelevantField) return ;
 
     const existing = await this.model.findOne(this.getQuery());
-    if (!existing) return next();
+    if (!existing) return ;
 
     const merged = {
         name: update.name ?? update.$set?.name ?? existing.name,
@@ -131,7 +138,7 @@ ListingSchema.pre("findOneAndUpdate", async function (next) {
 
     const { searchKeywords, resolvedLocation } = generateListingSearchData(merged);
     this.setUpdate({ ...update, searchKeywords, resolvedLocation });
-    next();
+   
 });
 const Listing = mongoose.model("Listing", ListingSchema);
     export default Listing;

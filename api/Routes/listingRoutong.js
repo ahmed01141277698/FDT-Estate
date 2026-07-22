@@ -30,6 +30,7 @@ import {
   getCategoryCounts,
 } from '../Controlles/listingControll.js';
 import { smartSearchListings } from '../Controlles/searchController.js';
+import{getMarketInsights} from '../Controlles/statscontroller.js'
 import { verifyToken } from '../Middleware/authMiddleware.js';
 
 const ListingRouter = express.Router();
@@ -42,6 +43,7 @@ ListingRouter.get('/', getAllListings);
 ListingRouter.get('/categories', getListingCategories);
 ListingRouter.get("/category-counts", getCategoryCounts);
 ListingRouter.get('/search', smartSearchListings);
+ListingRouter.get("/market-insights", getMarketInsights);
 
 // شيلت verifyToken من هنا عشان أي زائر (من غير تسجيل دخول) يقدر يفتح تفاصيل
 // العقار — لو ده مش المطلوب وعايزها تفضل تتطلب تسجيل دخول، رجّعها زي ما كانت.

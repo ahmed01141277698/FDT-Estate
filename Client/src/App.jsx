@@ -8,7 +8,7 @@ import Profile from "./Pages/Profile";
 import About from "./Pages/About";
 import Home from "./Pages/Home";
 import Header from "./Components/Header";
-import Footer from "./Components/Footer";
+import Footer from "./Components/Footer.jsx";
 import Listing from "./Pages/CreateListing";
 import Search from "./Pages/Search";
 import ListingDetailsPage from "./Pages/ListingDetailsPage";

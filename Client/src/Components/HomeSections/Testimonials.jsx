@@ -255,15 +255,15 @@ export default function Testimonials() {
           </div>
         )}
         <div className="pt-5   items-center">
-          <button
+          <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            className="mr-auto rounded-xl  px-4 py-2 text-lg font-semibold text-white"
+            className="mr-auto rounded-xl px-4 py-2 text-lg font-semibold text-white"
             style={{ background: "linear-gradient(135deg,#c9a227,#e8833a)" }}
             onClick={() => setShowReviewModal(true)}
           >
             شاركنا رأيك
-          </button>
+          </motion.button>
 
           {showReviewModal && (
             <WriteReviewModal

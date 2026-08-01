@@ -26,6 +26,12 @@ export default function AllListings() {
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]));
   }, []);
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category") || "الكل";
+    setActiveCategory(categoryFromUrl);
+    setAdvancedFilters(null);
+    setPage(1);
+  }, [searchParams]);
 
   useEffect(() => {
     const controller = new AbortController();

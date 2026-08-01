@@ -14,45 +14,46 @@ export default function PropertyTypeSection({ form, setForm }) {
       initial={{ opacity: 0, y: 25 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+      className="rounded-2xl border p-6 shadow-sm"
+      style={{ background: "#fff", borderColor: "rgba(24,61,55,0.1)" }}
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">نوع العقار</h2>
+      <h2 className="mb-6 text-2xl font-black text-[#183d37]">نوع العقار</h2>
 
       <div className="grid grid-cols-2 gap-5">
         <button
           type="button"
           onClick={() => handleTypeChange("sell")}
-          className={`rounded-2xl border p-6 transition-all duration-200
-
-          ${
+          className={`rounded-2xl border p-6 transition-all duration-200 ${
             form.type === "sell"
-              ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-              : "border-gray-300 hover:border-blue-500 hover:bg-blue-50"
+              ? "border-emerald-600 bg-emerald-600 text-white shadow-lg"
+              : "border-[#183d37]/15 hover:border-[#c9a227] hover:bg-[#f8f6f2]"
           }`}
         >
           <Building size={34} className="mx-auto mb-3" />
-
-          <h3 className="font-bold text-lg">للبيع</h3>
-
-          <p className="text-sm opacity-80 mt-1">بيع العقار نهائياً</p>
+          <h3 className="text-lg font-bold">للبيع</h3>
+          <p
+            className={`mt-1 text-sm ${form.type === "sell" ? "opacity-80" : "text-[#6b7a74]"}`}
+          >
+            بيع العقار نهائيًا
+          </p>
         </button>
 
         <button
           type="button"
           onClick={() => handleTypeChange("rent")}
-          className={`rounded-2xl border p-6 transition-all duration-200
-
-          ${
+          className={`rounded-2xl border p-6 transition-all duration-200 ${
             form.type === "rent"
-              ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-              : "border-gray-300 hover:border-blue-500 hover:bg-blue-50"
+              ? "border-blue-600 bg-blue-600 text-white shadow-lg"
+              : "border-[#183d37]/15 hover:border-[#c9a227] hover:bg-[#f8f6f2]"
           }`}
         >
           <KeyRound size={34} className="mx-auto mb-3" />
-
-          <h3 className="font-bold text-lg">للإيجار</h3>
-
-          <p className="text-sm opacity-80 mt-1">تأجير العقار</p>
+          <h3 className="text-lg font-bold">للإيجار</h3>
+          <p
+            className={`mt-1 text-sm ${form.type === "rent" ? "opacity-80" : "text-[#6b7a74]"}`}
+          >
+            تأجير العقار
+          </p>
         </button>
       </div>
     </motion.div>

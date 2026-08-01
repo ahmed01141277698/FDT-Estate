@@ -15,7 +15,7 @@ export default function CreateListing() {
   const listing = useListingForm({ editId });
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gray-100 py-10">
+    <div dir="rtl" className="min-h-screen bg-[#f7f5f0] py-10">
       <div className="max-w-7xl mx-auto px-4">
         <ListingHeader isEdit={Boolean(editId)} />
 

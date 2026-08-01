@@ -1,3 +1,52 @@
+// import { Building2, Info } from "lucide-react";
+// import { motion } from "framer-motion";
+
+// export default function ListingHeader({ isEdit = false }) {
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0, y: -25 }}
+//       animate={{ opacity: 1, y: 0 }}
+//       transition={{ duration: 0.4 }}
+//       className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 mb-8"
+//     >
+//       <div className="flex items-start gap-4">
+//         <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+//           <Building2 className="w-8 h-8 text-blue-600" />
+//         </div>
+
+//         <div className="flex-1">
+//           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+//             {isEdit ? "تحديث العقار" : "إضافة عقار جديد"}
+//           </h1>
+
+//           <p className="text-gray-500 mt-2 leading-7">
+//             {isEdit
+//               ? "عدّل بيانات العقار الحالي مع الحفاظ على صورك الحالية أو رفع صور جديدة بسهولة."
+//               : "املأ جميع بيانات العقار بدقة، وارفع صورًا واضحة وعالية الجودة لزيادة فرص ظهور إعلانك وجذب المزيد من العملاء."}
+//           </p>
+
+//           <div className="mt-6 flex items-start gap-3 rounded-xl bg-blue-50 border border-blue-200 p-4">
+//             <Info className="text-blue-600 mt-1" size={20} />
+
+//             <div>
+//               <p className="font-semibold text-blue-800">
+//                 نصائح للحصول على إعلان احترافي
+//               </p>
+
+//               <ul className="mt-2 text-sm text-blue-700 space-y-1 list-disc pr-5">
+//                 <li>استخدم صورًا واضحة بإضاءة جيدة.</li>
+//                 <li>اجعل أول صورة هي أفضل صورة للعقار.</li>
+//                 <li>اكتب وصفًا دقيقًا يشمل أهم المميزات.</li>
+//                 <li>حدد السعر الصحيح لتجنب الاستفسارات غير الجادة.</li>
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </motion.div>
+//   );
+// }
+
 import { Building2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -7,33 +56,37 @@ export default function ListingHeader({ isEdit = false }) {
       initial={{ opacity: 0, y: -25 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 mb-8"
+      className="mb-8 rounded-2xl border p-6 shadow-sm md:p-8"
+      style={{ background: "#fff", borderColor: "rgba(24,61,55,0.1)" }}
     >
       <div className="flex items-start gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-          <Building2 className="w-8 h-8 text-blue-600" />
+        <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-[#183d37]/10">
+          <Building2 className="h-8 w-8 text-[#183d37]" />
         </div>
 
         <div className="flex-1">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h1 className="text-3xl font-black text-[#183d37] md:text-4xl">
             {isEdit ? "تحديث العقار" : "إضافة عقار جديد"}
           </h1>
 
-          <p className="text-gray-500 mt-2 leading-7">
+          <p className="mt-2 leading-7 text-[#6b7a74]">
             {isEdit
               ? "عدّل بيانات العقار الحالي مع الحفاظ على صورك الحالية أو رفع صور جديدة بسهولة."
               : "املأ جميع بيانات العقار بدقة، وارفع صورًا واضحة وعالية الجودة لزيادة فرص ظهور إعلانك وجذب المزيد من العملاء."}
           </p>
 
-          <div className="mt-6 flex items-start gap-3 rounded-xl bg-blue-50 border border-blue-200 p-4">
-            <Info className="text-blue-600 mt-1" size={20} />
+          <div
+            className="mt-6 flex items-start gap-3 rounded-xl border p-4"
+            style={{ background: "#f8f6f2", borderColor: "rgba(24,61,55,0.1)" }}
+          >
+            <Info className="mt-1 text-[#c9a227]" size={20} />
 
             <div>
-              <p className="font-semibold text-blue-800">
+              <p className="font-bold text-[#183d37]">
                 نصائح للحصول على إعلان احترافي
               </p>
 
-              <ul className="mt-2 text-sm text-blue-700 space-y-1 list-disc pr-5">
+              <ul className="mt-2 list-disc space-y-1 pr-5 text-sm text-[#3f4d47]">
                 <li>استخدم صورًا واضحة بإضاءة جيدة.</li>
                 <li>اجعل أول صورة هي أفضل صورة للعقار.</li>
                 <li>اكتب وصفًا دقيقًا يشمل أهم المميزات.</li>

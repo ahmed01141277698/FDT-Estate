@@ -10,9 +10,9 @@ const validateEmail = (email) => {
 
 export const signUp = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, phone } = req.body;
 
-    if (!username || !email || !password)
+    if (!username || !email || !password || !phone)
       return next(errorHandler(400, 'جميع الحقول مطلوبة'));
     if (password.length < 6)
       return next(errorHandler(400, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'));
@@ -32,6 +32,7 @@ export const signUp = async (req, res, next) => {
       username,
       email,
       password: hashedPassword,
+      phone,
       isVerified: true,
     });
 

@@ -1,4 +1,4 @@
-// import { useEffect, useState } from "react";
+// import { useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import OAuth_Googal from "../Components/OAuth_Googal";
 
@@ -9,19 +9,20 @@
 //     password: "",
 //   });
 //   const [error, setError] = useState(null);
-//   const [successMessage, setSuccessMessage] = useState(null);
-//   const [registeredEmail, setRegisteredEmail] = useState("");
-//   const [resendCountdown, setResendCountdown] = useState(0);
-//   const [resendMessage, setResendMessage] = useState("");
 //   const [loading, setLoading] = useState(false);
 //   const navigate = useNavigate();
 
 //   const handleChange = (e) => {
+//     setError(null);
 //     setFormData({ ...formData, [e.target.id]: e.target.value });
 //   };
 
 //   const validateForm = () => {
-//     if (!formData.username || !formData.email || !formData.password) {
+//     if (
+//       !formData.username.trim() ||
+//       !formData.email.trim() ||
+//       !formData.password
+//     ) {
 //       setError("جميع الحقول مطلوبة");
 //       return false;
 //     }
@@ -38,10 +39,7 @@
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-
-//     if (!validateForm()) {
-//       return;
-//     }
+//     if (!validateForm()) return;
 
 //     try {
 //       setLoading(true);
@@ -59,21 +57,13 @@
 //         setError(data.message || "فشل إنشاء الحساب");
 //         return;
 //       }
+
 //       navigate("/signin", {
 //         state: {
 //           email: formData.email,
 //           password: formData.password,
 //         },
 //       });
-
-//       // setSuccessMessage(
-//       //   "تم إنشاء الحساب بنجاح. تم إرسال رسالة تحقق إلى بريدك الإلكتروني.",
-//       // );
-//       //     setRegisteredEmail(formData.email);
-//       //     setResendCountdown(120);
-//       //     setResendMessage("يمكنك إعادة الإرسال بعد انتهاء المؤقت.");
-//       //     setFormData({ username: "", email: "", password: "" });
-//       //     setError(null);
 //     } catch (err) {
 //       setError(err.message || "حدث خطأ، حاول مرة أخرى");
 //     } finally {
@@ -81,58 +71,11 @@
 //     }
 //   };
 
-//   // useEffect(() => {
-//   //   if (resendCountdown <= 0) return;
-
-//   //   const timerId = setInterval(() => {
-//   //     setResendCountdown((prev) => Math.max(prev - 1, 0));
-//   //   }, 1000);
-
-//   //   return () => clearInterval(timerId);
-//   // }, [resendCountdown]);
-
-//   // useEffect(() => {
-//   //   if (resendCountdown <= 0) return;
-
-//   //   const timerId = setInterval(() => {
-//   //     setResendCountdown((prev) => Math.max(prev - 1, 0));
-//   //   }, 1000);
-
-//   //   return () => clearInterval(timerId);
-//   // }, [resendCountdown]);
-
-//   // useEffect(() => {
-//   //   if (resendCountdown === 0 && registeredEmail) {
-//   //     setResendMessage("يمكنك الآن إعادة إرسال رسالة التحقق.");
-//   //   }
-//   // }, [resendCountdown, registeredEmail]);
-
-//   const handleResend = async () => {
-//     if (!registeredEmail) return;
-//     try {
-//       setLoading(true);
-//       setError(null);
-//       setResendMessage("");
-//       const response = await fetch("/api/auth/resend-verification", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ email: registeredEmail }),
-//       });
-//       const data = await response.json();
-//       if (!response.ok) {
-//         throw new Error(data.message || "فشل إعادة إرسال رسالة التحقق");
-//       }
-//       setResendMessage(data.message || "تم إرسال رسالة التحقق مرة أخرى.");
-//       setResendCountdown(120);
-//     } catch (err) {
-//       setError(err.message || "حدث خطأ أثناء محاولة الإرسال");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+//     <div
+//       className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+//       dir="rtl"
+//     >
 //       <section className="rounded-lg p-4 bg-white shadow-xl">
 //         <div className="flex items-center justify-center my-3">
 //           <div className="xl:mx-auto shadow-lg p-6 xl:w-full xl:max-w-sm 2xl:max-w-md rounded-lg border border-gray-200">
@@ -147,7 +90,10 @@
 //               <div className="space-y-4">
 //                 {/* Username */}
 //                 <div>
-//                   <label className="text-sm font-semibold text-gray-700 block mb-2">
+//                   <label
+//                     htmlFor="username"
+//                     className="text-sm font-semibold text-gray-700 block mb-2"
+//                   >
 //                     اسم المستخدم
 //                   </label>
 //                   <input
@@ -156,13 +102,16 @@
 //                     id="username"
 //                     value={formData.username}
 //                     onChange={handleChange}
-//                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+//                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-right"
 //                   />
 //                 </div>
 
 //                 {/* Email */}
 //                 <div>
-//                   <label className="text-sm font-semibold text-gray-700 block mb-2">
+//                   <label
+//                     htmlFor="email"
+//                     className="text-sm font-semibold text-gray-700 block mb-2"
+//                   >
 //                     البريد الإلكتروني
 //                   </label>
 //                   <input
@@ -171,13 +120,16 @@
 //                     id="email"
 //                     value={formData.email}
 //                     onChange={handleChange}
-//                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+//                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-right"
 //                   />
 //                 </div>
 
 //                 {/* Password */}
 //                 <div>
-//                   <label className="text-sm font-semibold text-gray-700 block mb-2">
+//                   <label
+//                     htmlFor="password"
+//                     className="text-sm font-semibold text-gray-700 block mb-2"
+//                   >
 //                     كلمة المرور
 //                   </label>
 //                   <input
@@ -186,11 +138,18 @@
 //                     id="password"
 //                     value={formData.password}
 //                     onChange={handleChange}
-//                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+//                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-right"
 //                   />
 //                 </div>
 
-//                 {/* Submit Button */}
+//                 {/* Error */}
+//                 {error && (
+//                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-right">
+//                     {error}
+//                   </div>
+//                 )}
+
+//                 {/* Submit */}
 //                 <button
 //                   className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-400 disabled:cursor-not-allowed"
 //                   type="submit"
@@ -199,7 +158,7 @@
 //                   {loading ? "جاري الإنشاء..." : "إنشاء حساب"}
 //                 </button>
 
-//                 {/* OAuth */}
+//                 {/* Divider */}
 //                 <div className="relative my-4">
 //                   <div className="absolute inset-0 flex items-center">
 //                     <div className="w-full border-t border-gray-300"></div>
@@ -213,46 +172,12 @@
 //               </div>
 //             </form>
 
-//             {/* Error Message */}
-//             {error && (
-//               <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-//                 {error}
-//               </div>
-//             )}
-//             {successMessage && (
-//               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-//                 {successMessage}
-//               </div>
-//             )}
-//             {/* {registeredEmail && (
-//               <div className="mt-4 rounded-3xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
-//                 <p>
-//                   تم إرسال رابط التحقق إلى: <strong>{registeredEmail}</strong>
-//                 </p>
-//                 <p className="mt-2">{resendMessage}</p>
-//                 <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
-//                   <button
-//                     type="button"
-//                     onClick={handleResend}
-//                     disabled={resendCountdown > 0 || loading}
-//                     className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
-//                   >
-//                     {resendCountdown > 0
-//                       ? `أعد الإرسال بعد ${Math.floor(resendCountdown / 60)}:${String(
-//                           resendCountdown % 60,
-//                         ).padStart(2, "0")}`
-//                       : "إعادة إرسال رابط التحقق"}
-//                   </button>
-//                 </div>
-//               </div>
-//             )} */}
-
 //             {/* Sign In Link */}
 //             <p className="mt-4 text-center text-gray-600">
-//               هل لديك حساب بالفعل؟
+//               هل لديك حساب بالفعل؟{" "}
 //               <Link
 //                 to="/signin"
-//                 className="text-blue-600 hover:underline font-semibold ml-1"
+//                 className="text-blue-600 hover:underline font-semibold"
 //               >
 //                 تسجيل الدخول
 //               </Link>
@@ -268,16 +193,29 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Building2,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Phone,
+  ShieldCheck,
+  User,
+} from "lucide-react";
 import OAuth_Googal from "../Components/OAuth_Googal";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    phone: "",
     password: "",
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -289,6 +227,7 @@ const SignUp = () => {
     if (
       !formData.username.trim() ||
       !formData.email.trim() ||
+      !formData.phone.trim() ||
       !formData.password
     ) {
       setError("جميع الحقول مطلوبة");
@@ -300,6 +239,10 @@ const SignUp = () => {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError("البريد الإلكتروني غير صحيح");
+      return false;
+    }
+    if (!/^01[0125][0-9]{8}$/.test(formData.phone.trim())) {
+      setError("رقم الهاتف غير صحيح، يجب أن يكون رقم مصري صالح");
       return false;
     }
     return true;
@@ -316,7 +259,12 @@ const SignUp = () => {
       const response = await fetch("/api/auth/signUp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          phone: formData.phone.trim(),
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
@@ -341,118 +289,222 @@ const SignUp = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0f2622] px-4 py-20"
       dir="rtl"
     >
-      <section className="rounded-lg p-4 bg-white shadow-xl">
-        <div className="flex items-center justify-center my-3">
-          <div className="xl:mx-auto shadow-lg p-6 xl:w-full xl:max-w-sm 2xl:max-w-md rounded-lg border border-gray-200">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold text-gray-900">
-                إنشاء حساب جديد
-              </h2>
-              <p className="text-gray-600 text-sm mt-2">انضم إلينا اليوم</p>
-            </div>
+      {/* Ambient brand backdrop */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#183d37] via-[#12302b] to-[#0f2622]" />
+      <div className="absolute -left-28 top-1/4 size-[28rem] rounded-full bg-[#e2a87b]/10 blur-3xl" />
+      <div className="absolute -right-24 bottom-0 size-[24rem] rounded-full bg-[#e8c56d]/10 blur-3xl" />
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
 
-            <form className="mt-6" onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                {/* Username */}
-                <div>
-                  <label
-                    htmlFor="username"
-                    className="text-sm font-semibold text-gray-700 block mb-2"
-                  >
-                    اسم المستخدم
-                  </label>
-                  <input
-                    placeholder="أدخل اسم المستخدم"
-                    type="text"
-                    id="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-right"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="text-sm font-semibold text-gray-700 block mb-2"
-                  >
-                    البريد الإلكتروني
-                  </label>
-                  <input
-                    placeholder="أدخل بريدك الإلكتروني"
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-right"
-                  />
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="text-sm font-semibold text-gray-700 block mb-2"
-                  >
-                    كلمة المرور
-                  </label>
-                  <input
-                    placeholder="أدخل كلمة المرور (6 أحرف على الأقل)"
-                    type="password"
-                    id="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-right"
-                  />
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-right">
-                    {error}
-                  </div>
-                )}
-
-                {/* Submit */}
-                <button
-                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-400 disabled:cursor-not-allowed"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? "جاري الإنشاء..." : "إنشاء حساب"}
-                </button>
-
-                {/* Divider */}
-                <div className="relative my-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">أو</span>
-                  </div>
-                </div>
-
-                <OAuth_Googal />
-              </div>
-            </form>
-
-            {/* Sign In Link */}
-            <p className="mt-4 text-center text-gray-600">
-              هل لديك حساب بالفعل؟{" "}
-              <Link
-                to="/signin"
-                className="text-blue-600 hover:underline font-semibold"
+      <div className="relative z-10 w-full max-w-md">
+        {/* Signature element — the official seal, stamped onto the document */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.4, rotate: -18 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 220, damping: 16 }}
+          className="relative z-20 mx-auto -mb-14 flex size-24 items-center justify-center sm:size-28"
+        >
+          <Link
+            to="/"
+            aria-label="الصفحة الرئيسية"
+            className="relative flex size-full items-center justify-center rounded-full border-[3px] border-[#f8f8f3] bg-gradient-to-br from-[#e8c56d] to-[#c9a227] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)]"
+          >
+            <svg
+              viewBox="0 0 100 100"
+              className="absolute inset-1.5 motion-safe:animate-[spin_26s_linear_infinite]"
+            >
+              <defs>
+                <path
+                  id="signupSealCircle"
+                  d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
+                />
+              </defs>
+              <text
+                fill="#173d36"
+                fontSize="9"
+                fontWeight="800"
+                letterSpacing="2"
               >
-                تسجيل الدخول
-              </Link>
+                <textPath href="#signupSealCircle" startOffset="0%">
+                  مَسكَن ★ السجل العقاري ★
+                </textPath>
+              </text>
+            </svg>
+            <Building2 size={26} strokeWidth={2.5} className="text-[#173d36]" />
+          </Link>
+        </motion.div>
+
+        {/* Document card */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="relative rounded-[32px] border border-[#c9a227]/20 bg-[#f8f8f3] px-7 pb-8 pt-20 shadow-[0_40px_100px_-28px_rgba(0,0,0,0.55)] sm:px-9"
+        >
+          {/* Certificate corner marks */}
+          <span className="pointer-events-none absolute right-5 top-5 size-4 border-r-2 border-t-2 border-[#c9a227]/50" />
+          <span className="pointer-events-none absolute left-5 top-5 size-4 border-l-2 border-t-2 border-[#c9a227]/50" />
+          <span className="pointer-events-none absolute bottom-5 right-5 size-4 border-b-2 border-r-2 border-[#c9a227]/50" />
+          <span className="pointer-events-none absolute bottom-5 left-5 size-4 border-b-2 border-l-2 border-[#c9a227]/50" />
+
+          <div className="text-center">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#a08a5f]">
+              انضم إلينا
+            </p>
+            <h1 className="mt-2 text-2xl font-black tracking-tight text-[#183d37] sm:text-[26px]">
+              أنشئ سجلّك العقاري
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-[#6b7d76]">
+              بيانات دقيقة تسهّل التحقق من هويتك وتأمين حسابك
             </p>
           </div>
+
+          <form className="mt-9 space-y-6" onSubmit={handleSubmit} noValidate>
+            <div>
+              <label
+                htmlFor="username"
+                className="mb-2 block text-xs font-black uppercase tracking-wide text-[#a08a5f]"
+              >
+                اسم المستخدم
+              </label>
+              <div className="flex items-center gap-2.5 border-b-2 border-[#e2ddd0] pb-2.5 transition focus-within:border-[#e49263]">
+                <User size={16} className="shrink-0 text-[#b3a483]" />
+                <input
+                  id="username"
+                  type="text"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="أدخل اسم المستخدم"
+                  disabled={loading}
+                  className="w-full bg-transparent text-sm font-semibold text-[#183d37] outline-none placeholder:text-[#b8b199]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-2 block text-xs font-black uppercase tracking-wide text-[#a08a5f]"
+              >
+                البريد الإلكتروني
+              </label>
+              <div className="flex items-center gap-2.5 border-b-2 border-[#e2ddd0] pb-2.5 transition focus-within:border-[#e49263]">
+                <Mail size={16} className="shrink-0 text-[#b3a483]" />
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="example@mail.com"
+                  disabled={loading}
+                  className="w-full bg-transparent text-sm font-semibold text-[#183d37] outline-none placeholder:text-[#b8b199]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="phone"
+                className="mb-2 block text-xs font-black uppercase tracking-wide text-[#a08a5f]"
+              >
+                رقم الهاتف
+              </label>
+              <div className="flex items-center gap-2.5 border-b-2 border-[#e2ddd0] pb-2.5 transition focus-within:border-[#e49263]">
+                <Phone size={16} className="shrink-0 text-[#b3a483]" />
+                <input
+                  id="phone"
+                  type="tel"
+                  dir="ltr"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="01xxxxxxxxx"
+                  disabled={loading}
+                  className="w-full bg-transparent text-left text-sm font-semibold text-[#183d37] outline-none placeholder:text-[#b8b199]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="mb-2 block text-xs font-black uppercase tracking-wide text-[#a08a5f]"
+              >
+                كلمة المرور
+              </label>
+              <div className="flex items-center gap-2.5 border-b-2 border-[#e2ddd0] pb-2.5 transition focus-within:border-[#e49263]">
+                <Lock size={16} className="shrink-0 text-[#b3a483]" />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="6 أحرف على الأقل"
+                  disabled={loading}
+                  className="w-full bg-transparent text-sm font-semibold text-[#183d37] outline-none placeholder:text-[#b8b199]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={
+                    showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"
+                  }
+                  className="shrink-0 text-[#b3a483] transition hover:text-[#183d37]"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#e49263] px-4 py-3.5 text-sm font-extrabold text-[#173d36] shadow-lg shadow-[#e49263]/30 transition hover:translate-y-[-1px] hover:bg-[#f1b68b] disabled:cursor-not-allowed disabled:translate-y-0 disabled:bg-[#e2ddd0] disabled:text-[#a9beb5] disabled:shadow-none"
+            >
+              {loading ? "جاري الإنشاء..." : "إنشاء حساب"}
+            </button>
+          </form>
+
+          <div className="mt-7 flex items-center gap-3 text-center text-xs font-bold text-[#b3a483]">
+            <span className="h-px flex-1 bg-[#e2ddd0]" />
+            <span>أو</span>
+            <span className="h-px flex-1 bg-[#e2ddd0]" />
+          </div>
+
+          <div className="mt-6">
+            <OAuth_Googal />
+          </div>
+
+          <p className="mt-7 text-center text-sm font-semibold text-[#6b7d76]">
+            هل لديك حساب بالفعل؟{" "}
+            <Link
+              to="/signin"
+              className="font-extrabold text-[#183d37] underline-offset-4 hover:text-[#e49263]"
+            >
+              تسجيل الدخول
+            </Link>
+          </p>
+        </motion.div>
+
+        <div className="mt-6 flex items-center justify-center gap-2 text-xs font-bold text-[#7f9089]">
+          <ShieldCheck size={14} className="text-[#e8c56d]" />
+          بياناتك محمية داخل سجلّنا الموثّق
         </div>
-      </section>
+      </div>
     </div>
   );
 };

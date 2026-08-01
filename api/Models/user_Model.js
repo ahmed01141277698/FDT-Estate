@@ -1,4 +1,44 @@
+// import mongoose from 'mongoose';
+// const userSchema = new mongoose.Schema({
+//     username: {
+//         type: String,
+//         required: true,
+//         unique: true
+//     },
+//     email: {
+//         type: String,
+//         required: true,
+//         unique: true
+//     },
+//     password: {
+//         type: String,
+//         required: true
+//     },
+//     avatar: {
+//   url: {
+//     type: String,
+//     default: "رابط الصورة الافتراضية"
+//   },
+//   public_id: {
+//     type: String,
+//     default: null
+//   }
+// },
+//     isVerified: {
+//         type: Boolean,
+//         default: false,
+//     },
+//     verificationToken: {
+//         type: String,
+//     },
+// }, { timestamps: true });
+// const User = mongoose.model('User', userSchema);
+
+// export default User;
+
+
 import mongoose from 'mongoose';
+
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -10,28 +50,38 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    phone: {
+        type: String,
+        required: true,
+        unique: true
+    },
     password: {
-        type: String,   
+        type: String,
         required: true
     },
     avatar: {
-  url: {
-    type: String,
-    default: "رابط الصورة الافتراضية"
-  },
-  public_id: {
-    type: String,
-    default: null
-  }
-},
+        url: {
+            type: String,
+            default: "رابط الصورة الافتراضية"
+        },
+        public_id: {
+            type: String,
+            default: null
+        }
+    },
     isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    isPhoneVerified: {
         type: Boolean,
         default: false,
     },
     verificationToken: {
         type: String,
     },
-}, { timestamps: true });  
+}, { timestamps: true });
+
 const User = mongoose.model('User', userSchema);
 
 export default User;

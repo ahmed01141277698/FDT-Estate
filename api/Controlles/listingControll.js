@@ -221,7 +221,10 @@ export const detailsListing = async (req, res, next) => {
   try {
     const listing = await Listing.findById(req.params.id)
       // عدّل أسماء الحقول دي على حسب الـ User schema الحقيقي عندك.
-      .populate("userRef", "username avatar accountType");
+      .populate(
+  "userRef",
+  "username avatar accountType phone isVerified socialLinks",
+);
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
     }

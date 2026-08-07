@@ -61,9 +61,9 @@ export default function ShareButtons({ title, onCopied }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleNativeShare}
-          className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-full transition-colors"
+          className="flex items-center gap-1.5 rounded-full bg-[#183d37]/5 px-3.5 py-2 text-xs font-bold text-[#183d37] transition-colors hover:bg-[#183d37]/10"
         >
-          <Share2 className="w-3.5 h-3.5" />
+          <Share2 className="h-3.5 w-3.5" />
           مشاركة
         </motion.button>
       )}
@@ -75,8 +75,8 @@ export default function ShareButtons({ title, onCopied }) {
           whileTap={{ scale: 0.94 }}
           href={c.url(url, title)}
           target="_blank"
-          rel="noreferrer"
-          className={`w-9 h-9 rounded-full ${c.color} text-white flex items-center justify-center text-[11px] font-bold shrink-0`}
+          rel="noopener noreferrer"
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${c.color} text-[11px] font-bold text-white`}
           aria-label={c.label}
         >
           {c.label.slice(0, 1)}
@@ -87,9 +87,9 @@ export default function ShareButtons({ title, onCopied }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleCopy}
-        className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-full transition-colors"
+        className="flex items-center gap-1.5 rounded-full bg-[#183d37]/5 px-3.5 py-2 text-xs font-bold text-[#183d37] transition-colors hover:bg-[#183d37]/10"
       >
-        <Link2 className="w-3.5 h-3.5" />
+        <Link2 className="h-3.5 w-3.5" />
         نسخ الرابط
       </motion.button>
     </div>

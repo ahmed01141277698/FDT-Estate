@@ -23,9 +23,9 @@ export default function FloatingActions({ saved, onToggleSave, onShare }) {
             whileTap={{ scale: 0.92 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             aria-label="العودة للأعلى"
-            className="w-11 h-11 rounded-full bg-white text-slate-700 shadow-lg shadow-slate-300/50 border border-slate-100 flex items-center justify-center"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#e7e2d7] bg-white text-[#183d37] shadow-lg shadow-[#183d37]/10"
           >
-            <ArrowUp className="w-4.5 h-4.5" />
+            <ArrowUp className="h-[18px] w-[18px]" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -35,9 +35,9 @@ export default function FloatingActions({ saved, onToggleSave, onShare }) {
         whileTap={{ scale: 0.92 }}
         onClick={onShare}
         aria-label="مشاركة العقار"
-        className="w-11 h-11 rounded-full bg-white text-slate-700 shadow-lg shadow-slate-300/50 border border-slate-100 flex items-center justify-center md:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-[#e7e2d7] bg-white text-[#183d37] shadow-lg shadow-[#183d37]/10 md:hidden"
       >
-        <Share2 className="w-4.5 h-4.5" />
+        <Share2 className="h-[18px] w-[18px]" />
       </motion.button>
 
       <motion.button
@@ -45,10 +45,10 @@ export default function FloatingActions({ saved, onToggleSave, onShare }) {
         whileTap={{ scale: 0.92 }}
         onClick={onToggleSave}
         aria-label="حفظ العقار"
-        className="w-11 h-11 rounded-full bg-white shadow-lg shadow-slate-300/50 border border-slate-100 flex items-center justify-center md:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-[#e7e2d7] bg-white shadow-lg shadow-[#183d37]/10 md:hidden"
       >
         <Heart
-          className={`w-4.5 h-4.5 ${saved ? "text-rose-500" : "text-slate-500"}`}
+          className={`h-[18px] w-[18px] ${saved ? "text-rose-500" : "text-[#6b7d76]"}`}
           fill={saved ? "currentColor" : "none"}
         />
       </motion.button>

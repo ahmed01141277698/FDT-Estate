@@ -19,13 +19,13 @@ function StatCard({ icon: Icon, value, label }) {
     <motion.div
       variants={item}
       whileHover={{ y: -4 }}
-      className="flex flex-col items-center justify-center gap-2 bg-white border border-slate-100 rounded-2xl py-5 px-3 shadow-sm hover:shadow-md transition-shadow"
+      className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[#e7e2d7] bg-white px-3 py-5 shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-        <Icon className="w-5 h-5 text-blue-600" strokeWidth={1.75} />
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e49263]/10">
+        <Icon className="h-5 w-5 text-[#e49263]" strokeWidth={1.75} />
       </div>
-      <span className="text-lg font-bold text-slate-900">{value}</span>
-      <span className="text-xs text-slate-500 font-medium">{label}</span>
+      <span className="text-lg font-black text-[#183d37]">{value}</span>
+      <span className="text-xs font-bold text-[#a08a5f]">{label}</span>
     </motion.div>
   );
 }
@@ -38,13 +38,25 @@ export default function ListingStats({ listing }) {
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4"
+      className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4"
     >
       <StatCard icon={BedDouble} value={bedrooms} label="غرف النوم" />
       <StatCard icon={Bath} value={bathrooms} label="الحمامات" />
-      <StatCard icon={Ruler} value={area ? `${area} م²` : undefined} label="المساحة" />
-      <StatCard icon={Car} value={parking ? "متاح" : "غير متاح"} label="موقف سيارات" />
-      <StatCard icon={Sofa} value={furnished ? "مفروشة" : "غير مفروشة"} label="التأثيث" />
+      <StatCard
+        icon={Ruler}
+        value={area ? `${area} م²` : undefined}
+        label="المساحة"
+      />
+      <StatCard
+        icon={Car}
+        value={parking ? "متاح" : "غير متاح"}
+        label="موقف سيارات"
+      />
+      <StatCard
+        icon={Sofa}
+        value={furnished ? "مفروشة" : "غير مفروشة"}
+        label="التأثيث"
+      />
     </motion.div>
   );
 }

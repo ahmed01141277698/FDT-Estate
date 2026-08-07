@@ -80,6 +80,14 @@ const userSchema = new mongoose.Schema({
     verificationToken: {
         type: String,
     },
+    socialLinks: {
+  facebook: String,
+  instagram: String,
+  twitter: String,
+  linkedin: String,
+  youtube: String,
+  website: String,
+}
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

@@ -233,8 +233,12 @@
 // }
 
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { toggleFavoriteLocal } from "../../../redux/favoriteSlice/favoriteSlice";
 import {
   Heart,
   MapPin,
@@ -254,7 +258,9 @@ const FALLBACK_IMG = "https://placehold.co/800x600?text=No+Image";
 const MotionLink = motion(Link);
 
 export default function PropertyCard({ property = {}, index = 0 }) {
-  const [saved, setSaved] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(
+    property?.favoritesCount || 0,
+  );
 
   const {
     _id,
@@ -273,13 +279,55 @@ export default function PropertyCard({ property = {}, index = 0 }) {
     views = 0,
     userRef, // مُعبّأ (populated) من الباك إند: { username, avatar, accountType }
   } = property;
+  const dispatch = useDispatch();
 
+  const saved = useSelector((state) =>
+    state.favorites.favoritesIds.includes(_id),
+  );
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const isAgency = userRef?.accountType === "agency";
   const posterName = userRef?.username || "معلن";
 
   const image = imageUrl?.[0]?.url || FALLBACK_IMG;
   const displayPrice = offer && discountPrice ? discountPrice : price;
 
+  const handleFavorite = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
+    dispatch(toggleFavoriteLocal(_id));
+
+    const previousCount = favoritesCount;
+
+    setFavoritesCount((prev) => (saved ? Math.max(prev - 1, 0) : prev + 1));
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`/api/listing/favorites/${_id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        dispatch(toggleFavoriteLocal(_id));
+        setFavoritesCount(previousCount);
+      }
+    } catch (error) {
+      dispatch(toggleFavoriteLocal(_id));
+      setFavoritesCount(previousCount);
+      console.log(error);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -336,7 +384,7 @@ export default function PropertyCard({ property = {}, index = 0 }) {
         </div>
 
         <button
-          onClick={() => setSaved((s) => !s)}
+          onClick={handleFavorite}
           aria-label="حفظ العقار"
           className={`absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-sm transition-colors ${
             saved
@@ -403,12 +451,24 @@ export default function PropertyCard({ property = {}, index = 0 }) {
               </div>
             )}
 
-            <div
-              className="flex shrink-0 items-center gap-1 text-[#a08a5f]"
-              title={`${views} مشاهدة`}
-            >
-              <Eye size={13} className="text-[#e49263]" />
-              <span className="num text-xs font-semibold">{views}</span>
+            <div className="flex shrink-0 items-center gap-3">
+              <div
+                className="flex items-center gap-1 text-[#a08a5f]"
+                title={`${views} مشاهدة`}
+              >
+                <Eye size={13} className="text-[#e49263]" />
+                <span className="num text-xs font-semibold">{views}</span>
+              </div>
+
+              <div
+                className="flex items-center gap-1 text-[#a08a5f]"
+                title={`${favoritesCount} حفظ`}
+              >
+                <Heart size={13} className="text-[#e49263]" />
+                <span className="num text-xs font-semibold">
+                  {favoritesCount}
+                </span>
+              </div>
             </div>
           </div>
 

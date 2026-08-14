@@ -14,7 +14,9 @@ import Search from "./Pages/Search";
 import ListingDetailsPage from "./Pages/ListingDetailsPage";
 import { signInSuccess, signOut } from "../redux/user/userSlice";
 import AllListings from "./Pages/AllListings";
-
+import Favorites from "./Pages/Favorites";
+import { useSelector } from "react-redux";
+import { loadFavorites } from "./services/favoriteService";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -45,6 +47,15 @@ const App = () => {
     fetchProfile();
   }, [dispatch]);
 
+  const { currentUser } = useSelector((state) => state.user);
+
+  const dispatchfavorites = useDispatch();
+
+  useEffect(() => {
+    if (currentUser) {
+      dispatchfavorites(loadFavorites());
+    }
+  }, [currentUser, dispatchfavorites]);
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -60,6 +71,7 @@ const App = () => {
         <Route path="/AllListings" element={<AllListings />} />
         <Route path="/search" element={<Search />} />
         <Route path="/listing/:id" element={<ListingDetailsPage />} />
+        <Route path="/favorites" element={<Favorites />} />
       </Routes>
 
       <Footer />

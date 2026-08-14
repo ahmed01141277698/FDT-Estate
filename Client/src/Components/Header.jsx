@@ -208,7 +208,6 @@ const Header = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const { currentUser } = useSelector((state) => state.user || {});
   const isAuthenticated = Boolean(currentUser);
-
   const closeMenu = () => setMobileMenu(false);
 
   // Lock background scroll while the mobile menu is open so the
@@ -224,7 +223,7 @@ const Header = () => {
     currentUser?.avatar?.url ||
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80";
   const displayName = currentUser?.username || "ملفي";
-
+  const favoritesCount = useSelector((state) => state.favorites.count);
   return (
     <header className="sticky top-0 z-50 min-h-[70px] overflow-hidden bg-[#183d37] px-5 pb-6 pt-5 text-white sm:px-8 lg:px-12">
       <div className="absolute -left-20 bottom-0 size-[30rem] rounded-full bg-[#e2a87b]/20 blur-3xl" />
@@ -267,9 +266,15 @@ const Header = () => {
             <Link
               to="/favorites"
               aria-label="المفضلة"
-              className="grid size-10 place-items-center rounded-full transition hover:bg-white/10"
+              className="relative grid size-10 place-items-center rounded-full transition hover:bg-white/10"
             >
               <Heart size={19} />
+
+              {favoritesCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {favoritesCount > 99 ? "99+" : favoritesCount}
+                </span>
+              )}
             </Link>
 
             <Link
@@ -423,10 +428,18 @@ const Header = () => {
               <Link
                 to="/favorites"
                 onClick={closeMenu}
-                className="flex items-center gap-2 rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+                className="flex items-center justify-between rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
               >
-                <Heart size={16} />
-                المفضلة
+                <div className="flex items-center gap-2">
+                  <Heart size={16} />
+                  المفضلة
+                </div>
+
+                {favoritesCount > 0 && (
+                  <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    {favoritesCount > 99 ? "99+" : favoritesCount}
+                  </span>
+                )}
               </Link>
 
               <Link

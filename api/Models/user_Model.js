@@ -51,9 +51,11 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     phone: {
+        // مش required على مستوى الاسكيما لأن حسابات جوجل مبيرجعش منها رقم
+        // تليفون. فورم التسجيل العادي لسه بيطلبه إجباري في auth_controll.js.
         type: String,
-        required: true,
-        unique: true
+        unique: true,
+        sparse: true,
     },
     password: {
         type: String,

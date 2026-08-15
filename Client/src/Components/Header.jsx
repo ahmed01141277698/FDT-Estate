@@ -1,14 +1,12 @@
-// // export default Header;
 // import { Link } from "react-router-dom";
 // import { useEffect, useState } from "react";
 // import { useSelector } from "react-redux";
-// import { Building2, Menu, X } from "lucide-react";
+// import { Bell, Building2, Heart, Menu, Plus, X } from "lucide-react";
 
 // const Header = () => {
 //   const [mobileMenu, setMobileMenu] = useState(false);
 //   const { currentUser } = useSelector((state) => state.user || {});
 //   const isAuthenticated = Boolean(currentUser);
-
 //   const closeMenu = () => setMobileMenu(false);
 
 //   // Lock background scroll while the mobile menu is open so the
@@ -24,9 +22,9 @@
 //     currentUser?.avatar?.url ||
 //     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80";
 //   const displayName = currentUser?.username || "ملفي";
-
+//   const favoritesCount = useSelector((state) => state.favorites.count);
 //   return (
-//     <header className="sticky z-50 top-0 min-h-[70px] overflow-hidden bg-[#183d37] px-5 pb-6 pt-5 text-white sm:px-8 lg:px-12">
+//     <header className="sticky top-0 z-50 min-h-[70px] overflow-hidden bg-[#183d37] px-5 pb-6 pt-5 text-white sm:px-8 lg:px-12">
 //       <div className="absolute -left-20 bottom-0 size-[30rem] rounded-full bg-[#e2a87b]/20 blur-3xl" />
 //       <div className="absolute right-[25%] top-24 size-64 rounded-full border border-white/10" />
 
@@ -46,31 +44,66 @@
 //           <Link to="/" className="transition hover:text-[#f2b17e]">
 //             الرئيسية
 //           </Link>
+//           <Link to="/AllListings" className="transition hover:text-[#f2b17e]">
+//             العقارات
+//           </Link>
 //           <Link to="/about" className="transition hover:text-[#f2b17e]">
 //             حول
 //           </Link>
 //         </div>
 
 //         {isAuthenticated ? (
-//           <Link
-//             to="/profile"
-//             className="hidden items-center gap-2.5 rounded-full py-1.5 pl-4 pr-1.5 transition hover:bg-white/10 lg:flex"
-//           >
-//             <span className="hidden max-w-[110px] truncate text-sm font-semibold text-white/90 md:inline">
-//               {displayName}
-//             </span>
-//             <span className="relative flex h-9 w-9 shrink-0">
-//               <img
-//                 src={avatarUrl}
-//                 alt={currentUser?.username || currentUser?.email || "Profile"}
-//                 className="h-9 w-9 rounded-full border-2 border-white/40 object-cover"
-//               />
-//               <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
-//                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-//                 <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-[#183d37] bg-emerald-500" />
+//           <div className="hidden items-center gap-2 lg:flex">
+//             <Link
+//               to="/create-listing"
+//               className="flex items-center gap-1.5 rounded-full bg-[#e49263] px-4 py-2 text-sm font-extrabold text-[#173d36] transition hover:bg-[#f1b68b]"
+//             >
+//               <Plus size={16} />
+//               إضافة عقار
+//             </Link>
+
+//             <Link
+//               to="/favorites"
+//               aria-label="المفضلة"
+//               className="relative grid size-10 place-items-center rounded-full transition hover:bg-white/10"
+//             >
+//               <Heart size={19} />
+
+//               {favoritesCount > 0 && (
+//                 <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+//                   {favoritesCount > 99 ? "99+" : favoritesCount}
+//                 </span>
+//               )}
+//             </Link>
+
+//             <Link
+//               to="/notifications"
+//               aria-label="الإشعارات"
+//               className="grid size-10 place-items-center rounded-full transition hover:bg-white/10"
+//             >
+//               <Bell size={19} />
+//             </Link>
+
+//             <Link
+//               to="/profile"
+//               className="flex items-center gap-2.5 rounded-full py-1.5 pl-4 pr-1.5 transition hover:bg-white/10"
+//             >
+//               <span className="hidden max-w-[110px] truncate text-sm font-semibold text-white/90 md:inline">
+//                 {displayName}
 //               </span>
-//             </span>
-//           </Link>
+//               <span className="relative flex h-9 w-9 shrink-0">
+//                 <img
+//                   src={avatarUrl}
+//                   alt={currentUser?.username || currentUser?.email || "Profile"}
+//                   className="h-9 w-9 rounded-full border-2 border-white/40 object-cover"
+//                 />
+//                 <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+//                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+//                   <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-[#183d37] bg-emerald-500" />
+//                 </span>
+//               </span>
+//             </Link>
+//           </div>
 //         ) : (
 //           <div className="hidden items-center gap-4 lg:flex">
 //             <Link
@@ -165,12 +198,59 @@
 //           </Link>
 
 //           <Link
+//             to="/AllListings"
+//             onClick={closeMenu}
+//             className="rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+//           >
+//             العقارات
+//           </Link>
+
+//           <Link
 //             to="/about"
 //             onClick={closeMenu}
 //             className="rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
 //           >
 //             حول
 //           </Link>
+
+//           {isAuthenticated && (
+//             <>
+//               <Link
+//                 to="/create-listing"
+//                 onClick={closeMenu}
+//                 className="flex items-center gap-2 rounded-xl bg-[#e49263] px-4 py-3 text-[#173d36] transition hover:bg-[#f1b68b]"
+//               >
+//                 <Plus size={16} />
+//                 إضافة عقار
+//               </Link>
+
+//               <Link
+//                 to="/favorites"
+//                 onClick={closeMenu}
+//                 className="flex items-center justify-between rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+//               >
+//                 <div className="flex items-center gap-2">
+//                   <Heart size={16} />
+//                   المفضلة
+//                 </div>
+
+//                 {favoritesCount > 0 && (
+//                   <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+//                     {favoritesCount > 99 ? "99+" : favoritesCount}
+//                   </span>
+//                 )}
+//               </Link>
+
+//               <Link
+//                 to="/notifications"
+//                 onClick={closeMenu}
+//                 className="flex items-center gap-2 rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+//               >
+//                 <Bell size={16} />
+//                 الإشعارات
+//               </Link>
+//             </>
+//           )}
 
 //           {!isAuthenticated && (
 //             <>
@@ -224,6 +304,33 @@ const Header = () => {
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80";
   const displayName = currentUser?.username || "ملفي";
   const favoritesCount = useSelector((state) => state.favorites.count);
+
+  // عداد الإشعارات غير المقروءة — نفس فكرة favoritesCount بس جاي من الـ API
+  // بدل الـ redux، وبيتحدث كل 30 ثانية.
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await fetch("/api/notifications/unread-count", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        setUnreadCount(data.unreadCount || 0);
+      } catch {
+        // إخفاق صامت — عداد خلفي، مش محتاج يعطّل الواجهة
+      }
+    };
+
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+
   return (
     <header className="sticky top-0 z-50 min-h-[70px] overflow-hidden bg-[#183d37] px-5 pb-6 pt-5 text-white sm:px-8 lg:px-12">
       <div className="absolute -left-20 bottom-0 size-[30rem] rounded-full bg-[#e2a87b]/20 blur-3xl" />
@@ -280,9 +387,15 @@ const Header = () => {
             <Link
               to="/notifications"
               aria-label="الإشعارات"
-              className="grid size-10 place-items-center rounded-full transition hover:bg-white/10"
+              className="relative grid size-10 place-items-center rounded-full transition hover:bg-white/10"
             >
               <Bell size={19} />
+
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Link>
 
             <Link
@@ -445,10 +558,18 @@ const Header = () => {
               <Link
                 to="/notifications"
                 onClick={closeMenu}
-                className="flex items-center gap-2 rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+                className="flex items-center justify-between rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
               >
-                <Bell size={16} />
-                الإشعارات
+                <div className="flex items-center gap-2">
+                  <Bell size={16} />
+                  الإشعارات
+                </div>
+
+                {unreadCount > 0 && (
+                  <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
               </Link>
             </>
           )}

@@ -15,7 +15,7 @@ import authRoute from './Routes/auth_route.js';
 import listingRoute from './Routes/listingRoutong.js';
 import uploadRoute from './Routes/uploadRoutes.js';
 import ReviewRouter from './Routes/reviewrouter.js'
-
+import NotificationRouter from './Routes/notificationRouter.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -102,7 +102,9 @@ app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/upload', uploadRoute);
 app.use('/api/listing', listingRoute);
-app.use('/api/reviews',ReviewRouter)
+app.use('/api/reviews', ReviewRouter)
+app.use('/api/notifications', NotificationRouter);
+
 // 404
 app.use((req, res) => {
   res.status(404).json({

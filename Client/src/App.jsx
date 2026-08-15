@@ -17,6 +17,7 @@ import AllListings from "./Pages/AllListings";
 import Favorites from "./Pages/Favorites";
 import { useSelector } from "react-redux";
 import { loadFavorites } from "./services/favoriteService";
+import NotificationsPage from "./Pages/NotificationsPage";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -72,6 +73,7 @@ const App = () => {
         <Route path="/search" element={<Search />} />
         <Route path="/listing/:id" element={<ListingDetailsPage />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
 
       <Footer />

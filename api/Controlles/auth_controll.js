@@ -37,15 +37,23 @@ export const signUp = async (req, res, next) => {
     });
 
     await newUser.save();
-
+   // إشعار ترحيبي أول ما يتعمل الحساب — أول حاجة هيلاقيها المستخدم في جرس
+    // الإشعارات لما يسجل دخوله لأول مرة.
+   
     res.status(201).json({
       success: true,
       message: 'تم إنشاء الحساب بنجاح',
     });
   } catch (error) {
-    console.error('خطأ في التسجيل:', error);
-    next(errorHandler(500, 'حدث خطأ في إنشاء الحساب'));
+  if (error.code === 11000) {
+    return res.status(400).json({
+      success: false,
+      message: "رقم الهاتف مستخدم بالفعل",
+    });
   }
+
+  next(error);
+}
 };
 
 export const signIn = async (req, res, next) => {
@@ -135,6 +143,13 @@ export const google = async (req, res, next) => {
     });
 
     const savedUser = await newUser.save();
+      await createNotification({
+      recipient: savedUser._id,
+      type: 'system',
+      title: `أهلاً بيك في مَسكَن يا ${username}`,
+      body: 'ابدأ استكشاف العقارات أو أضف أول إعلان ليك دلوقتي',
+      link: '/',
+    });
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     const { password: pass, ...rest } = savedUser._doc;
 

@@ -13,7 +13,6 @@ import {
   Trash2,
   Loader2,
 } from "lucide-react";
-
 const TYPE_CONFIG = {
   message: { icon: MessageCircle, color: "#e49263" },
   listing_liked: { icon: Heart, color: "#e11d48" },

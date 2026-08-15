@@ -45,6 +45,16 @@ const notificationSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
+    // مفتاح فريد اختياري لمنع تكرار نفس الإشعار لو نفس الحدث اتنفّذ مرتين
+    // (retry من الشبكة، ضغطتين سريعة، إلخ). الـ unique + sparse يخلي
+    // MongoDB نفسه يرفض أي محاولة إنشاء بنفس المفتاح، وده آمن حتى مع
+    // طلبين متزامنين في نفس اللحظة بالظبط. sparse عشان الإشعارات اللي
+    // مالهاش deduplicationKey (زي الترحيب) متتأثرش بالـ index ده.
+    deduplicationKey: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
   },
   { timestamps: true },
 );

@@ -6,7 +6,8 @@ export const createListing = async (req, res, next) => {
   try {
     const newListing = await Listing.create(req.body);
 
-    // إشعار تأكيد للمالك إن عقاره نُشر بنجاح
+    // إشعار تأكيد للمالك إن عقاره نُشر بنجاح — dedup بمفتاح ثابت لأن عقار
+    // معيّن مفروض يتنشر مرة واحدة بس أصلاً.
     await createNotification({
       recipient: newListing.userRef,
       type: "listing_approved",
@@ -14,6 +15,7 @@ export const createListing = async (req, res, next) => {
       body: `عقارك "${newListing.name}" أصبح متاحًا الآن على الموقع`,
       link: `/listing/${newListing._id}`,
       relatedListing: newListing._id,
+      deduplicationKey: `listing_published:${newListing._id}`,
     });
 
     res.status(201).json(newListing);
@@ -161,7 +163,8 @@ export const updateListing = async (req, res, next) => {
     if (req.body.price !== undefined && Number(req.body.price) !== oldPrice) {
       const isDrop = Number(req.body.price) < oldPrice;
 
-      // 1) إشعار تأكيد للمالك نفسه
+      // 1) إشعار تأكيد للمالك نفسه — dedup بقيمة السعر القديم/الجديد، عشان
+      // نفس التحديث بالظبط لو اتكرر (retry) ميعملش إشعار تاني.
       await createNotification({
         recipient: updatedListing.userRef,
         type: "price_change",
@@ -169,6 +172,7 @@ export const updateListing = async (req, res, next) => {
         body: `تغيّر سعر "${updatedListing.name}" من ${oldPrice.toLocaleString()} إلى ${updatedListing.price.toLocaleString()} ج.م`,
         link: `/listing/${updatedListing._id}`,
         relatedListing: updatedListing._id,
+        deduplicationKey: `price_change_owner:${updatedListing._id}:${oldPrice}:${updatedListing.price}`,
       });
 
       // 2) لو السعر نزل، إشعار لكل اللي حافظين العقار ده في مفضلتهم
@@ -186,6 +190,7 @@ export const updateListing = async (req, res, next) => {
               body: `"${updatedListing.name}" نزل سعره من ${oldPrice.toLocaleString()} إلى ${updatedListing.price.toLocaleString()} ج.م`,
               link: `/listing/${updatedListing._id}`,
               relatedListing: updatedListing._id,
+              deduplicationKey: `price_drop_follower:${updatedListing._id}:${fav.userRef}:${updatedListing.price}`,
             }),
           ),
         );
@@ -249,6 +254,11 @@ export const notifyListingInterest = async (req, res, next) => {
     }
 
     const channelLabel = channel === "whatsapp" ? "واتساب" : "مكالمة هاتفية";
+
+    // dedup بمفتاح دقيقة واحدة — يمنع سبام لو حد ضغط الزرار كذا مرة بسرعة،
+    // بدون ما يمنع إشعارات حقيقية من زوار مختلفين بعد كده.
+    const minuteBucket = Math.floor(Date.now() / 60000);
+
     await createNotification({
       recipient: listing.userRef,
       type: "message",
@@ -256,6 +266,7 @@ export const notifyListingInterest = async (req, res, next) => {
       body: `${visitorName || "زائر"} حاول التواصل معاك عن طريق ${channelLabel} بخصوص "${listing.name}"`,
       link: `/listing/${listing._id}`,
       relatedListing: listing._id,
+      deduplicationKey: `interest:${listing._id}:${channel}:${minuteBucket}`,
     });
 
     res.status(200).json({ success: true });

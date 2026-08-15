@@ -57,8 +57,11 @@ export const toggleFavorite = async (req, res) => {
       $inc: { favoritesCount: 1 },
     });
 
-    // إشعار للمالك — بس لو مش هو نفسه اللي حفظ عقاره
+    // إشعار للمالك — بس لو مش هو نفسه اللي حفظ عقاره. dedup يوم بيوم عشان
+    // لو حد شال العقار من مفضلته ورجّعه تاني في نفس اليوم متبعتش له إشعار
+    // تاني، لكن لو حصل تاني بكرة يبعت من جديد.
     if (listing.userRef.toString() !== userId) {
+      const todayBucket = new Date().toISOString().slice(0, 10);
       await createNotification({
         recipient: listing.userRef,
         type: "listing_liked",
@@ -67,6 +70,7 @@ export const toggleFavorite = async (req, res) => {
         link: `/listing/${listing._id}`,
         relatedListing: listing._id,
         relatedUser: userId,
+        deduplicationKey: `favorite:${listingId}:${userId}:${todayBucket}`,
       });
     }
 

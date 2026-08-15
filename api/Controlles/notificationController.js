@@ -93,10 +93,13 @@ export const deleteNotification = async (req, res, next) => {
 
 /**
  * دالة مساعدة داخلية (مش route) — استدعيها من أي controller تاني عندك
- * لما يحصل حدث محتاج يبعت إشعار. مثال استخدام:
+ * لما يحصل حدث محتاج يبعت إشعار.
  *
- *   import { createNotification } from "./notificationController.js";
+ * deduplicationKey (اختياري بس مهم): لو حاطط قيمة، والإشعار ده اتبعت قبل
+ * كده بنفس المفتاح بالظبط، الدالة هترجع null بهدوء من غير ما تعمل تكرار
+ * ومن غير ما توقف العملية الأساسية (زي حفظ المفضلة أو تحديث السعر).
  *
+ * مثال استخدام:
  *   await createNotification({
  *     recipient: listing.userRef,
  *     type: "listing_liked",
@@ -105,6 +108,7 @@ export const deleteNotification = async (req, res, next) => {
  *     link: `/listing/${listing._id}`,
  *     relatedListing: listing._id,
  *     relatedUser: likerId,
+ *     deduplicationKey: `favorite:${listing._id}:${likerId}:${todayString}`,
  *   });
  */
 export const createNotification = async ({
@@ -115,6 +119,7 @@ export const createNotification = async ({
   link,
   relatedListing,
   relatedUser,
+  deduplicationKey,
 }) => {
   try {
     return await Notification.create({
@@ -125,8 +130,14 @@ export const createNotification = async ({
       link,
       relatedListing,
       relatedUser,
+      ...(deduplicationKey && { deduplicationKey }),
     });
   } catch (error) {
+    // كود 11000 = تعارض على مستوى unique index — يعني الإشعار ده أصلاً
+    // موجود بنفس deduplicationKey. ده متوقّع وسليم، مش خطأ حقيقي.
+    if (error?.code === 11000 && error?.keyPattern?.deduplicationKey) {
+      return null;
+    }
     console.error("Failed to create notification:", error);
     return null;
   }

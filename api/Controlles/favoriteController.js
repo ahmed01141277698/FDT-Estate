@@ -1,7 +1,9 @@
 import Favorite from "../Models/favoriteModel.js";
 import Listing from "../Models/listingModel.js";
+import User from "../Models/user_Model.js";
 import mongoose from "mongoose";
-import { createNotification } from "./notificationController.js";
+import { upsertGroupedNotification } from "./notificationController.js";
+import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 
 /**
  * Toggle Favorite
@@ -57,20 +59,25 @@ export const toggleFavorite = async (req, res) => {
       $inc: { favoritesCount: 1 },
     });
 
-    // إشعار للمالك — بس لو مش هو نفسه اللي حفظ عقاره. dedup يوم بيوم عشان
-    // لو حد شال العقار من مفضلته ورجّعه تاني في نفس اليوم متبعتش له إشعار
-    // تاني، لكن لو حصل تاني بكرة يبعت من جديد.
+    // إشعار مجمّع للمالك — بس لو مش هو نفسه اللي حفظ عقاره. طول ما فيه
+    // إشعار "حفظ مفضلة" غير مقروء لنفس العقار، أي حفظ جديد بيتجمّع فيه
+    // بدل ما يعمل إشعار منفصل لكل شخص.
     if (listing.userRef.toString() !== userId) {
-      const todayBucket = new Date().toISOString().slice(0, 10);
-      await createNotification({
+      const actingUser = await User.findById(userId).select("username");
+      const actorName = actingUser?.username || "مستخدم";
+
+      await upsertGroupedNotification({
         recipient: listing.userRef,
-        type: "listing_liked",
-        title: "حد حفظ عقارك في المفضلة",
-        body: `عقارك "${listing.name}" اتضاف لمفضلة حد جديد`,
+        groupKey: `favorite_group:${listingId}`,
+        type: NOTIFICATION_TYPES.LISTING_LIKED,
         link: `/listing/${listing._id}`,
         relatedListing: listing._id,
-        relatedUser: userId,
-        deduplicationKey: `favorite:${listingId}:${userId}:${todayBucket}`,
+        actorId: userId,
+        buildTitle: (count) =>
+          count === 1
+            ? `${actorName} حفظ عقارك في المفضلة`
+            : `${actorName} و${count - 1} آخرين حفظوا عقارك في المفضلة`,
+        buildBody: () => `عقارك "${listing.name}"`,
       });
     }
 

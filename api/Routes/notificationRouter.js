@@ -4,6 +4,7 @@ import {
   getUnreadCount,
   markAsRead,
   markAllAsRead,
+  markAsSeen,
   deleteNotification,
 } from "../Controlles/notificationController.js";
 import { verifyToken } from "../Middleware/authMiddleware.js";
@@ -17,6 +18,7 @@ NotificationRouter.get("/", getNotifications);
 NotificationRouter.get("/unread-count", getUnreadCount);
 NotificationRouter.put("/read-all", markAllAsRead);
 NotificationRouter.put("/:id/read", markAsRead);
+NotificationRouter.put("/:id/seen", markAsSeen);
 NotificationRouter.delete("/:id", deleteNotification);
 
 export default NotificationRouter;

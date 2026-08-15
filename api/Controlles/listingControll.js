@@ -1,6 +1,7 @@
 import Listing from "../Models/listingModel.js";
 import Favorite from "../Models/favoriteModel.js";
-import { createNotification } from "./notificationController.js";
+import { createNotification, upsertGroupedNotification } from "./notificationController.js";
+import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 
 export const createListing = async (req, res, next) => {
   try {
@@ -10,7 +11,7 @@ export const createListing = async (req, res, next) => {
     // معيّن مفروض يتنشر مرة واحدة بس أصلاً.
     await createNotification({
       recipient: newListing.userRef,
-      type: "listing_approved",
+      type: NOTIFICATION_TYPES.LISTING_APPROVED,
       title: "تم نشر عقارك بنجاح",
       body: `عقارك "${newListing.name}" أصبح متاحًا الآن على الموقع`,
       link: `/listing/${newListing._id}`,
@@ -163,11 +164,10 @@ export const updateListing = async (req, res, next) => {
     if (req.body.price !== undefined && Number(req.body.price) !== oldPrice) {
       const isDrop = Number(req.body.price) < oldPrice;
 
-      // 1) إشعار تأكيد للمالك نفسه — dedup بقيمة السعر القديم/الجديد، عشان
-      // نفس التحديث بالظبط لو اتكرر (retry) ميعملش إشعار تاني.
+      // 1) إشعار تأكيد للمالك نفسه — dedup بقيمة السعر القديم/الجديد.
       await createNotification({
         recipient: updatedListing.userRef,
-        type: "price_change",
+        type: NOTIFICATION_TYPES.PRICE_CHANGE,
         title: isDrop ? "تم تخفيض سعر عقارك" : "تم تحديث سعر عقارك",
         body: `تغيّر سعر "${updatedListing.name}" من ${oldPrice.toLocaleString()} إلى ${updatedListing.price.toLocaleString()} ج.م`,
         link: `/listing/${updatedListing._id}`,
@@ -175,7 +175,8 @@ export const updateListing = async (req, res, next) => {
         deduplicationKey: `price_change_owner:${updatedListing._id}:${oldPrice}:${updatedListing.price}`,
       });
 
-      // 2) لو السعر نزل، إشعار لكل اللي حافظين العقار ده في مفضلتهم
+      // 2) لو السعر نزل، إشعار لكل اللي حافظين العقار ده في مفضلتهم —
+      // إشعار سعر واحد لكل متابع مهم يوصله بالتفاصيل، فمش محتاج تجميع هنا.
       if (isDrop) {
         const followers = await Favorite.find({
           listingRef: updatedListing._id,
@@ -185,7 +186,7 @@ export const updateListing = async (req, res, next) => {
           followers.map((fav) =>
             createNotification({
               recipient: fav.userRef,
-              type: "price_change",
+              type: NOTIFICATION_TYPES.PRICE_CHANGE,
               title: "انخفض سعر عقار في مفضلتك 🎉",
               body: `"${updatedListing.name}" نزل سعره من ${oldPrice.toLocaleString()} إلى ${updatedListing.price.toLocaleString()} ج.م`,
               link: `/listing/${updatedListing._id}`,
@@ -242,12 +243,13 @@ export const detailsListing = async (req, res, next) => {
   }
 };
 
-// عامة — بتتنادى من زراير "اتصال" و"واتساب" في ContactCard عشان تبعت
-// للمالك إشعار "فيه حد مهتم بعقارك". من غير verifyToken لأن زوار غير
-// مسجلين برضو المفروض يقدروا يتواصلوا مع المالك.
+// عامة — بتتنادى من زراير "اتصال" و"واتساب" في ContactCard. مجمّعة عشان
+// لو أكتر من زائر حاول يتواصل قبل ما المالك يقرا الإشعار، يوصله إشعار
+// واحد ("3 أشخاص حاولوا التواصل معاك") بدل سبام. من غير verifyToken لأن
+// زوار غير مسجلين برضو المفروض يقدروا يتواصلوا مع المالك.
 export const notifyListingInterest = async (req, res, next) => {
   try {
-    const { channel, visitorName } = req.body; // channel: "whatsapp" | "call"
+    const { channel } = req.body; // channel: "whatsapp" | "call"
     const listing = await Listing.findById(req.params.id);
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
@@ -255,18 +257,19 @@ export const notifyListingInterest = async (req, res, next) => {
 
     const channelLabel = channel === "whatsapp" ? "واتساب" : "مكالمة هاتفية";
 
-    // dedup بمفتاح دقيقة واحدة — يمنع سبام لو حد ضغط الزرار كذا مرة بسرعة،
-    // بدون ما يمنع إشعارات حقيقية من زوار مختلفين بعد كده.
-    const minuteBucket = Math.floor(Date.now() / 60000);
-
-    await createNotification({
+    await upsertGroupedNotification({
       recipient: listing.userRef,
-      type: "message",
-      title: "فيه حد مهتم بعقارك",
-      body: `${visitorName || "زائر"} حاول التواصل معاك عن طريق ${channelLabel} بخصوص "${listing.name}"`,
+      groupKey: `interest_group:${listing._id}`,
+      type: NOTIFICATION_TYPES.MESSAGE,
       link: `/listing/${listing._id}`,
       relatedListing: listing._id,
-      deduplicationKey: `interest:${listing._id}:${channel}:${minuteBucket}`,
+      // مفيش actorId هنا لأن الزائر ممكن يكون مش مسجل دخول أصلاً
+      buildTitle: (count) =>
+        count === 1
+          ? "فيه حد مهتم بعقارك"
+          : `فيه ${count} أشخاص مهتمين بعقارك`,
+      buildBody: () =>
+        `آخر محاولة تواصل بخصوص "${listing.name}" كانت عن طريق ${channelLabel}`,
     });
 
     res.status(200).json({ success: true });

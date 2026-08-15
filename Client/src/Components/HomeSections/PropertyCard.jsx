@@ -437,7 +437,7 @@ export default function PropertyCard({ property = {}, index = 0 }) {
         </div>
 
         <div className="flex items-center justify-between pt-1">
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2">
             {userRef && (
               <div className="flex min-w-0 items-center gap-1.5 text-[#a08a5f]">
                 {isAgency ? (
@@ -476,7 +476,7 @@ export default function PropertyCard({ property = {}, index = 0 }) {
             to={_id ? `/listing/${_id}` : "#"}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            className="mr-auto rounded-xl bg-[#e49263] px-4 py-2 text-xs font-extrabold text-[#173d36] transition-colors hover:bg-[#f1b68b]"
+            className="mr-auto rounded-xl bg-[#e49263] px-4 py-2  text-xs font-extrabold text-[#173d36] transition-colors hover:bg-[#f1b68b]"
           >
             عرض التفاصيل
           </MotionLink>

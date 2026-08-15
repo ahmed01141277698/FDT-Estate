@@ -1,6 +1,7 @@
 import Favorite from "../Models/favoriteModel.js";
 import Listing from "../Models/listingModel.js";
 import mongoose from "mongoose";
+import { createNotification } from "./notificationController.js";
 
 /**
  * Toggle Favorite
@@ -9,7 +10,7 @@ import mongoose from "mongoose";
 export const toggleFavorite = async (req, res) => {
   try {
     const { listingId } = req.params;
-const userId = req.userId;
+    const userId = req.userId;
     if (!mongoose.Types.ObjectId.isValid(listingId)) {
       return res.status(400).json({
         success: false,
@@ -56,6 +57,19 @@ const userId = req.userId;
       $inc: { favoritesCount: 1 },
     });
 
+    // إشعار للمالك — بس لو مش هو نفسه اللي حفظ عقاره
+    if (listing.userRef.toString() !== userId) {
+      await createNotification({
+        recipient: listing.userRef,
+        type: "listing_liked",
+        title: "حد حفظ عقارك في المفضلة",
+        body: `عقارك "${listing.name}" اتضاف لمفضلة حد جديد`,
+        link: `/listing/${listing._id}`,
+        relatedListing: listing._id,
+        relatedUser: userId,
+      });
+    }
+
     return res.status(200).json({
       success: true,
       favorited: true,
@@ -77,7 +91,7 @@ const userId = req.userId;
  */
 export const getUserFavorites = async (req, res) => {
   try {
-const userId = req.userId;
+    const userId = req.userId;
     const favorites = await Favorite.find({
       userRef: userId,
     })

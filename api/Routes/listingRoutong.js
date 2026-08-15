@@ -9,6 +9,7 @@ import {
   deleteListing,
   detailsListing,
   getCategoryCounts,
+  notifyListingInterest,   // ← جديدة
   getTopFavoritedListings,
 } from '../Controlles/listingControll.js';
 import {
@@ -49,7 +50,7 @@ ListingRouter.get(
   "/top-favorites/:userId",
   getTopFavoritedListings
 );
-
+ListingRouter.post('/:id/interest', notifyListingInterest);
 // شيلت verifyToken من هنا عشان أي زائر (من غير تسجيل دخول) يقدر يفتح تفاصيل
 // العقار — لو ده مش المطلوب وعايزها تفضل تتطلب تسجيل دخول، رجّعها زي ما كانت.
 ListingRouter.get('/details/:id', detailsListing);

@@ -23,6 +23,33 @@
 //     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80";
 //   const displayName = currentUser?.username || "ملفي";
 //   const favoritesCount = useSelector((state) => state.favorites.count);
+
+//   // عداد الإشعارات غير المقروءة — نفس فكرة favoritesCount بس جاي من الـ API
+//   // بدل الـ redux، وبيتحدث كل 30 ثانية.
+//   const [unreadCount, setUnreadCount] = useState(0);
+
+//   useEffect(() => {
+//     if (!isAuthenticated) return;
+
+//     const fetchUnreadCount = async () => {
+//       try {
+//         const res = await fetch("/api/notifications/unread-count", {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem("token")}`,
+//           },
+//         });
+//         const data = await res.json();
+//         setUnreadCount(data.unreadCount || 0);
+//       } catch {
+//         // إخفاق صامت — عداد خلفي، مش محتاج يعطّل الواجهة
+//       }
+//     };
+
+//     fetchUnreadCount();
+//     const interval = setInterval(fetchUnreadCount, 30000);
+//     return () => clearInterval(interval);
+//   }, [isAuthenticated]);
+
 //   return (
 //     <header className="sticky top-0 z-50 min-h-[70px] overflow-hidden bg-[#183d37] px-5 pb-6 pt-5 text-white sm:px-8 lg:px-12">
 //       <div className="absolute -left-20 bottom-0 size-[30rem] rounded-full bg-[#e2a87b]/20 blur-3xl" />
@@ -79,9 +106,15 @@
 //             <Link
 //               to="/notifications"
 //               aria-label="الإشعارات"
-//               className="grid size-10 place-items-center rounded-full transition hover:bg-white/10"
+//               className="relative grid size-10 place-items-center rounded-full transition hover:bg-white/10"
 //             >
 //               <Bell size={19} />
+
+//               {unreadCount > 0 && (
+//                 <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+//                   {unreadCount > 99 ? "99+" : unreadCount}
+//                 </span>
+//               )}
 //             </Link>
 
 //             <Link
@@ -244,10 +277,18 @@
 //               <Link
 //                 to="/notifications"
 //                 onClick={closeMenu}
-//                 className="flex items-center gap-2 rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+//                 className="flex items-center justify-between rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
 //               >
-//                 <Bell size={16} />
-//                 الإشعارات
+//                 <div className="flex items-center gap-2">
+//                   <Bell size={16} />
+//                   الإشعارات
+//                 </div>
+
+//                 {unreadCount > 0 && (
+//                   <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+//                     {unreadCount > 99 ? "99+" : unreadCount}
+//                   </span>
+//                 )}
 //               </Link>
 //             </>
 //           )}
@@ -280,7 +321,7 @@
 // export default Header;
 
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Bell, Building2, Heart, Menu, Plus, X } from "lucide-react";
 
@@ -305,31 +346,62 @@ const Header = () => {
   const displayName = currentUser?.username || "ملفي";
   const favoritesCount = useSelector((state) => state.favorites.count);
 
-  // عداد الإشعارات غير المقروءة — نفس فكرة favoritesCount بس جاي من الـ API
-  // بدل الـ redux، وبيتحدث كل 30 ثانية.
+  // عداد الإشعارات غير المقروءة
   const [unreadCount, setUnreadCount] = useState(0);
+  const eventSourceRef = useRef(null);
 
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications/unread-count", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      setUnreadCount(data.unreadCount || 0);
+    } catch {
+      // إخفاق صامت — عداد خلفي، مش محتاج يعطّل الواجهة
+    }
+  }, []);
+
+  // خط الدفاع الاحتياطي: polling كل 30 ثانية، شغال دايمًا بغض النظر عن
+  // حالة اتصال SSE — لو الستريم عطل أو اتقفل، العداد لسه بيتحدث (بس أبطأ).
   useEffect(() => {
     if (!isAuthenticated) return;
-
-    const fetchUnreadCount = async () => {
-      try {
-        const res = await fetch("/api/notifications/unread-count", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const data = await res.json();
-        setUnreadCount(data.unreadCount || 0);
-      } catch {
-        // إخفاق صامت — عداد خلفي، مش محتاج يعطّل الواجهة
-      }
-    };
 
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchUnreadCount]);
+
+  // التحديث اللحظي: اتصال SSE مفتوح — أول ما إشعار جديد يوصل، العداد
+  // بيتحدث فورًا من غير ما نستنى الـ 30 ثانية. لو الاتصال فشل، المتصفح
+  // بيحاول يعيد الاتصال لوحده تلقائيًا (سلوك EventSource الافتراضي).
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const source = new EventSource(
+      `/api/notifications/stream?token=${encodeURIComponent(token)}`,
+    );
+    eventSourceRef.current = source;
+
+    source.onmessage = () => {
+      fetchUnreadCount();
+    };
+
+    source.onerror = () => {
+      // مفيش داعي نعمل حاجة يدويًا هنا — المتصفح بيحاول يعيد الاتصال
+      // لوحده، وخط الـ polling الاحتياطي فوق فاضل شغال في كل الأحوال.
+    };
+
+    return () => {
+      source.close();
+      eventSourceRef.current = null;
+    };
+  }, [isAuthenticated, fetchUnreadCount]);
 
   return (
     <header className="sticky top-0 z-50 min-h-[70px] overflow-hidden bg-[#183d37] px-5 pb-6 pt-5 text-white sm:px-8 lg:px-12">

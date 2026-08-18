@@ -1,259 +1,28 @@
-// import Notification from "../Models/notificationModel.js";
-// import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
-
-// // جلب إشعارات المستخدم الحالي — مع صفحات وفلتر "غير مقروءة فقط".
-// // الترتيب بـ lastActivityAt مش createdAt، عشان إشعار مجمّع (زي مفضلة/اهتمام)
-// // لما يحصل فيه نشاط جديد يطلع فوق تاني في الليستة، حتى لو الإشعار نفسه
-// // اتعمل من زمان.
-// export const getNotifications = async (req, res, next) => {
-//   try {
-//     const { page = 1, limit = 20, unreadOnly } = req.query;
-
-//     const filter = { recipient: req.userId };
-//     if (unreadOnly === "true") filter.read = false;
-
-//     const numericPage = Math.max(Number(page) || 1, 1);
-//     const numericLimit = Math.min(Number(limit) || 20, 50);
-//     const skip = (numericPage - 1) * numericLimit;
-
-//     const [notifications, total, unreadCount] = await Promise.all([
-//       Notification.find(filter)
-//         .populate("relatedUser", "username avatar")
-//         .populate("relatedListing", "name imageUrl")
-//         .populate("actors", "username avatar")
-//         .sort({ lastActivityAt: -1 })
-//         .skip(skip)
-//         .limit(numericLimit),
-//       Notification.countDocuments(filter),
-//       Notification.countDocuments({ recipient: req.userId, read: false }),
-//     ]);
-
-//     const unseenIds = notifications.filter((n) => !n.seen).map((n) => n._id);
-
-//     if (unseenIds.length > 0) {
-//       // best-effort — مش محتاجين ننتظره قبل ما نرجّع الرد للمستخدم
-//       Notification.updateMany(
-//         { _id: { $in: unseenIds } },
-//         { seen: true, seenAt: new Date() },
-//       ).catch((err) => console.error("Failed to mark notifications as seen:", err));
-
-//       notifications.forEach((n) => {
-//         if (unseenIds.some((id) => id.equals(n._id))) n.seen = true;
-//       });
-//     }
-
-//     res.status(200).json({
-//       notifications,
-//       total,
-//       unreadCount,
-//       page: numericPage,
-//       totalPages: Math.ceil(total / numericLimit),
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// // عداد سريع بس — بيتنادى كل شوية من الجرس في الهيدر من غير ما يجيب الليستة كلها
-// export const getUnreadCount = async (req, res, next) => {
-//   try {
-//     const unreadCount = await Notification.countDocuments({
-//       recipient: req.userId,
-//       read: false,
-//     });
-//     res.status(200).json({ unreadCount });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const markAsRead = async (req, res, next) => {
-//   try {
-//     const notification = await Notification.findOneAndUpdate(
-//       { _id: req.params.id, recipient: req.userId },
-//       { read: true, readAt: new Date(), seen: true, seenAt: new Date() },
-//       { new: true },
-//     );
-//     if (!notification) {
-//       return res.status(404).json({ message: "Notification not found" });
-//     }
-//     res.status(200).json(notification);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const markAllAsRead = async (req, res, next) => {
-//   try {
-//     await Notification.updateMany(
-//       { recipient: req.userId, read: false },
-//       { read: true, readAt: new Date(), seen: true, seenAt: new Date() },
-//     );
-//     res.status(200).json({ message: "All notifications marked as read" });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const markAsSeen = async (req, res, next) => {
-//   try {
-//     const notification = await Notification.findOneAndUpdate(
-//       { _id: req.params.id, recipient: req.userId, seen: false },
-//       { seen: true, seenAt: new Date() },
-//       { new: true },
-//     );
-//     res.status(200).json({ notification: notification || null });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const deleteNotification = async (req, res, next) => {
-//   try {
-//     const notification = await Notification.findOneAndDelete({
-//       _id: req.params.id,
-//       recipient: req.userId,
-//     });
-//     if (!notification) {
-//       return res.status(404).json({ message: "Notification not found" });
-//     }
-//     res.status(200).json({ message: "Notification deleted" });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// /**
-//  * دالة مساعدة داخلية — لإشعارات لمرة واحدة/فريدة (نشر عقار، تغيير سعر،
-//  * ترحيب). لو الحدث ممكن يتكرر بكثرة في وقت قصير (حفظ مفضلة، محاولات
-//  * تواصل)، استخدم upsertGroupedNotification تحتها بدل الدالة دي.
-//  *
-//  * مثال استخدام:
-//  *   await createNotification({
-//  *     recipient: listing.userRef,
-//  *     type: NOTIFICATION_TYPES.LISTING_APPROVED,
-//  *     title: "تم نشر عقارك بنجاح",
-//  *     link: `/listing/${listing._id}`,
-//  *     relatedListing: listing._id,
-//  *     deduplicationKey: `listing_published:${listing._id}`,
-//  *   });
-//  */
-// export const createNotification = async ({
-//   recipient,
-//   type = NOTIFICATION_TYPES.SYSTEM,
-//   title,
-//   body,
-//   link,
-//   relatedListing,
-//   relatedUser,
-//   deduplicationKey,
-// }) => {
-//   try {
-//     return await Notification.create({
-//       recipient,
-//       type,
-//       title,
-//       body,
-//       link,
-//       relatedListing,
-//       relatedUser,
-//       ...(deduplicationKey && { deduplicationKey }),
-//     });
-//   } catch (error) {
-//     if (error?.code === 11000 && error?.keyPattern?.deduplicationKey) {
-//       return null;
-//     }
-//     console.error("Failed to create notification:", error);
-//     return null;
-//   }
-// };
-
-// /**
-//  * التجميع الذكي — استخدمها لأي حدث ممكن يتكرر (حفظ مفضلة، محاولات تواصل).
-//  * طول ما فيه إشعار غير مقروء بنفس groupKey لنفس المستقبِل، أي حدث جديد
-//  * بيتجمّع فيه (بيزوّد groupCount ويحدّث العنوان/النص) بدل ما يعمل إشعار
-//  * مستقل. أول ما المستخدم يقرا الإشعار، أي حدث جديد بعد كده بيبدأ مجموعة
-//  * جديدة تلقائيًا (لأن الفلتر بيدوّر بس على read: false).
-//  *
-//  * لو actorId موجود وهو نفسه فاعل سابق في نفس المجموعة، العملية بتتجاهل
-//  * تمامًا (منع لعب/تلاعب زي حد يشيل ويرجّع يحفظ نفس العقار كذا مرة).
-//  *
-//  * buildTitle(count) / buildBody(count): دوال بترجع النص المناسب حسب عدد
-//  * الأحداث المجمّعة لحد دلوقتي.
-//  *
-//  * مثال استخدام:
-//  *   await upsertGroupedNotification({
-//  *     recipient: listing.userRef,
-//  *     groupKey: `favorite_group:${listing._id}`,
-//  *     type: NOTIFICATION_TYPES.LISTING_LIKED,
-//  *     link: `/listing/${listing._id}`,
-//  *     relatedListing: listing._id,
-//  *     actorId: userId,
-//  *     buildTitle: (count) =>
-//  *       count === 1
-//  *         ? `${actorName} حفظ عقارك في المفضلة`
-//  *         : `${actorName} و${count - 1} آخرين حفظوا عقارك في المفضلة`,
-//  *     buildBody: () => `عقارك "${listing.name}"`,
-//  *   });
-//  */
-// export const upsertGroupedNotification = async ({
-//   recipient,
-//   groupKey,
-//   type = NOTIFICATION_TYPES.SYSTEM,
-//   link,
-//   relatedListing,
-//   actorId,
-//   buildTitle,
-//   buildBody,
-// }) => {
-//   try {
-//     const existing = await Notification.findOne({
-//       recipient,
-//       groupKey,
-//       read: false,
-//     });
-
-//     if (existing) {
-//       const alreadyCounted =
-//         actorId && existing.actors.some((a) => a.equals(actorId));
-
-//       if (alreadyCounted) return existing; // منع تكرار نفس الفاعل في نفس المجموعة
-
-//       existing.groupCount += 1;
-//       if (actorId) {
-//         existing.actors.unshift(actorId);
-//         existing.actors = existing.actors.slice(0, 5);
-//       }
-//       existing.title = buildTitle(existing.groupCount);
-//       existing.body = buildBody(existing.groupCount);
-//       existing.lastActivityAt = new Date();
-//       existing.seen = false; // نشاط جديد فعليًا، يستاهل يبان تاني كـ "جديد"
-//       await existing.save();
-//       return existing;
-//     }
-
-//     return await Notification.create({
-//       recipient,
-//       type,
-//       groupKey,
-//       title: buildTitle(1),
-//       body: buildBody(1),
-//       link,
-//       relatedListing,
-//       actors: actorId ? [actorId] : [],
-//       groupCount: 1,
-//       lastActivityAt: new Date(),
-//     });
-//   } catch (error) {
-//     console.error("Failed to upsert grouped notification:", error);
-//     return null;
-//   }
-// };
-
-
 import Notification from "../Models/notificationModel.js";
+import User from "../Models/user_Model.js";
 import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 import { sendToUser } from "./sseController.js";
+
+// الأنواع اللي المستخدم مسموح له يوقفها. أي نوع مش هنا (زي system) دايمًا
+// مبعوت، مهما كانت تفضيلات المستخدم — منطقي إن رسائل النظام/الترحيب
+// متتقفلش، ولو ضفت مستقبلًا نوع أمني (زي تنبيه دخول من جهاز جديد) سيبه
+// برضو برّه القائمة دي.
+const PREFERENCE_SUPPRESSIBLE_TYPES = new Set([
+  NOTIFICATION_TYPES.MESSAGE,
+  NOTIFICATION_TYPES.LISTING_LIKED,
+  NOTIFICATION_TYPES.PRICE_CHANGE,
+  NOTIFICATION_TYPES.LISTING_APPROVED,
+]);
+
+const isNotificationAllowed = async (recipient, type) => {
+  if (!PREFERENCE_SUPPRESSIBLE_TYPES.has(type)) return true;
+
+  const user = await User.findById(recipient).select("notificationPreferences");
+  if (!user) return true; // ما نعرفش نتأكد، الأفضل نبعت بدل ما نضيّع إشعار مهم
+
+  const prefs = user.notificationPreferences || {};
+  return prefs[type] !== false; // افتراضيًا مسموح لو مش محدد صراحةً بـ false
+};
 
 // جلب إشعارات المستخدم الحالي — مع صفحات وفلتر "غير مقروءة فقط".
 // الترتيب بـ lastActivityAt مش createdAt، عشان إشعار مجمّع (زي مفضلة/اهتمام)
@@ -285,7 +54,6 @@ export const getNotifications = async (req, res, next) => {
     const unseenIds = notifications.filter((n) => !n.seen).map((n) => n._id);
 
     if (unseenIds.length > 0) {
-      // best-effort — مش محتاجين ننتظره قبل ما نرجّع الرد للمستخدم
       Notification.updateMany(
         { _id: { $in: unseenIds } },
         { seen: true, seenAt: new Date() },
@@ -377,14 +145,51 @@ export const deleteNotification = async (req, res, next) => {
   }
 };
 
+// GET /api/notifications/preferences
+export const getNotificationPreferences = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId).select("notificationPreferences");
+    const defaults = {
+      message: true,
+      listing_liked: true,
+      price_change: true,
+      listing_approved: true,
+    };
+    res.status(200).json({
+      preferences: { ...defaults, ...(user?.notificationPreferences?.toObject?.() ?? user?.notificationPreferences ?? {}) },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /api/notifications/preferences  body: { message?, listing_liked?, price_change?, listing_approved? }
+export const updateNotificationPreferences = async (req, res, next) => {
+  try {
+    const allowedKeys = ["message", "listing_liked", "price_change", "listing_approved"];
+    const updates = {};
+    for (const key of allowedKeys) {
+      if (typeof req.body[key] === "boolean") {
+        updates[`notificationPreferences.${key}`] = req.body[key];
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: updates },
+      { new: true },
+    ).select("notificationPreferences");
+
+    res.status(200).json({ preferences: user.notificationPreferences });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /**
  * دالة مساعدة داخلية — لإشعارات لمرة واحدة/فريدة (نشر عقار، تغيير سعر،
- * ترحيب). لو الحدث ممكن يتكرر بكثرة في وقت قصير، استخدم
- * upsertGroupedNotification تحتها بدل الدالة دي.
- *
- * بعد ما تتخزن في الداتابيز، بتتبعت فورًا لأي تاب/جهاز مفتوح للمستخدم عبر
- * SSE (لو فيه اتصال مفتوح أصلاً — لو مفيش، بترجع بهدوء والإشعار هيوصل
- * عادي أول ما يفتح الصفحة أو الـ polling الاحتياطي يشتغل).
+ * ترحيب). بتتحقق أول من تفضيلات المستقبِل قبل ما تعمل أي حاجة — لو
+ * موقفها، بترجع null بهدوء من غير كتابة في الداتابيز ومن غير SSE.
  */
 export const createNotification = async ({
   recipient,
@@ -397,6 +202,9 @@ export const createNotification = async ({
   deduplicationKey,
 }) => {
   try {
+    const allowed = await isNotificationAllowed(recipient, type);
+    if (!allowed) return null;
+
     const notification = await Notification.create({
       recipient,
       type,
@@ -422,11 +230,8 @@ export const createNotification = async ({
 
 /**
  * التجميع الذكي — طول ما فيه إشعار غير مقروء بنفس groupKey لنفس
- * المستقبِل، أي حدث جديد بيتجمّع فيه بدل ما يعمل إشعار مستقل. أول ما
- * المستخدم يقرا الإشعار، أي حدث جديد بعد كده بيبدأ مجموعة جديدة.
- *
- * نفس الشيء — أي تحديث (سواء إشعار جديد أو تجميع في موجود) بيتبعت فورًا
- * عبر SSE لأي تاب مفتوح.
+ * المستقبِل، أي حدث جديد بيتجمّع فيه بدل ما يعمل إشعار مستقل. بتتحقق
+ * برضو من تفضيلات المستقبِل الأول قبل أي تجميع أو إنشاء.
  */
 export const upsertGroupedNotification = async ({
   recipient,
@@ -439,6 +244,9 @@ export const upsertGroupedNotification = async ({
   buildBody,
 }) => {
   try {
+    const allowed = await isNotificationAllowed(recipient, type);
+    if (!allowed) return null;
+
     const existing = await Notification.findOne({
       recipient,
       groupKey,

@@ -81,10 +81,9 @@ const SignUp = () => {
         return;
       }
 
-      navigate("/signin", {
+      navigate("/verify-email", {
         state: {
           email: formData.email,
-          password: formData.password,
         },
       });
     } catch (err) {

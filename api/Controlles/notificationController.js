@@ -3,10 +3,6 @@ import User from "../Models/user_Model.js";
 import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 import { sendToUser } from "./sseController.js";
 
-// الأنواع اللي المستخدم مسموح له يوقفها. أي نوع مش هنا (زي system) دايمًا
-// مبعوت، مهما كانت تفضيلات المستخدم — منطقي إن رسائل النظام/الترحيب
-// متتقفلش، ولو ضفت مستقبلًا نوع أمني (زي تنبيه دخول من جهاز جديد) سيبه
-// برضو برّه القائمة دي.
 const PREFERENCE_SUPPRESSIBLE_TYPES = new Set([
   NOTIFICATION_TYPES.MESSAGE,
   NOTIFICATION_TYPES.LISTING_LIKED,
@@ -18,16 +14,13 @@ const isNotificationAllowed = async (recipient, type) => {
   if (!PREFERENCE_SUPPRESSIBLE_TYPES.has(type)) return true;
 
   const user = await User.findById(recipient).select("notificationPreferences");
-  if (!user) return true; // ما نعرفش نتأكد، الأفضل نبعت بدل ما نضيّع إشعار مهم
+  if (!user) return true;
 
   const prefs = user.notificationPreferences || {};
-  return prefs[type] !== false; // افتراضيًا مسموح لو مش محدد صراحةً بـ false
+  return prefs[type] !== false;
 };
 
 // جلب إشعارات المستخدم الحالي — مع صفحات وفلتر "غير مقروءة فقط".
-// الترتيب بـ lastActivityAt مش createdAt، عشان إشعار مجمّع (زي مفضلة/اهتمام)
-// لما يحصل فيه نشاط جديد يطلع فوق تاني في الليستة، حتى لو الإشعار نفسه
-// اتعمل من زمان.
 export const getNotifications = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, unreadOnly } = req.query;
@@ -99,6 +92,12 @@ export const markAsRead = async (req, res, next) => {
     if (!notification) {
       return res.status(404).json({ message: "Notification not found" });
     }
+
+    // بنبعت تحديث عبر SSE عشان أي تاب/جهاز تاني مفتوح لنفس المستخدم
+    // (بما فيه الهيدر في نفس التاب اللي انت فيه دلوقتي) يحدّث العداد فورًا،
+    // بدل ما يستنى الـ polling كل 30 ثانية.
+    sendToUser(String(req.userId), { type: "read" });
+
     res.status(200).json(notification);
   } catch (error) {
     next(error);
@@ -111,6 +110,9 @@ export const markAllAsRead = async (req, res, next) => {
       { recipient: req.userId, read: false },
       { read: true, readAt: new Date(), seen: true, seenAt: new Date() },
     );
+
+    sendToUser(String(req.userId), { type: "read" });
+
     res.status(200).json({ message: "All notifications marked as read" });
   } catch (error) {
     next(error);
@@ -139,6 +141,12 @@ export const deleteNotification = async (req, res, next) => {
     if (!notification) {
       return res.status(404).json({ message: "Notification not found" });
     }
+
+    // لو الإشعار المحذوف كان غير مقروء، حذفه غيّر العداد برضو — بلّغ بنفس الطريقة.
+    if (!notification.read) {
+      sendToUser(String(req.userId), { type: "read" });
+    }
+
     res.status(200).json({ message: "Notification deleted" });
   } catch (error) {
     next(error);
@@ -163,7 +171,7 @@ export const getNotificationPreferences = async (req, res, next) => {
   }
 };
 
-// PATCH /api/notifications/preferences  body: { message?, listing_liked?, price_change?, listing_approved? }
+// PATCH /api/notifications/preferences
 export const updateNotificationPreferences = async (req, res, next) => {
   try {
     const allowedKeys = ["message", "listing_liked", "price_change", "listing_approved"];
@@ -188,8 +196,7 @@ export const updateNotificationPreferences = async (req, res, next) => {
 
 /**
  * دالة مساعدة داخلية — لإشعارات لمرة واحدة/فريدة (نشر عقار، تغيير سعر،
- * ترحيب). بتتحقق أول من تفضيلات المستقبِل قبل ما تعمل أي حاجة — لو
- * موقفها، بترجع null بهدوء من غير كتابة في الداتابيز ومن غير SSE.
+ * ترحيب). بتتحقق أول من تفضيلات المستقبِل قبل ما تعمل أي حاجة.
  */
 export const createNotification = async ({
   recipient,
@@ -230,8 +237,7 @@ export const createNotification = async ({
 
 /**
  * التجميع الذكي — طول ما فيه إشعار غير مقروء بنفس groupKey لنفس
- * المستقبِل، أي حدث جديد بيتجمّع فيه بدل ما يعمل إشعار مستقل. بتتحقق
- * برضو من تفضيلات المستقبِل الأول قبل أي تجميع أو إنشاء.
+ * المستقبِل، أي حدث جديد بيتجمّع فيه بدل ما يعمل إشعار مستقل.
  */
 export const upsertGroupedNotification = async ({
   recipient,

@@ -1,67 +1,75 @@
-
-
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import net from 'net';
-import connectLivereload from 'connect-livereload';
-import livereload from 'livereload';
-import cors from 'cors';
-import userRoute from './Routes/userRoute.js';
-import authRoute from './Routes/auth_route.js';
-import listingRoute from './Routes/listingRoutong.js';
-import uploadRoute from './Routes/uploadRoutes.js';
-import ReviewRouter from './Routes/reviewrouter.js'
-import NotificationRouter from './Routes/notificationRouter.js';
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import net from "net";
+import connectLivereload from "connect-livereload";
+import livereload from "livereload";
+import cors from "cors";
+import userRoute from "./Routes/userRoute.js";
+import authRoute from "./Routes/auth_route.js";
+import listingRoute from "./Routes/listingRoutong.js";
+import uploadRoute from "./Routes/uploadRoutes.js";
+import ReviewRouter from "./Routes/reviewrouter.js";
+import NotificationRouter from "./Routes/notificationRouter.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // CORS
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Serve uploaded avatars
-app.use('/uploads', express.static(join(__dirname, 'uploads')));
+app.use("/uploads", express.static(join(__dirname, "uploads")));
 
 const checkPortAvailable = (port) =>
   new Promise((resolve) => {
     const tester = net.createServer();
-    tester.once('error', () => { tester.close(); resolve(false); });
-    tester.once('listening', () => { tester.close(); resolve(true); });
-    tester.listen(port, '127.0.0.1');
+    tester.once("error", () => {
+      tester.close();
+      resolve(false);
+    });
+    tester.once("listening", () => {
+      tester.close();
+      resolve(true);
+    });
+    tester.listen(port, "127.0.0.1");
   });
 
 // Live Reload (development only)
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   const liveReloadPort = Number(process.env.LIVERELOAD_PORT) || 35729;
   checkPortAvailable(liveReloadPort).then((available) => {
     if (!available) {
-      console.warn(`⚠️ LiveReload port ${liveReloadPort} is already in use. Skipping live reload.`);
+      console.warn(
+        `⚠️ LiveReload port ${liveReloadPort} is already in use. Skipping live reload.`,
+      );
       return;
     }
     const liveReloadServer = livereload.createServer({ port: liveReloadPort });
-    liveReloadServer.watch(path.join(process.cwd(), 'public'));
+    liveReloadServer.watch(path.join(process.cwd(), "public"));
     app.use(connectLivereload());
-    liveReloadServer.server.once('connection', () => {
-      setTimeout(() => liveReloadServer.refresh('/'), 100);
+    liveReloadServer.server.once("connection", () => {
+      setTimeout(() => liveReloadServer.refresh("/"), 100);
     });
   });
 }
@@ -73,10 +81,13 @@ app.use((req, res, next) => {
 });
 
 // Required environment variables
-const requiredEnv = ['Mongo', 'JWT_SECRET'];
+const requiredEnv = ["Mongo", "JWT_SECRET"];
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 if (missingEnv.length > 0) {
-  console.error('✗ Missing required environment variables:', missingEnv.join(', '));
+  console.error(
+    "✗ Missing required environment variables:",
+    missingEnv.join(", "),
+  );
   process.exit(1);
 }
 
@@ -89,21 +100,21 @@ mongoose
   .then(() => {
     app.listen(port, () => {
       console.log(`✓ Server running at http://localhost:${port}`);
-      console.log('✓ Connected to MongoDB');
+      console.log("✓ Connected to MongoDB");
     });
   })
   .catch((err) => {
-    console.error('✗ Error connecting to MongoDB:', err.message);
+    console.error("✗ Error connecting to MongoDB:", err.message);
     process.exit(1);
   });
 
 // Routes
-app.use('/api/user', userRoute);
-app.use('/api/auth', authRoute);
-app.use('/api/upload', uploadRoute);
-app.use('/api/listing', listingRoute);
-app.use('/api/reviews', ReviewRouter)
-app.use('/api/notifications', NotificationRouter);
+app.use("/api/user", userRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/upload", uploadRoute);
+app.use("/api/listing", listingRoute);
+app.use("/api/reviews", ReviewRouter);
+app.use("/api/notifications", NotificationRouter);
 
 // 404
 app.use((req, res) => {
@@ -131,8 +142,8 @@ app.use((err, req, res, next) => {
 });
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\n✓ Server shutting down gracefully...');
+process.on("SIGINT", () => {
+  console.log("\n✓ Server shutting down gracefully...");
   mongoose.connection.close();
   process.exit(0);
 });

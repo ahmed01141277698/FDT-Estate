@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import SignUp from "./Pages/SignUp";
 import SignIn from "./Pages/SignIn";
-// import VerifyEmail from "./Pages/VerifyEmail";
+import VerifyEmail from "./Pages/VerifyEmail.jsx";
 import Profile from "./Pages/Profile";
 import About from "./Pages/About";
 import Home from "./Pages/Home";
@@ -74,6 +74,7 @@ const App = () => {
         <Route path="/listing/:id" element={<ListingDetailsPage />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
 
       <Footer />

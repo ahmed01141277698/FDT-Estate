@@ -95,6 +95,29 @@ const userSchema = new mongoose.Schema({
         price_change: { type: Boolean, default: true }, // تغييرات الأسعار
         listing_approved: { type: Boolean, default: true }, // تأكيد نشر العقار
     },
+    emailVerifiedAt: {
+  type: Date,
+  default: null,
+    },
+    // استبدل حقل accountType القديم (individual/agency) بالنسخة الموسّعة دي:
+
+accountType: {
+  type: String,
+  enum: ["individual", "broker", "company", "marketing_office"],
+  // individual        = فرد بيبيع/يأجّر عقاره الشخصي
+  // broker            = سمسار / وسيط عقاري مستقل
+  // company           = شركة عقارية
+  // marketing_office  = مكتب تسويق عقاري
+  default: "individual",
+},
+
+// مكان جاهز لنظام الخطط المدفوعة لاحقًا (من غير ما نبنيه دلوقتي) — كل
+// أنواع الحسابات غير "individual" غالبًا هتحتاج خطة اشتراك مختلفة السعر.
+subscriptionPlan: {
+  type: String,
+  enum: ["free", "basic", "pro", "enterprise"],
+  default: "free",
+},
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

@@ -45,10 +45,7 @@ router.post(
   }),
   resendVerification,
 );
-router.post("/signUp", signUp);
-router.post("/signIn", signIn);
+
 router.post("/google", google);
-// router.post('/resend-verification', resendVerification);
-// router.get('/verify-email', verifyEmail);
 
 export default router;

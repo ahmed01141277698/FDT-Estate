@@ -7,7 +7,7 @@ import {
   Zap,
   ShieldCheck,
 } from "lucide-react";
-
+import image from "../../assets/aqarx-header-logo.png";
 const REASONS = [
   {
     icon: Brain,
@@ -86,11 +86,11 @@ export default function WhyUs() {
           transition={{ duration: 0.6 }}
           className="mb-4 text-center"
         >
-          <p className="mb-2 text-sm font-medium" style={{ color: "#c9a227" }}>
-            لماذا FDT Estate
+          <p className="mb-2 text-2xl font-medium" style={{ color: "#c9a227" }}>
+            لماذا Aqarx
           </p>
           <h2
-            className="text-3xl font-bold md:text-4xl"
+            className="text-2xl  font-bold md:text-4xl"
             style={{ color: "#f0ede6" }}
           >
             الأساس اللي <span className="text-gold-gradient">بيتك</span> يقوم
@@ -123,9 +123,9 @@ export default function WhyUs() {
           >
             <div className="h-full w-full overflow-hidden rounded-full ring-4 ring-[#0e0e16]">
               <img
-                src="https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=900&q=80"
+                src={image}
                 alt="واجهة فيلا عصرية"
-                className="h-full w-full object-cover"
+                className="h-95 w-95  object-cover"
               />
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function WhyUs() {
               style={{ background: "#c9a227" }}
             />
             <p
-              className="text-sm font-bold tracking-wide"
+              className="text-lg font-bold tracking-wide"
               style={{ color: "#c9a227" }}
             >
               بيتك يبدأ من هنا

@@ -103,23 +103,16 @@ export default function Hero() {
         </svg>
       </div>
 
-      <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-8 pt-2 text-center sm:pt-14">
-        <div className="motion-safe:animate-[fadeInUp_0.6s_ease] inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-bold text-[#fee0c4]">
-          <span className="relative flex h-2 w-2">
+      <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-8 pt-8 text-center sm:pt-14">
+        <div className="motion-safe:animate-[fadeInUp_0.6s_ease] inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 mt-3 text-xs font-bold text-[#fee0c4]">
+          <span className="relative flex h-3 w-3">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f1b184] opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f1b184]" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-[#f1b184]" />
           </span>
           منصتك الأولى لفهم قصة كل بيت في مصر
         </div>
 
-        {/* <h1 className=" text-wrap motion-safe:animate-[fadeInUp_0.6s_ease_0.1s_backwards] max-w-4xl text-5xl font-black leading-[2] tracking-tight sm:text-6xl lg:text-7xl">
-          <span className="block">ابحثْ، قارِنْ، واطمئن</span>
-          <span className="text-gold-gradient py-4 block sm:mt-4 text-wrap line-height-[1.2] ">
-            فبيتك الحقيقي في انتظارك.
-          </span>
-        </h1> */}
-
-        <h1 className="text-wrap motion-safe:animate-[fadeInUp_0.6s_ease_0.1s_backwards] max-w-4xl text-5xl font-black leading-[1.2] tracking-tight sm:text-6xl lg:text-7xl">
+        <h1 className="text-wrap  motion-safe:animate-[fadeInUp_0.6s_ease_0.1s_backwards] max-w-4xl text-5xl font-black leading-[1.5] tracking-tight sm:text-6xl lg:text-7xl">
           <span className="block">ابحثْ، قارِنْ، واطمئن</span>
 
           <span className="text-gold-gradient py-4 block leading-[1.2] sm:mt-4">

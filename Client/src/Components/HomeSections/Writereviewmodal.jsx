@@ -73,10 +73,7 @@ export default function WriteReviewModal({ onClose, onSuccess }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-      dir="rtl"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
       <div
         className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
         style={{ border: "1px solid rgba(201,162,39,0.25)" }}

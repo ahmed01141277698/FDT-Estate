@@ -19,7 +19,7 @@ const PHONE_HREF = "tel:+201553007698";
 
 export default function CTA() {
   return (
-    <section className="relative overflow-hidden" dir="rtl">
+    <section className="relative overflow-hidden z-0" dir="rtl">
       {/* منحنى انتقالي من الخلفية البيضاء للسيكشن اللي قبله */}
       <div className="absolute inset-x-0 top-0 z-10 -translate-y-[1px]">
         <svg
@@ -120,7 +120,7 @@ export default function CTA() {
             className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl lg:hidden"
             style={{ background: "linear-gradient(135deg,#c9a227,#e8833a)" }}
           >
-            <Sparkles size={28} color="#fff" />
+            {/* <Sparkles size={28} color="#fff" /> */}
           </motion.div>
 
           <motion.p

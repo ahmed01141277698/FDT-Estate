@@ -18,6 +18,8 @@ import Favorites from "./Pages/Favorites";
 import { useSelector } from "react-redux";
 import { loadFavorites } from "./services/favoriteService";
 import NotificationsPage from "./Pages/NotificationsPage";
+import ForgotPassword from "./Pages/ForgotPassword";
+import ResetPassword from "./Pages/ResetPassword";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -75,6 +77,8 @@ const App = () => {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
 
       <Footer />

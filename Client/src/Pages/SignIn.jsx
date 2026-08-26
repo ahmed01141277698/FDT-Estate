@@ -166,7 +166,6 @@ const SignIn = () => {
                 />
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="password"
@@ -199,8 +198,7 @@ const SignIn = () => {
                 </button>
               </div>
             </div>
-
-            <label className="flex w-fit cursor-pointer items-center gap-2 text-sm font-semibold text-[#6b7d76]">
+            {/* <label className="flex w-fit cursor-pointer items-center gap-2 text-sm font-semibold text-[#6b7d76]">
               <input
                 type="checkbox"
                 checked={rememberMe}
@@ -208,8 +206,26 @@ const SignIn = () => {
                 className="size-4 rounded border-[#e2ddd0] accent-[#e49263]"
               />
               تذكرني
-            </label>
+            </label> */}
 
+            <div className="flex items-center justify-between">
+              <label className="flex w-fit cursor-pointer items-center gap-2 text-sm font-semibold text-[#6b7d76]">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="size-4 rounded border-[#e2ddd0] accent-[#e49263]"
+                />
+                تذكرني
+              </label>
+
+              <Link
+                to="/forgot-password"
+                className="text-sm font-extrabold text-[#183d37] underline-offset-4 hover:text-[#e49263]"
+              >
+                نسيت كلمة المرور؟
+              </Link>
+            </div>
             <button
               type="submit"
               disabled={loading}

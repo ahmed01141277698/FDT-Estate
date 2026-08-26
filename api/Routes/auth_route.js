@@ -1,11 +1,17 @@
 import express from "express";
 const router = express.Router();
+
 import { signUp, signIn, google } from "../Controlles/auth_controll.js";
 import {
   verifyEmail,
   resendVerification,
 } from "../Controlles/verificationController.js";
+import {
+  forgotPassword,
+  resetPassword,
+} from "../Controlles/passwordResetController.js";
 import { simpleRateLimiter } from "../middleware/simpleRateLimiter.js";
+
 router.post(
   "/signUp",
   simpleRateLimiter({
@@ -25,6 +31,8 @@ router.post(
   }),
   signIn,
 );
+
+router.post("/google", google);
 
 router.post(
   "/verify-email",
@@ -46,6 +54,26 @@ router.post(
   resendVerification,
 );
 
-router.post("/google", google);
+// forgot-password بيغطي كمان إعادة الإرسال (نفس الـ endpoint، الفرونت إند
+// بينادي عليه تاني بعد الـ cooldown).
+router.post(
+  "/forgot-password",
+  simpleRateLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 8,
+    message: "محاولات كتير، حاول بعد شوية",
+  }),
+  forgotPassword,
+);
+
+router.post(
+  "/reset-password",
+  simpleRateLimiter({
+    windowMs: 10 * 60 * 1000,
+    max: 10,
+    message: "محاولات كتير، حاول بعد شوية",
+  }),
+  resetPassword,
+);
 
 export default router;

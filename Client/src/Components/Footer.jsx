@@ -15,7 +15,7 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import WriteReviewModal from "./HomeSections/WriteReviewModal";
-
+import aqarxLogo from "../assets/aqarx-header-logo.png";
 const PROPERTY_LINKS = [
   { label: "كل العقارات", to: "/AllListings" },
   { label: "شقق", to: "/AllListings?category=شقة" },
@@ -75,12 +75,7 @@ export default function Footer() {
             {/* Brand */}
             <div className="lg:col-span-2">
               <div className="mb-4 flex items-center gap-2.5">
-                <div className="grid size-10 place-items-center rounded-xl bg-[#e49263] text-[#183d37]">
-                  <span className="text-lg font-black">م</span>
-                </div>
-                <span className="text-xl font-black tracking-tight text-white">
-                  مَسكَن
-                </span>
+                <img src={aqarxLogo} alt="عقاركس" className="h-13 w-20" />
               </div>
 
               <p className="mb-6 text-sm leading-relaxed text-[#c6d3ce]">

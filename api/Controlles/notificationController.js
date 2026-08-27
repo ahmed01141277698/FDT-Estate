@@ -50,7 +50,9 @@ export const getNotifications = async (req, res, next) => {
       Notification.updateMany(
         { _id: { $in: unseenIds } },
         { seen: true, seenAt: new Date() },
-      ).catch((err) => console.error("Failed to mark notifications as seen:", err));
+      ).catch((err) =>
+        console.error("Failed to mark notifications as seen:", err),
+      );
 
       notifications.forEach((n) => {
         if (unseenIds.some((id) => id.equals(n._id))) n.seen = true;
@@ -156,15 +158,27 @@ export const deleteNotification = async (req, res, next) => {
 // GET /api/notifications/preferences
 export const getNotificationPreferences = async (req, res, next) => {
   try {
-    const user = await User.findById(req.userId).select("notificationPreferences");
+    const user = await User.findById(req.userId).select(
+      "notificationPreferences",
+    );
     const defaults = {
       message: true,
       listing_liked: true,
       price_change: true,
       listing_approved: true,
+      password_change: true,
+      new_device_login: true,
+      system_announcement: true,
+      account_suspension: true,
+      avatar_change: true,
     };
     res.status(200).json({
-      preferences: { ...defaults, ...(user?.notificationPreferences?.toObject?.() ?? user?.notificationPreferences ?? {}) },
+      preferences: {
+        ...defaults,
+        ...(user?.notificationPreferences?.toObject?.() ??
+          user?.notificationPreferences ??
+          {}),
+      },
     });
   } catch (error) {
     next(error);
@@ -174,7 +188,17 @@ export const getNotificationPreferences = async (req, res, next) => {
 // PATCH /api/notifications/preferences
 export const updateNotificationPreferences = async (req, res, next) => {
   try {
-    const allowedKeys = ["message", "listing_liked", "price_change", "listing_approved"];
+    const allowedKeys = [
+      "message",
+      "listing_liked",
+      "price_change",
+      "listing_approved",
+      "password_change",
+      "new_device_login",
+      "system_announcement",
+      "account_suspension",
+      "avatar_change",
+    ];
     const updates = {};
     for (const key of allowedKeys) {
       if (typeof req.body[key] === "boolean") {
@@ -276,7 +300,10 @@ export const upsertGroupedNotification = async ({
       existing.seen = false;
       await existing.save();
 
-      sendToUser(String(recipient), { type: "notification", notification: existing });
+      sendToUser(String(recipient), {
+        type: "notification",
+        notification: existing,
+      });
       return existing;
     }
 

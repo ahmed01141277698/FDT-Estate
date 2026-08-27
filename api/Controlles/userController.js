@@ -155,12 +155,10 @@ export const deleteProfile = async (req, res, next) => {
     // ٧. أخيرًا، امسح اليوزر نفسه.
     await User.findByIdAndDelete(req.userId);
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "تم حذف الحساب وكل بياناتك المرتبطة بنجاح",
-      });
+    res.status(200).json({
+      success: true,
+      message: "تم حذف الحساب وكل بياناتك المرتبطة بنجاح",
+    });
   } catch (error) {
     console.error("Error deleting profile:", error);
     next(errorHandler(500, "حدث خطأ أثناء حذف الحساب"));

@@ -139,7 +139,7 @@ export default function CTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-5 text-3xl font-black leading-tight md:text-5xl"
+            className="mb-5 text-3xl font-black leading-tight md:text-4x2l"
             style={{ color: "#f0ede6" }}
           >
             بيتك القادم على بعد <br className="hidden sm:block" />

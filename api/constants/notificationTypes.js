@@ -10,6 +10,11 @@ export const NOTIFICATION_TYPES = Object.freeze({
   LISTING_APPROVED: "listing_approved", // تم نشر العقار بنجاح
   VERIFICATION: "verification", // احتياطي لمستقبل نظام التوثيق
   SYSTEM: "system", // رسائل عامة زي الترحيب
+  PASSWORD_CHANGE: "password_change", // تغيير كلمة المرور
+  NEW_DEVICE_LOGIN: "new_device_login", // تسجيل دخول من جهاز جديد
+  SYSTEM_ANNOUNCEMENT: "system_announcement", // إعلان عام من النظام
+  ACCOUNT_SUSPENSION: "account_suspension", // تعليق الحساب
+  AVATAR_CHANGE: "avatar_change", // تغيير صورة الملف الشخصي
 });
 
 // نفس القيم كمصفوفة — تُستخدم مباشرة في enum بتاع الموديل.

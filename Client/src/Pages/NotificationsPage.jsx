@@ -305,6 +305,11 @@ const PREFERENCE_LABELS = {
   listing_liked: "حفظ عقارك في المفضلة",
   price_change: "تغييرات الأسعار",
   listing_approved: "تأكيد نشر العقار",
+  password_change: "تغيير كلمة المرور",
+  new_device_login: "تسجيل دخول من جهاز جديد",
+  system_announcement: "إعلان عام من النظام",
+  account_suspension: "تعليق الحساب",
+  avatar_change: "تغيير صورة الملف الشخصي",
 };
 
 function timeAgo(date) {

@@ -129,7 +129,7 @@ export default function Testimonials() {
           className="text-3xl font-black md:text-4xl"
           style={{ color: "#183d37" }}
         >
-          يثقون في <span className="text-gold-gradient">مَسكَن</span>
+          يثقون في <span className="text-gold-gradient">عقاركس</span>
         </h2>
       </motion.div>
 

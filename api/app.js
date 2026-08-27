@@ -14,6 +14,7 @@ import listingRoute from "./Routes/listingRoutong.js";
 import uploadRoute from "./Routes/uploadRoutes.js";
 import ReviewRouter from "./Routes/reviewrouter.js";
 import NotificationRouter from "./Routes/notificationRouter.js";
+import PublicProfileRouter from "./Routes/PublicprofileRouter.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -115,6 +116,7 @@ app.use("/api/upload", uploadRoute);
 app.use("/api/listing", listingRoute);
 app.use("/api/reviews", ReviewRouter);
 app.use("/api/notifications", NotificationRouter);
+app.use("/api/users", PublicProfileRouter);
 
 // 404
 app.use((req, res) => {

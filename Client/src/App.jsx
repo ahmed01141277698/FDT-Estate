@@ -20,6 +20,7 @@ import { loadFavorites } from "./services/favoriteService";
 import NotificationsPage from "./Pages/NotificationsPage";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ResetPassword from "./Pages/ResetPassword";
+import PublicProfilePage from "./Pages/Publicprofilepage.jsx";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -79,6 +80,7 @@ const App = () => {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/profile/:id" element={<PublicProfilePage />} />
       </Routes>
 
       <Footer />

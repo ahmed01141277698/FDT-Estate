@@ -106,7 +106,16 @@ export const getUserFavorites = async (req, res) => {
     const favorites = await Favorite.find({
       userRef: userId,
     })
-      .populate("listingRef")
+      // populate متداخل: نجيب العقار (listingRef)، وجوّه العقار نفسه نجيب
+      // صاحب الإعلان (userRef) بنفس الحقول المستخدمة في getAllListings —
+      // عشان PropertyCard يشتغل بنفس الطريقة بالظبط في أي صفحة.
+      .populate({
+        path: "listingRef",
+        populate: {
+          path: "userRef",
+          select: "username avatar accountType",
+        },
+      })
       .sort({ createdAt: -1 });
 
     const listings = favorites

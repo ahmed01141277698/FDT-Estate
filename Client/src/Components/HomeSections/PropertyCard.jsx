@@ -13,8 +13,6 @@ import {
   Maximize2,
   BadgeCheck,
   Tag,
-  Building2,
-  User,
   Eye,
 } from "lucide-react";
 
@@ -22,6 +20,16 @@ const FALLBACK_IMG = "https://placehold.co/800x600?text=No+Image";
 
 // نسخة من Link تحمل خصائص framer-motion (whileHover/whileTap) على زر التفاصيل.
 const MotionLink = motion(Link);
+
+// أول جزء بس من اسم المستخدم (لو فيه مسافات) وبحد أقصى لعدد الحروف — عشان
+// الاسم الطويل ميضغطش زرار "عرض التفاصيل" أو يخليه يتقلص.
+const MAX_NAME_LENGTH = 12;
+function getShortDisplayName(name) {
+  const firstWord = name.split(" ")[0];
+  return firstWord.length > MAX_NAME_LENGTH
+    ? `${firstWord.slice(0, MAX_NAME_LENGTH)}…`
+    : firstWord;
+}
 
 export default function PropertyCard({ property = {}, index = 0 }) {
   const [favoritesCount, setFavoritesCount] = useState(
@@ -52,8 +60,11 @@ export default function PropertyCard({ property = {}, index = 0 }) {
   );
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const isAgency = userRef?.accountType && userRef.accountType !== "individual";
   const posterName = userRef?.username || "معلن";
+  const posterDisplayName = getShortDisplayName(posterName);
+  const posterAvatar =
+    userRef?.avatar?.url ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(posterName)}&background=183d37&color=fee0c4&size=64`;
 
   const image = imageUrl?.[0]?.url || FALLBACK_IMG;
   const displayPrice = offer && discountPrice ? discountPrice : price;
@@ -202,19 +213,24 @@ export default function PropertyCard({ property = {}, index = 0 }) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex min-w-0 items-center gap-2">
+        <div className="flex items-center justify-between gap-2 pt-1">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             {userRef && (
-              <div className="flex min-w-0 items-center gap-1.5 text-[#a08a5f]">
-                {isAgency ? (
-                  <Building2 size={13} className="text-[#e49263]" />
-                ) : (
-                  <User size={13} className="text-[#e49263]" />
-                )}
-                <span className="line-clamp-1 text-xs font-semibold">
-                  {posterName}
+              <Link
+                to={`/profile/${userRef._id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex min-w-0 shrink items-center gap-1.5 text-[#a08a5f] transition hover:text-[#183d37]"
+                title={posterName}
+              >
+                <img
+                  src={posterAvatar}
+                  alt={posterName}
+                  className="h-5 w-5 shrink-0 rounded-full border border-[#e7e2d7] object-cover"
+                />
+                <span className="truncate text-xs font-semibold">
+                  {posterDisplayName}
                 </span>
-              </div>
+              </Link>
             )}
 
             <div className="flex shrink-0 items-center gap-3">
@@ -242,7 +258,7 @@ export default function PropertyCard({ property = {}, index = 0 }) {
             to={_id ? `/listing/${_id}` : "#"}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            className="mr-auto rounded-xl bg-[#e49263] px-4 py-2  text-xs font-extrabold text-[#173d36] transition-colors hover:bg-[#f1b68b]"
+            className="shrink-0 rounded-xl bg-[#e49263] px-4 py-2 text-xs font-extrabold text-[#173d36] transition-colors hover:bg-[#f1b68b]"
           >
             عرض التفاصيل
           </MotionLink>

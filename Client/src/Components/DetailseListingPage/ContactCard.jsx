@@ -52,7 +52,7 @@ export default function ContactCard({
 
   const handleSendWhatsApp = () => {
     if (!message.trim() || !whatsappNumber) return;
-    const intro = `مرحبًا، أنا مهتم بعقار "${listing?.name || ""}" المعروض على مَسكَن.\n\n`;
+    const intro = `مرحبًا، أنا مهتم بعقار "${listing?.name || ""}" المعروض على عقاركس.\n\n`;
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
       intro + message.trim(),
     )}`;
@@ -74,7 +74,7 @@ export default function ContactCard({
         <div className="relative space-y-5 p-6">
           {/* Owner identity — clickable through to their public profile */}
           <Link
-            to={ownerData._id ? `/user/${ownerData._id}` : "#"}
+            to={ownerData._id ? `/profile/${ownerData._id}` : "#"}
             className="group flex items-center gap-3"
           >
             <img

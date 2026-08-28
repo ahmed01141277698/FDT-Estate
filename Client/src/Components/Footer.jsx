@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import WriteReviewModal from "./HomeSections/WriteReviewModal";
 import aqarxLogo from "../assets/aqarx-header-logo.png";
+
 const PROPERTY_LINKS = [
   { label: "كل العقارات", to: "/AllListings" },
   { label: "شقق", to: "/AllListings?category=شقة" },
@@ -26,12 +27,18 @@ const PROPERTY_LINKS = [
   { label: "أراضي", to: "/AllListings?category=أرض" },
 ];
 
-const COMPANY_LINKS = ["من نحن", "وظائف", "المدونة", "اتصل بنا"];
+const COMPANY_LINKS = [
+  { label: "من نحن", to: "/about" },
+  { label: "وظائف", to: "/careers" },
+  { label: "المدونة", to: "/blog" },
+  { label: "اتصل بنا", to: "/contact" },
+];
+
 const SUPPORT_LINKS = [
-  "مركز المساعدة",
-  "الشروط والأحكام",
-  "سياسة الخصوصية",
-  "الأسئلة الشائعة",
+  { label: "مركز المساعدة", to: "/help" },
+  { label: "الشروط والأحكام", to: "/terms" },
+  { label: "سياسة الخصوصية", to: "/privacy" },
+  { label: "الأسئلة الشائعة", to: "/faq" },
 ];
 
 // أيقونات السوشيال ميديا من react-icons بدل lucide-react (اللي شالت أيقونات
@@ -57,193 +64,191 @@ export default function Footer() {
 
   return (
     <footer
-      className="relative px-4 pb-8 pt-16 md:px-8 lg:px-16"
+      className="relative overflow-hidden px-4 pb-8 pt-16 md:px-8 lg:px-16"
       dir="rtl"
       style={{
-        background: "linear-gradient(180deg, #0e0e16 0%, #0b1a17 100%)",
+        background: "linear-gradient(180deg, #183d37 0%, #0e0e16 100%)",
       }}
     >
+      {/* طبقة زخرفية بحتة — مستقلة عن المحتوى الحقيقي عمدًا */}
       <div
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
             "radial-gradient(ellipse at 50% 0%, rgba(201,162,39,0.08) 0%, transparent 60%)",
         }}
-      >
-        <div className="relative mx-auto max-w-7xl">
-          {/* ============ Grid: Brand + Links ============ */}
-          <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
-            {/* Brand */}
-            <div className="lg:col-span-2">
-              <div className="mb-4 flex items-center gap-2.5">
-                <img src={aqarxLogo} alt="عقاركس" className="h-13 w-20" />
-              </div>
+      />
 
-              <p className="mb-6 text-sm leading-relaxed text-[#c6d3ce]">
-                منصة عقارية رائدة توفر أفضل العقارات المصرية بمستوى خدمة
-                استثنائي وتجربة مستخدم لا مثيل لها.
-              </p>
-
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-2 text-sm text-[#c6d3ce]">
-                  <MapPin size={14} className="text-[#f1b184]" />٦ أكتوبر،
-                  الجيزة، مصر
-                </div>
-
-                <a
-                  href="tel:+201553007698"
-                  className="flex items-center gap-2 text-sm text-[#c6d3ce] transition-colors hover:text-[#f2b17e]"
-                >
-                  <Phone size={14} className="text-[#f1b184]" />
-                  <span className="num" dir="ltr">
-                    +20 155 300 7698
-                  </span>
-                </a>
-
-                <a
-                  href="mailto:ahmedalfaod230@gmail.com"
-                  className="flex items-center gap-2 text-sm text-[#c6d3ce] transition-colors hover:text-[#f2b17e]"
-                >
-                  <Mail size={14} className="text-[#f1b184]" />
-                  <span dir="ltr">ahmedalfaod230@gmail.com</span>
-                </a>
-              </div>
+      <div className="relative mx-auto max-w-7xl">
+        {/* ============ Grid: Brand + Links ============ */}
+        <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
+          {/* Brand */}
+          <div className="lg:col-span-2">
+            <div className="mb-4 flex items-center gap-2.5">
+              <img src={aqarxLogo} alt="عقاركس" className="h-13 w-20" />
             </div>
 
-            {/* أنواع العقارات */}
-            <div>
-              <h4 className="mb-4 font-black text-white">أنواع العقارات</h4>
-              <ul className="space-y-2.5">
-                {PROPERTY_LINKS.map((l) => (
-                  <li key={l.label}>
-                    <Link
-                      to={l.to}
-                      className="text-sm text-[#c6d3ce] transition-colors duration-200 hover:text-[#f2b17e]"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* الشركة */}
-            <div>
-              <h4 className="mb-4 font-black text-white">الشركة</h4>
-              <ul className="space-y-2.5">
-                {COMPANY_LINKS.map((label) => (
-                  <li key={label}>
-                    <span className="flex cursor-not-allowed items-center gap-2 text-sm text-[#c6d3ce] opacity-60">
-                      {label}
-                      <span className="rounded-full bg-[#f1b184]/15 px-1.5 py-0.5 text-[10px] font-bold text-[#f1b184]">
-                        قريبًا
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* الدعم */}
-            <div>
-              <h4 className="mb-4 font-black text-white">الدعم</h4>
-              <ul className="space-y-2.5">
-                {SUPPORT_LINKS.map((label) => (
-                  <li key={label}>
-                    <span className="flex cursor-not-allowed items-center gap-2 text-sm text-[#c6d3ce] opacity-60">
-                      {label}
-                      <span className="rounded-full bg-[#f1b184]/15 px-1.5 py-0.5 text-[10px] font-bold text-[#f1b184]">
-                        قريبًا
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          {/* ============ نهاية الـ Grid ============ */}
-
-          {/* Newsletter */}
-          <div className="mb-6 flex flex-col items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-6 md:flex-row">
-            <div>
-              <h4 className="mb-1 font-black text-white">
-                اشترك في نشرتنا البريدية
-              </h4>
-              <p className="text-sm text-[#c6d3ce]">
-                {subscribed
-                  ? "الخدمة هتتفعّل قريبًا — هنبلغك أول ما تبقى جاهزة 🌱"
-                  : "احصل على أحدث العقارات والعروض مباشرة في بريدك."}
-              </p>
-            </div>
-
-            <form
-              onSubmit={handleSubscribe}
-              className="flex w-full gap-2 md:w-auto"
-            >
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="بريدك الإلكتروني"
-                disabled={subscribed}
-                className="flex-1 rounded-xl border border-white/15 bg-white/[0.08] px-4 py-2.5 text-sm text-white outline-none placeholder:text-[#8fa39a] disabled:opacity-50 md:w-64"
-              />
-              <motion.button
-                type="submit"
-                disabled={subscribed}
-                whileHover={{ scale: subscribed ? 1 : 1.04 }}
-                whileTap={{ scale: subscribed ? 1 : 0.97 }}
-                className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-extrabold text-[#183d37] disabled:opacity-60"
-                style={{
-                  background: "linear-gradient(135deg,#c9a227,#e8833a)",
-                }}
-              >
-                {subscribed ? "تم" : "اشتراك"} <ArrowLeft size={15} />
-              </motion.button>
-            </form>
-          </div>
-
-          {/* شاركنا رأيك */}
-          <div className="mb-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-6 md:flex-row">
-            <div>
-              <h4 className="mb-1 font-black text-white">
-                جربت مَسكَن قبل كده؟
-              </h4>
-              <p className="text-sm text-[#c6d3ce]">
-                رأيك بيفرق معانا — شاركنا تجربتك في دقيقة واحدة.
-              </p>
-            </div>
-
-            <motion.button
-              onClick={() => setShowReviewModal(true)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-extrabold text-[#183d37]"
-              style={{ background: "linear-gradient(135deg,#c9a227,#e8833a)" }}
-            >
-              <MessageSquarePlus size={16} />
-              شاركنا رأيك
-            </motion.button>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
-            <p className="text-sm text-[#a9beb5]">
-              © <span className="num">2025</span> مَسكَن. جميع الحقوق محفوظة.
+            <p className="mb-6 text-sm leading-relaxed text-[#c6d3ce]">
+              منصة عقارية رائدة توفر أفضل العقارات المصرية بمستوى خدمة استثنائي
+              وتجربة مستخدم لا مثيل لها.
             </p>
 
-            <div className="flex gap-3">
-              {SOCIALS.map(({ Icon, label }) => (
-                <span
-                  key={label}
-                  title="قريبًا"
-                  aria-disabled="true"
-                  className="flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] opacity-50"
-                >
-                  <Icon size={16} className="text-[#f1b184]" />
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2 text-sm text-[#c6d3ce]">
+                <MapPin size={14} className="text-[#f1b184]" />٦ أكتوبر، الجيزة،
+                مصر
+              </div>
+
+              <a
+                href="tel:+201553007698"
+                className="flex items-center gap-2 text-sm text-[#c6d3ce] transition-colors hover:text-[#f2b17e]"
+              >
+                <Phone size={14} className="text-[#f1b184]" />
+                <span className="num" dir="ltr">
+                  +20 155 300 7698
                 </span>
-              ))}
+              </a>
+
+              <a
+                href="mailto:ahmedalfaod230@gmail.com"
+                className="flex items-center gap-2 text-sm text-[#c6d3ce] transition-colors hover:text-[#f2b17e]"
+              >
+                <Mail size={14} className="text-[#f1b184]" />
+                <span dir="ltr">ahmedalfaod230@gmail.com</span>
+              </a>
             </div>
+          </div>
+
+          {/* أنواع العقارات */}
+          <div>
+            <h4 className="mb-4 font-black text-white">أنواع العقارات</h4>
+            <ul className="space-y-2.5">
+              {PROPERTY_LINKS.map((l) => (
+                <li key={l.label}>
+                  <Link
+                    to={l.to}
+                    className="text-sm text-[#c6d3ce] transition-colors duration-200 hover:text-[#f2b17e]"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* الشركة */}
+          <div>
+            <h4 className="mb-4 font-black text-white">الشركة</h4>
+            <ul className="space-y-2.5">
+              {COMPANY_LINKS.map((l) => (
+                <li key={l.label}>
+                  <Link
+                    to={l.to}
+                    className="text-sm text-[#c6d3ce] transition-colors duration-200 hover:text-[#f2b17e]"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* الدعم */}
+          <div>
+            <h4 className="mb-4 font-black text-white">الدعم</h4>
+            <ul className="space-y-2.5">
+              {SUPPORT_LINKS.map((l) => (
+                <li key={l.label}>
+                  <Link
+                    to={l.to}
+                    className="text-sm text-[#c6d3ce] transition-colors duration-200 hover:text-[#f2b17e]"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        {/* ============ نهاية الـ Grid ============ */}
+
+        {/* Newsletter */}
+        <div className="mb-6 flex flex-col items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-6 md:flex-row">
+          <div>
+            <h4 className="mb-1 font-black text-white">
+              اشترك في نشرتنا البريدية
+            </h4>
+            <p className="text-sm text-[#c6d3ce]">
+              {subscribed
+                ? "الخدمة هتتفعّل قريبًا — هنبلغك أول ما تبقى جاهزة 🌱"
+                : "احصل على أحدث العقارات والعروض مباشرة في بريدك."}
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubscribe}
+            className="flex w-full gap-2 md:w-auto"
+          >
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="بريدك الإلكتروني"
+              disabled={subscribed}
+              className="flex-1 rounded-xl border border-white/15 bg-white/[0.08] px-4 py-2.5 text-sm text-white outline-none placeholder:text-[#8fa39a] disabled:opacity-50 md:w-64"
+            />
+            <motion.button
+              type="submit"
+              disabled={subscribed}
+              whileHover={{ scale: subscribed ? 1 : 1.04 }}
+              whileTap={{ scale: subscribed ? 1 : 0.97 }}
+              className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-extrabold text-[#183d37] disabled:opacity-60"
+              style={{ background: "linear-gradient(135deg,#c9a227,#e8833a)" }}
+            >
+              {subscribed ? "تم" : "اشتراك"} <ArrowLeft size={15} />
+            </motion.button>
+          </form>
+        </div>
+
+        {/* شاركنا رأيك */}
+        <div className="mb-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-6 md:flex-row">
+          <div>
+            <h4 className="mb-1 font-black text-white">جربت عقاركس قبل كده؟</h4>
+            <p className="text-sm text-[#c6d3ce]">
+              رأيك بيفرق معانا — شاركنا تجربتك في دقيقة واحدة.
+            </p>
+          </div>
+
+          <motion.button
+            onClick={() => setShowReviewModal(true)}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-extrabold text-[#183d37]"
+            style={{ background: "linear-gradient(135deg,#c9a227,#e8833a)" }}
+          >
+            <MessageSquarePlus size={16} />
+            شاركنا رأيك
+          </motion.button>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
+          <p className="text-sm text-[#a9beb5]">
+            © <span className="num">2025</span> عقاركس. جميع الحقوق محفوظة.
+          </p>
+
+          <div className="flex gap-3">
+            {SOCIALS.map(({ Icon, label }) => (
+              <span
+                key={label}
+                title="قريبًا"
+                aria-disabled="true"
+                className="flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] opacity-50"
+              >
+                <Icon size={16} className="text-[#f1b184]" />
+              </span>
+            ))}
           </div>
         </div>
       </div>

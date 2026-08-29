@@ -639,7 +639,7 @@ export default function AboutPage() {
               <p className="text-sm font-bold tracking-[0.2em] text-[#d7ecdf]/80">
                 READY TO EXPLORE
               </p>
-              <h2 className="mt-4 text-3xl font-black leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-5xl">
+              <h2 className="mt-4 text-3xl font-black leading-[1.5] tracking-[-0.03em] sm:text-4xl lg:text-5xl lg:leading-[1.5]">
                 جاهز لاكتشاف فرصتك العقارية القادمة؟
               </h2>
             </div>

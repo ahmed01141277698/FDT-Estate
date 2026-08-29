@@ -137,6 +137,15 @@ const userSchema = new mongoose.Schema(
       // بيتحدّث فورًا مع أي تغيير باسورد (تسجيل عادي، أو reset). بيستخدمه
       // verifyToken عشان يلغي أي JWT قديم صادر قبل التغيير ده.
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

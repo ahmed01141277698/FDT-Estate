@@ -15,6 +15,9 @@ import uploadRoute from "./Routes/uploadRoutes.js";
 import ReviewRouter from "./Routes/reviewrouter.js";
 import NotificationRouter from "./Routes/notificationRouter.js";
 import PublicProfileRouter from "./Routes/PublicprofileRouter.js";
+import careersRoutes from "./Routes/careersRoutes.js";
+import blogRoutes from "./Routes/blogRoutes.js";
+import contactRoutes from "./Routes/contactRoutes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -117,6 +120,9 @@ app.use("/api/listing", listingRoute);
 app.use("/api/reviews", ReviewRouter);
 app.use("/api/notifications", NotificationRouter);
 app.use("/api/users", PublicProfileRouter);
+app.use("/api/careers", careersRoutes);
+app.use("/api/blog", blogRoutes);
+app.use("/api/contact", contactRoutes);
 
 // 404
 app.use((req, res) => {

@@ -36,10 +36,9 @@ export const verifyToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // لو الباسورد اتغيّر بعد ما التوكن ده اتصدر، التوكن يبقى ملغي —
-    // حتى لو لسه في مدة صلاحيته الأصلية (٧ أيام). ده اللي بيقفل الجلسات
-    // القديمة فورًا بعد Reset Password.
-    const user = await User.findById(decoded.id).select("passwordChangedAt");
+    const user = await User.findById(decoded.id).select(
+      "passwordChangedAt role",
+    );
     if (user?.passwordChangedAt) {
       const changedAtSeconds = Math.floor(
         user.passwordChangedAt.getTime() / 1000,
@@ -52,9 +51,29 @@ export const verifyToken = async (req, res, next) => {
     }
 
     req.userId = decoded.id;
+    req.user = user;
     next();
   } catch (error) {
     console.error("JWT verification failed:", error);
     return next(errorHandler(401, "الرمز غير صالح أو منتهي الصلاحية."));
+  }
+};
+
+export const requireAdmin = async (req, res, next) => {
+  try {
+    if (!req.userId) {
+      return next(errorHandler(401, "غير مصرح بالدخول. الرجاء تسجيل الدخول."));
+    }
+
+    const user = await User.findById(req.userId).select("role");
+    const isAdmin = user?.role === "admin" || user?.isAdmin === true;
+
+    if (!isAdmin) {
+      return next(errorHandler(403, "لا توجد صلاحية لتنفيذ هذا الإجراء."));
+    }
+
+    next();
+  } catch (error) {
+    next(errorHandler(500, "فشل التحقق من صلاحية الإدارة."));
   }
 };

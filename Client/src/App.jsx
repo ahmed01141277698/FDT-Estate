@@ -25,6 +25,12 @@ import HelpCenterPage from "./Pages/HelpCenter.jsx";
 import FAQPage from "./Pages/FAQPage.jsx";
 import TermsPage from "./Pages/TermsPage.jsx";
 import PrivacyPage from "./Pages/PrivacyPage.jsx";
+import CareersPage from "./Pages/CareersPage.jsx";
+import CareerDetailsPage from "./Pages/CareerDetailsPage.jsx";
+import CareerApplicationPage from "./Pages/CareerApplicationPage.jsx";
+import BlogPage from "./Pages/BlogPage.jsx";
+import ArticlePage from "./Pages/ArticlePage.jsx";
+import ContactPage from "./Pages/ContactPage.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -90,6 +96,15 @@ const App = () => {
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/careers" element={<CareersPage />} />
+        <Route path="/careers/:slug" element={<CareerDetailsPage />} />
+        <Route
+          path="/careers/:slug/apply"
+          element={<CareerApplicationPage />}
+        />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<ArticlePage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
 
       <Footer />

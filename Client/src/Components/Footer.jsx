@@ -35,10 +35,10 @@ const COMPANY_LINKS = [
 ];
 
 const SUPPORT_LINKS = [
-  { label: "مركز المساعدة", to: "/help" },
+  { label: "مركز المساعدة", to: "/help-center" },
+  { label: "الأسئلة الشائعة", to: "/faq" },
   { label: "الشروط والأحكام", to: "/terms" },
   { label: "سياسة الخصوصية", to: "/privacy" },
-  { label: "الأسئلة الشائعة", to: "/faq" },
 ];
 
 // أيقونات السوشيال ميديا من react-icons بدل lucide-react (اللي شالت أيقونات

@@ -21,6 +21,11 @@ import NotificationsPage from "./Pages/NotificationsPage";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ResetPassword from "./Pages/ResetPassword";
 import PublicProfilePage from "./Pages/Publicprofilepage.jsx";
+import HelpCenterPage from "./Pages/HelpCenter.jsx";
+import FAQPage from "./Pages/FAQPage.jsx";
+import TermsPage from "./Pages/TermsPage.jsx";
+import PrivacyPage from "./Pages/PrivacyPage.jsx";
+
 const App = () => {
   const dispatch = useDispatch();
 
@@ -81,6 +86,10 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile/:id" element={<PublicProfilePage />} />
+        <Route path="/help-center" element={<HelpCenterPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
       </Routes>
 
       <Footer />

@@ -1,14 +1,16 @@
 import Listing from "../Models/listingModel.js";
 import Favorite from "../Models/favoriteModel.js";
-import { createNotification, upsertGroupedNotification } from "./notificationController.js";
+import {
+  createNotification,
+  upsertGroupedNotification,
+} from "./notificationController.js";
 import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 
+// create listing and send notification to the owner of the listing that their listing has been published
 export const createListing = async (req, res, next) => {
   try {
     const newListing = await Listing.create(req.body);
-
-    // إشعار تأكيد للمالك إن عقاره نُشر بنجاح — dedup بمفتاح ثابت لأن عقار
-    // معيّن مفروض يتنشر مرة واحدة بس أصلاً.
+    //   // Send notification to the owner of the listing that their listing has been published
     await createNotification({
       recipient: newListing.userRef,
       type: NOTIFICATION_TYPES.LISTING_APPROVED,
@@ -25,7 +27,7 @@ export const createListing = async (req, res, next) => {
   }
 };
 
-// جلب كل العقارات مع فلاتر وصفحات — تُستخدم في الصفحة الرئيسية وصفحة "جميع العقارات".
+// get all listings with filters and pagination including category, type, featured, minPrice, maxPrice, bedrooms, bathrooms
 export const getAllListings = async (req, res, next) => {
   try {
     const {
@@ -76,7 +78,7 @@ export const getAllListings = async (req, res, next) => {
   }
 };
 
-// القيم الفعلية المتاحة لحقل `category` — تُستخدم لبناء أزرار الفلاتر ديناميكيًا في الفرونت.
+// get all listings by user id and send notification to the owner of the listing that their listing has been viewed
 export const getListingCategories = async (req, res, next) => {
   try {
     const categories = await Listing.distinct("category");
@@ -86,25 +88,7 @@ export const getListingCategories = async (req, res, next) => {
   }
 };
 
-// عدد العقارات في كل تصنيف — لازم يرجع Array مش Object، لأن الفرونت إند
-// (Discover.jsx, AllListings.jsx) بيعمل عليها .map() مباشرة بشكل [{category, count}].
-// export const getCategoryCounts = async (req, res, next) => {
-//   try {
-//     const counts = await Listing.aggregate([
-//       { $group: { _id: "$category", count: { $sum: 1 } } },
-//       { $sort: { count: -1 } },
-//     ]);
-
-//     const result = counts
-//       .filter((item) => item._id)
-//       .map((item) => ({ category: item._id, count: item.count }));
-
-//     res.status(200).json(result);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
+// get the count of listings in each category
 export const getCategoryCounts = async (req, res, next) => {
   try {
     const counts = await Listing.aggregate([
@@ -120,10 +104,12 @@ export const getCategoryCounts = async (req, res, next) => {
     next(error);
   }
 };
-
+// GET user's listings by user id
 export const getUserListings = async (req, res, next) => {
   try {
-    const listings = await Listing.find({ userRef: req.params.id }).sort({ createdAt: -1 });
+    const listings = await Listing.find({ userRef: req.params.id }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(listings);
   } catch (error) {
     next(error);
@@ -150,15 +136,21 @@ export const updateListing = async (req, res, next) => {
     }
 
     if (listing.userRef.toString() !== req.userId) {
-      return res.status(403).json({ message: "You are not allowed to edit this listing" });
+      return res
+        .status(403)
+        .json({ message: "You are not allowed to edit this listing" });
     }
 
     const oldPrice = listing.price;
 
-    const updatedListing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
-      returnDocument: "after",
-      runValidators: true,
-    });
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        returnDocument: "after",
+        runValidators: true,
+      },
+    );
 
     // لو السعر اتغيّر فعلاً
     if (req.body.price !== undefined && Number(req.body.price) !== oldPrice) {
@@ -203,7 +195,7 @@ export const updateListing = async (req, res, next) => {
     next(error);
   }
 };
-
+// delete listing by id and send notification to the owner of the listing that their listing has been deleted
 export const deleteListing = async (req, res, next) => {
   try {
     const listing = await Listing.findById(req.params.id);
@@ -211,18 +203,26 @@ export const deleteListing = async (req, res, next) => {
       return res.status(404).json({ message: "Listing not found" });
     }
     if (listing.userRef.toString() !== req.userId) {
-      return res.status(403).json({ message: "You are not allowed to delete this listing" });
+      return res
+        .status(403)
+        .json({ message: "You are not allowed to delete this listing" });
     }
 
     await Listing.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Listing deleted successfully" });
+
+    await createNotification({
+      recipient: listing.userRef,
+      type: NOTIFICATION_TYPES.LISTING_DELETED,
+      title: "تم حذف عقارك",
+      body: `تم حذف العقار "${listing.name}"`,
+      link: `/`,
+    });
   } catch (error) {
     next(error);
   }
 };
-
-// عامة (بدون verifyToken) — أي زائر يقدر يفتح تفاصيل العقار.
-// كل فتح بيزوّد عداد المشاهدات بواحد ($inc) بعملية ذرّية آمنة.
+// get listing details by id and increment views count
 export const detailsListing = async (req, res, next) => {
   try {
     const listing = await Listing.findByIdAndUpdate(
@@ -243,10 +243,7 @@ export const detailsListing = async (req, res, next) => {
   }
 };
 
-// عامة — بتتنادى من زراير "اتصال" و"واتساب" في ContactCard. مجمّعة عشان
-// لو أكتر من زائر حاول يتواصل قبل ما المالك يقرا الإشعار، يوصله إشعار
-// واحد ("3 أشخاص حاولوا التواصل معاك") بدل سبام. من غير verifyToken لأن
-// زوار غير مسجلين برضو المفروض يقدروا يتواصلوا مع المالك.
+// notify listing interest by id and send notification to the owner of the listing that someone is interested in their listing
 export const notifyListingInterest = async (req, res, next) => {
   try {
     const { channel } = req.body; // channel: "whatsapp" | "call"
@@ -266,8 +263,8 @@ export const notifyListingInterest = async (req, res, next) => {
       // مفيش actorId هنا لأن الزائر ممكن يكون مش مسجل دخول أصلاً
       buildTitle: (count) =>
         count === 1
-          ? "فيه حد مهتم بعقارك"
-          : `فيه ${count} أشخاص مهتمين بعقارك`,
+          ? "يوجد شخص مهتم بعقارك"
+          : `يوجد ${count} أشخاص مهتمين بعقارك`,
       buildBody: () =>
         `آخر محاولة تواصل بخصوص "${listing.name}" كانت عن طريق ${channelLabel}`,
     });
@@ -277,7 +274,8 @@ export const notifyListingInterest = async (req, res, next) => {
     next(error);
   }
 };
-
+// get top 5 favorited listings by user id
+// this is used to show the user their most favorited listings in their profile page
 export const getTopFavoritedListings = async (req, res, next) => {
   try {
     const listings = await Listing.find({

@@ -12,6 +12,7 @@ export const NOTIFICATION_TYPES = Object.freeze({
   SYSTEM_ANNOUNCEMENT: "system_announcement", // used for system-wide announcements
   ACCOUNT_SUSPENSION: "account_suspension", // used when a user's account is suspended
   AVATAR_CHANGE: "avatar_change", // used when a user changes their avatar
+  LISTING_DELETED: "listing_deleted", // used when a listing is deleted
 });
 
 export const NOTIFICATION_TYPE_VALUES = Object.values(NOTIFICATION_TYPES);

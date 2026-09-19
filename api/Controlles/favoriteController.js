@@ -59,9 +59,8 @@ export const toggleFavorite = async (req, res) => {
       $inc: { favoritesCount: 1 },
     });
 
-    // إشعار مجمّع للمالك — بس لو مش هو نفسه اللي حفظ عقاره. طول ما فيه
-    // إشعار "حفظ مفضلة" غير مقروء لنفس العقار، أي حفظ جديد بيتجمّع فيه
-    // بدل ما يعمل إشعار منفصل لكل شخص.
+    //  check if the user who favorited the listing is not the owner of the listing
+    // if the user is not the owner, send a notification to the owner of the listing
     if (listing.userRef.toString() !== userId) {
       const actingUser = await User.findById(userId).select("username");
       const actorName = actingUser?.username || "مستخدم";
@@ -106,9 +105,8 @@ export const getUserFavorites = async (req, res) => {
     const favorites = await Favorite.find({
       userRef: userId,
     })
-      // populate متداخل: نجيب العقار (listingRef)، وجوّه العقار نفسه نجيب
-      // صاحب الإعلان (userRef) بنفس الحقول المستخدمة في getAllListings —
-      // عشان PropertyCard يشتغل بنفس الطريقة بالظبط في أي صفحة.
+
+      // populate the listingRef and userRef fields to get the listing and user details
       .populate({
         path: "listingRef",
         populate: {

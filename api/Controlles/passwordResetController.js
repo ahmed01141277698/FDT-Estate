@@ -8,7 +8,7 @@ import {
   sendPasswordChangedEmail,
 } from "../Services/emailService.js";
 import { createNotification } from "./notificationController.js";
-import { NOTIFICATION_TYPES } from "../constants/notificationTypes.js";
+import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 import {
   PASSWORD_RESET_EXPIRATION_MINUTES,
   PASSWORD_RESET_MAX_ATTEMPTS,
@@ -211,7 +211,7 @@ export const resetPassword = async (req, res, next) => {
     // إشعار داخلي كمان — لكن مش بديل عن الإيميل، دعم إضافي بس.
     await createNotification({
       recipient: user._id,
-      type: NOTIFICATION_TYPES.SECURITY,
+      type: NOTIFICATION_TYPES.PASSWORD_CHANGE,
       title: "تم تغيير كلمة المرور",
       body: "تم تغيير كلمة مرور حسابك بنجاح.",
       link: "/profile",

@@ -7,6 +7,8 @@ import { errorHandler } from "../utils/errors.js";
 import { uploadToCloudinary } from "./uploadController.js";
 import { deleteImage } from "../../config/cloudinary.js";
 
+import { createNotification } from "./notificationController.js";
+import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 export const getProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId).select("-password");
@@ -60,6 +62,12 @@ export const uploadAvatar = async (req, res, next) => {
     };
 
     await user.save();
+    await createNotification({
+      recipient: user._id,
+      type: NOTIFICATION_TYPES.AVATAR_CHANGE,
+      title: "تم تغيير صورة البروفايل بنجاح",
+      link: "/Profile",
+    });
 
     const { password, ...rest } = user._doc;
 
@@ -109,8 +117,7 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
-// حذف الحساب نهائيًا، مع تنظيف كل البيانات المرتبطة بيه (عقارات، صور
-// Cloudinary، مراجعات، مفضلة) عشان مايفضلش بيانات يتيمة في الداتابيز.
+// deleteProfile function: Deletes the user profile and all associated data, including listings, reviews, favorites, and avatar images from Cloudinary. It handles errors gracefully and ensures that the deletion process continues even if some images fail to delete.
 export const deleteProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);

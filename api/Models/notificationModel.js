@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { NOTIFICATION_TYPE_VALUES } from "../Constants/notificationTypes.js";
-
 const notificationSchema = new mongoose.Schema(
   {
     recipient: {
@@ -21,7 +20,7 @@ const notificationSchema = new mongoose.Schema(
     body: {
       type: String,
     },
-    // مسار داخل الموقع يتنقل له المستخدم لما يضغط على الإشعار (مثلاً /listing/123)
+    // link = رابط داخلي أو خارجي للإشعار (مثلاً صفحة تفاصيل العقار، أو رابط خارجي).
     link: {
       type: String,
     },

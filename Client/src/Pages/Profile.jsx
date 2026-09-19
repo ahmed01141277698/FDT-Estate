@@ -496,22 +496,6 @@ const Profile = () => {
                     />
                   </div>
                 </div>
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="mb-2 block text-sm font-bold text-[#183d37]"
-                  >
-                    كلمة المرور
-                  </label>
-                  <input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="اتركها فارغة إذا لم ترغب بتغييرها"
-                    className="w-full rounded-2xl border border-[#e7e2d7] bg-[#faf9f6] px-4 py-3 text-sm font-semibold text-[#183d37] outline-none transition focus:border-[#e49263] focus:bg-white"
-                  />
-                </div>
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
@@ -595,7 +579,6 @@ const Profile = () => {
                 );
               })}
             </div>
-
             <motion.section
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -633,7 +616,6 @@ const Profile = () => {
                   {showListings ? "إخفاء العقارات" : "مشاهدة عقاراتي"}
                 </button>
               </div>
-
               <AnimatePresence initial={false}>
                 {showListings && (
                   <motion.div

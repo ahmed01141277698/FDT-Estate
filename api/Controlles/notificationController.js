@@ -8,6 +8,11 @@ const PREFERENCE_SUPPRESSIBLE_TYPES = new Set([
   NOTIFICATION_TYPES.LISTING_LIKED,
   NOTIFICATION_TYPES.PRICE_CHANGE,
   NOTIFICATION_TYPES.LISTING_APPROVED,
+  NOTIFICATION_TYPES.PASSWORD_CHANGE,
+  NOTIFICATION_TYPES.NEW_DEVICE_LOGIN,
+  NOTIFICATION_TYPES.SYSTEM_ANNOUNCEMENT,
+  NOTIFICATION_TYPES.ACCOUNT_SUSPENSION,
+  NOTIFICATION_TYPES.AVATAR_CHANGE,
 ]);
 
 const isNotificationAllowed = async (recipient, type) => {
@@ -20,7 +25,7 @@ const isNotificationAllowed = async (recipient, type) => {
   return prefs[type] !== false;
 };
 
-// جلب إشعارات المستخدم الحالي — مع صفحات وفلتر "غير مقروءة فقط".
+// get notifications list — pagination, filtering, and marking unseen as seen
 export const getNotifications = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, unreadOnly } = req.query;
@@ -71,7 +76,7 @@ export const getNotifications = async (req, res, next) => {
   }
 };
 
-// عداد سريع بس — بيتنادى كل شوية من الجرس في الهيدر من غير ما يجيب الليستة كلها
+// get unread notifications count for the logged-in user
 export const getUnreadCount = async (req, res, next) => {
   try {
     const unreadCount = await Notification.countDocuments({
@@ -83,7 +88,7 @@ export const getUnreadCount = async (req, res, next) => {
     next(error);
   }
 };
-
+// mark a notification as read and send an SSE update to the user
 export const markAsRead = async (req, res, next) => {
   try {
     const notification = await Notification.findOneAndUpdate(
@@ -95,9 +100,8 @@ export const markAsRead = async (req, res, next) => {
       return res.status(404).json({ message: "Notification not found" });
     }
 
-    // بنبعت تحديث عبر SSE عشان أي تاب/جهاز تاني مفتوح لنفس المستخدم
-    // (بما فيه الهيدر في نفس التاب اللي انت فيه دلوقتي) يحدّث العداد فورًا،
-    // بدل ما يستنى الـ polling كل 30 ثانية.
+    //  send an SSE update to the user to indicate that a notification has been read
+
     sendToUser(String(req.userId), { type: "read" });
 
     res.status(200).json(notification);
@@ -105,7 +109,7 @@ export const markAsRead = async (req, res, next) => {
     next(error);
   }
 };
-
+// mark all notifications as read for the logged-in user and send an SSE update to the user
 export const markAllAsRead = async (req, res, next) => {
   try {
     await Notification.updateMany(
@@ -120,7 +124,7 @@ export const markAllAsRead = async (req, res, next) => {
     next(error);
   }
 };
-
+// mark a notification as seen and send an SSE update to the user
 export const markAsSeen = async (req, res, next) => {
   try {
     const notification = await Notification.findOneAndUpdate(
@@ -133,7 +137,7 @@ export const markAsSeen = async (req, res, next) => {
     next(error);
   }
 };
-
+// delete a notification for the logged-in user
 export const deleteNotification = async (req, res, next) => {
   try {
     const notification = await Notification.findOneAndDelete({
@@ -144,7 +148,6 @@ export const deleteNotification = async (req, res, next) => {
       return res.status(404).json({ message: "Notification not found" });
     }
 
-    // لو الإشعار المحذوف كان غير مقروء، حذفه غيّر العداد برضو — بلّغ بنفس الطريقة.
     if (!notification.read) {
       sendToUser(String(req.userId), { type: "read" });
     }
@@ -188,6 +191,7 @@ export const getNotificationPreferences = async (req, res, next) => {
 // PATCH /api/notifications/preferences
 export const updateNotificationPreferences = async (req, res, next) => {
   try {
+    // validate the request body to only allow boolean values for known keys
     const allowedKeys = [
       "message",
       "listing_liked",
@@ -218,10 +222,6 @@ export const updateNotificationPreferences = async (req, res, next) => {
   }
 };
 
-/**
- * دالة مساعدة داخلية — لإشعارات لمرة واحدة/فريدة (نشر عقار، تغيير سعر،
- * ترحيب). بتتحقق أول من تفضيلات المستقبِل قبل ما تعمل أي حاجة.
- */
 export const createNotification = async ({
   recipient,
   type = NOTIFICATION_TYPES.SYSTEM,
@@ -259,10 +259,6 @@ export const createNotification = async ({
   }
 };
 
-/**
- * التجميع الذكي — طول ما فيه إشعار غير مقروء بنفس groupKey لنفس
- * المستقبِل، أي حدث جديد بيتجمّع فيه بدل ما يعمل إشعار مستقل.
- */
 export const upsertGroupedNotification = async ({
   recipient,
   groupKey,
@@ -325,5 +321,25 @@ export const upsertGroupedNotification = async ({
   } catch (error) {
     console.error("Failed to upsert grouped notification:", error);
     return null;
+  }
+};
+
+// delete all notifications for the logged-in user and send an SSE update to the user
+export const deleteAllNotifications = async (req, res, next) => {
+  try {
+    const result = await Notification.deleteMany({
+      recipient: req.userId,
+    });
+
+    sendToUser(String(req.userId), {
+      type: "notifications_cleared",
+    });
+
+    res.status(200).json({
+      message: "All notifications deleted",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    next(error);
   }
 };

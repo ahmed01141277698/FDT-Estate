@@ -179,7 +179,7 @@ export const updateListing = async (req, res, next) => {
             createNotification({
               recipient: fav.userRef,
               type: NOTIFICATION_TYPES.PRICE_CHANGE,
-              title: "انخفض سعر عقار في مفضلتك 🎉",
+              title: "انخفض سعر عقار في مفضلتك ",
               body: `"${updatedListing.name}" نزل سعره من ${oldPrice.toLocaleString()} إلى ${updatedListing.price.toLocaleString()} ج.م`,
               link: `/listing/${updatedListing._id}`,
               relatedListing: updatedListing._id,

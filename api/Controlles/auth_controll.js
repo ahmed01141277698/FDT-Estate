@@ -3,17 +3,16 @@ import bcrypt from "bcryptjs";
 import { errorHandler } from "../utils/errors.js";
 import jwt from "jsonwebtoken";
 import { createNotification } from "./notificationController.js";
-import { NOTIFICATION_TYPES } from "../constants/notificationTypes.js";
+import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 import { issueNewOtp } from "./verificationController.js";
 
+// Validate email format
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
-// إعدادات الكوكيز — secure و sameSite:none بس في الإنتاج (وقت ما الموقع
-// شغال على HTTPS فعليًا). في الديفلوبمنت المحلي (http://localhost) بتفضل
-// زي ما كانت بالظبط عشان الكوكي تكمل تشتغل من غير أي كسر.
+// Cookie options for secure storage
 const cookieOptions = {
   httpOnly: true,
   ...(process.env.NODE_ENV === "production"
@@ -21,6 +20,7 @@ const cookieOptions = {
     : {}),
 };
 
+// Sign Up Controller
 export const signUp = async (req, res, next) => {
   try {
     const { username, email, password, phone } = req.body;
@@ -76,6 +76,7 @@ export const signUp = async (req, res, next) => {
   }
 };
 
+// Sign In Controller
 export const signIn = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -84,11 +85,16 @@ export const signIn = async (req, res, next) => {
       return next(errorHandler(400, "البريد وكلمة المرور مطلوبان"));
 
     const user = await User.findOne({ email });
-    if (!user) return next(errorHandler(404, "المستخدم غير موجود"));
+    if (!user)
+      return next(
+        errorHandler(404, "المستخدم غير موجود. من فضلك سجّل حساب جديد"),
+      );
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
-      return next(errorHandler(401, "كلمة المرور غير صحيحة"));
+      return next(
+        errorHandler(401, "البريد الإلكتروني أو كلمة المرور غير صحيحة"),
+      );
 
     if (!user.isVerified) {
       return res.status(403).json({
@@ -100,7 +106,7 @@ export const signIn = async (req, res, next) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "10d",
     });
 
     const { password: pass, ...rest } = user._doc;
@@ -116,7 +122,7 @@ export const signIn = async (req, res, next) => {
     next(errorHandler(500, "حدث خطأ في تسجيل الدخول"));
   }
 };
-
+// Google Sign In Controller
 export const google = async (req, res, next) => {
   try {
     const { email, name, avatar } = req.body;
@@ -138,7 +144,7 @@ export const google = async (req, res, next) => {
       await user.save();
 
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
+        expiresIn: "10d",
       });
       const { password: pass, ...rest } = user._doc;
 
@@ -181,7 +187,7 @@ export const google = async (req, res, next) => {
         avatar ||
         "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423",
       isVerified: true,
-      authProvider: "google", // بيمنع Forgot Password من محاولة تغيير باسورد وهمي.
+      authProvider: "google", // Marking the user as registered via Google OAuth
     });
 
     const savedUser = await newUser.save();
@@ -189,14 +195,14 @@ export const google = async (req, res, next) => {
     await createNotification({
       recipient: savedUser._id,
       type: NOTIFICATION_TYPES.SYSTEM,
-      title: `أهلاً بيك في مَسكَن يا ${username}`,
-      body: "ابدأ استكشاف العقارات أو أضف أول إعلان ليك دلوقتي",
+      title: `أهلاً بيك في عقاركس يا ${username}`,
+      body: "ابدأ استكشاف العقارات أو أضف أول إعلان ليك الان!",
       link: "/",
       deduplicationKey: `welcome:${savedUser._id}`,
     });
 
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "10d",
     });
     const { password: pass, ...rest } = savedUser._doc;
 

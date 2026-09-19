@@ -3,14 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Building2, Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
 import OAuth_Googal from "../Components/OAuth_Googal";
 import {
   signInstart,
   signInSuccess,
   signInFailure,
 } from "../../redux/user/userSlice";
-
+import logo from "../assets/aqarx-header-logo.png";
 const SignIn = () => {
   const savedEmail = localStorage.getItem("savedEmail") || "";
   const [localError, setLocalError] = useState("");
@@ -96,28 +96,11 @@ const SignIn = () => {
             aria-label="الصفحة الرئيسية"
             className="relative flex size-full items-center justify-center rounded-full border-[3px] border-[#f8f8f3] bg-gradient-to-br from-[#e8c56d] to-[#c9a227] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)]"
           >
-            <svg
-              viewBox="0 0 100 100"
-              className="absolute inset-1.5 motion-safe:animate-[spin_26s_linear_infinite]"
-            >
-              <defs>
-                <path
-                  id="signinSealCircle"
-                  d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
-                />
-              </defs>
-              <text
-                fill="#173d36"
-                fontSize="9"
-                fontWeight="800"
-                letterSpacing="2"
-              >
-                <textPath href="#signinSealCircle" startOffset="0%">
-                  مَسكَن ★ السجل العقاري ★
-                </textPath>
-              </text>
-            </svg>
-            <Building2 size={26} strokeWidth={2.5} className="text-[#173d36]" />
+            <img
+              src={logo}
+              alt="Masaken Logo"
+              className="absolute inset-0 m-auto h-13 w-13 rounded-full object-cover"
+            />
           </Link>
         </motion.div>
 
@@ -198,15 +181,6 @@ const SignIn = () => {
                 </button>
               </div>
             </div>
-            {/* <label className="flex w-fit cursor-pointer items-center gap-2 text-sm font-semibold text-[#6b7d76]">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="size-4 rounded border-[#e2ddd0] accent-[#e49263]"
-              />
-              تذكرني
-            </label> */}
 
             <div className="flex items-center justify-between">
               <label className="flex w-fit cursor-pointer items-center gap-2 text-sm font-semibold text-[#6b7d76]">

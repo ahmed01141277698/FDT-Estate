@@ -4,7 +4,7 @@ import { errorHandler } from "../utils/errors.js";
 import { generateOtp, hashOtp, verifyOtpHash } from "../Services/otpService.js";
 import { sendVerificationEmail } from "../services/emailService.js";
 import { createNotification } from "./notificationController.js";
-import { NOTIFICATION_TYPES } from "../constants/notificationTypes.js";
+import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 import {
   OTP_EXPIRATION_MINUTES,
   OTP_MAX_ATTEMPTS,
@@ -18,12 +18,15 @@ export async function issueNewOtp(user, { isResend = false } = {}) {
   const existing = await EmailVerification.findOne({ userId: user._id });
 
   if (isResend && existing) {
-    const secondsSinceLastSend = (Date.now() - existing.lastSentAt.getTime()) / 1000;
+    const secondsSinceLastSend =
+      (Date.now() - existing.lastSentAt.getTime()) / 1000;
 
     if (secondsSinceLastSend < OTP_RESEND_COOLDOWN_SECONDS) {
       const err = new Error("RESEND_COOLDOWN");
       err.code = "RESEND_COOLDOWN";
-      err.retryAfterSeconds = Math.ceil(OTP_RESEND_COOLDOWN_SECONDS - secondsSinceLastSend);
+      err.retryAfterSeconds = Math.ceil(
+        OTP_RESEND_COOLDOWN_SECONDS - secondsSinceLastSend,
+      );
       throw err;
     }
 
@@ -72,7 +75,8 @@ export async function issueNewOtp(user, { isResend = false } = {}) {
 export const verifyEmail = async (req, res, next) => {
   try {
     const { email, code } = req.body;
-    if (!email || !code) return next(errorHandler(400, "الإيميل ورمز التحقق مطلوبان"));
+    if (!email || !code)
+      return next(errorHandler(400, "الإيميل ورمز التحقق مطلوبان"));
 
     const user = await User.findOne({ email });
     if (!user) return next(errorHandler(404, "المستخدم غير موجود"));
@@ -134,7 +138,7 @@ export const verifyEmail = async (req, res, next) => {
     await createNotification({
       recipient: user._id,
       type: NOTIFICATION_TYPES.SYSTEM,
-      title: `أهلاً بيك في مَسكَن يا ${user.username}`,
+      title: `أهلاً بيك في عقاركس يا ${user.username}`,
       body: "ابدأ استكشاف العقارات أو أضف أول إعلان ليك دلوقتي",
       link: "/",
       deduplicationKey: `welcome:${user._id}`,
@@ -189,7 +193,10 @@ export const resendVerification = async (req, res, next) => {
       throw err;
     }
 
-    res.status(200).json({ success: true, message: "تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني" });
+    res.status(200).json({
+      success: true,
+      message: "تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني",
+    });
   } catch (error) {
     console.error("خطأ في إعادة إرسال رمز التحقق:", error);
     next(errorHandler(500, "حدث خطأ أثناء إعادة إرسال رمز التحقق"));

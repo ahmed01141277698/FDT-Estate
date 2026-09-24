@@ -9,8 +9,8 @@ import {
   getNotificationPreferences,
   updateNotificationPreferences,
   deleteAllNotifications,
-} from "../Controlles/notificationController.js";
-import { streamNotifications } from "../Controlles/sseController.js";
+} from "../Controllers/notificationController.js";
+import { streamNotifications } from "../Controllers/sseController.js";
 import { verifyToken } from "../Middleware/authMiddleware.js";
 
 const NotificationRouter = express.Router();

@@ -5,7 +5,7 @@ import {
   deleteProfile,
   uploadAvatar,
   getUserById,
-} from "../Controlles/userController.js";
+} from "../Controllers/userController.js";
 import { verifyToken } from "../Middleware/authMiddleware.js";
 import upload from "../Middleware/upload.js";
 const router = express.Router();

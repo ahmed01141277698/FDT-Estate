@@ -14,7 +14,7 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
-import WriteReviewModal from "./HomeSections/WriteReviewModal";
+import WriteReviewModal from "./HomeSections/WritereviewModal.jsx";
 import aqarxLogo from "../assets/aqarx-header-logo.png";
 
 const PROPERTY_LINKS = [

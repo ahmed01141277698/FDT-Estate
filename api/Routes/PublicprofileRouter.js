@@ -1,5 +1,5 @@
 import express from "express";
-import { getPublicProfile } from "../Controlles/puplicprofileControlle.js";
+import { getPublicProfile } from "../Controllers/puplicprofileControlle.js";
 
 const PublicProfileRouter = express.Router();
 

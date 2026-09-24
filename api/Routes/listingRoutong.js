@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import {
   createListing,
   getAllListings,
@@ -9,55 +9,42 @@ import {
   deleteListing,
   detailsListing,
   getCategoryCounts,
-  notifyListingInterest,   // ← جديدة
+  notifyListingInterest, // ← جديدة
   getTopFavoritedListings,
-} from '../Controlles/listingControll.js';
+} from "../Controllers/listingControll.js";
 import {
   toggleFavorite,
   getUserFavorites,
-} from '../Controlles/favoriteController.js';
-import { smartSearchListings } from '../Controlles/searchController.js';
-import{getMarketInsights} from '../Controlles/statscontroller.js'
-import { verifyToken } from '../Middleware/authMiddleware.js';
+} from "../Controllers/favoriteController.js";
+import { smartSearchListings } from "../Controllers/searchController.js";
+import { getMarketInsights } from "../Controllers/statscontroller.js";
+import { verifyToken } from "../Middleware/authMiddleware.js";
 
 const ListingRouter = express.Router();
 
-ListingRouter.post('/createListing', verifyToken, createListing);
+ListingRouter.post("/createListing", verifyToken, createListing);
 
 // ⚠️ الترتيب مهم في Express: أي مسار ثابت (زي /categories) لازم يتسجّل
 // قبل /:id، وإلا هيتفهم "categories" على إنها قيمة الـ id.
-ListingRouter.get('/', getAllListings);
-ListingRouter.get('/categories', getListingCategories);
+ListingRouter.get("/", getAllListings);
+ListingRouter.get("/categories", getListingCategories);
 ListingRouter.get("/category-counts", getCategoryCounts);
-ListingRouter.get('/search', smartSearchListings);
+ListingRouter.get("/search", smartSearchListings);
 ListingRouter.get("/market-insights", getMarketInsights);
 // Favorites
-ListingRouter.post(
-  '/favorites/:listingId',
-  verifyToken,
-  toggleFavorite
-);
+ListingRouter.post("/favorites/:listingId", verifyToken, toggleFavorite);
 
-ListingRouter.get(
-  '/favorites',
-  verifyToken,
-  getUserFavorites
-);
+ListingRouter.get("/favorites", verifyToken, getUserFavorites);
 
-
-
-ListingRouter.get(
-  "/top-favorites/:userId",
-  getTopFavoritedListings
-);
-ListingRouter.post('/:id/interest', notifyListingInterest);
+ListingRouter.get("/top-favorites/:userId", getTopFavoritedListings);
+ListingRouter.post("/:id/interest", notifyListingInterest);
 // شيلت verifyToken من هنا عشان أي زائر (من غير تسجيل دخول) يقدر يفتح تفاصيل
 // العقار — لو ده مش المطلوب وعايزها تفضل تتطلب تسجيل دخول، رجّعها زي ما كانت.
-ListingRouter.get('/details/:id', detailsListing);
+ListingRouter.get("/details/:id", detailsListing);
 
-ListingRouter.get('/user/:id', verifyToken, getUserListings);
-ListingRouter.get('/:id', verifyToken, getListingById);
-ListingRouter.put('/:id', verifyToken, updateListing);
-ListingRouter.delete('/:id', verifyToken, deleteListing);
+ListingRouter.get("/user/:id", verifyToken, getUserListings);
+ListingRouter.get("/:id", verifyToken, getListingById);
+ListingRouter.put("/:id", verifyToken, updateListing);
+ListingRouter.delete("/:id", verifyToken, deleteListing);
 
 export default ListingRouter;

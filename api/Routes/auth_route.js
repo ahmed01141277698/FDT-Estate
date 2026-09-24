@@ -1,16 +1,16 @@
 import express from "express";
 const router = express.Router();
 
-import { signUp, signIn, google } from "../Controlles/auth_controll.js";
+import { signUp, signIn, google } from "../Controls/auth_controll.js";
 import {
   verifyEmail,
   resendVerification,
-} from "../Controlles/verificationController.js";
+} from "../Controls/verificationController.js";
 import {
   forgotPassword,
   resetPassword,
-} from "../Controlles/passwordResetController.js";
-import { simpleRateLimiter } from "../middleware/simpleRateLimiter.js";
+} from "../Controls/passwordResetController.js";
+import { simpleRateLimiter } from "../Middleware/simpleRateLimiter.js";
 
 router.post(
   "/signUp",

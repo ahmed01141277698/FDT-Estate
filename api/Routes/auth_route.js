@@ -1,15 +1,15 @@
 import express from "express";
 const router = express.Router();
 
-import { signUp, signIn, google } from "../Controls/auth_controll.js";
+import { signUp, signIn, google } from "../Controllers/auth_controll.js";
 import {
   verifyEmail,
   resendVerification,
-} from "../Controls/verificationController.js";
+} from "../Controllers/verificationController.js";
 import {
   forgotPassword,
   resetPassword,
-} from "../Controls/passwordResetController.js";
+} from "../Controllers/passwordResetController.js";
 import { simpleRateLimiter } from "../Middleware/simpleRateLimiter.js";
 
 router.post(
@@ -17,7 +17,7 @@ router.post(
   simpleRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 10,
-    message: "محاولات تسجيل كتير، حاول بعد شوية",
+    message: "هناك محاولات تسجيل كثيرة ، حاول في وقت لاحق",
   }),
   signUp,
 );
@@ -27,7 +27,7 @@ router.post(
   simpleRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 10,
-    message: "محاولات دخول كتير، حاول بعد شوية",
+    message: "هناك محاولات دخول كثيرة ، حاول في وقت لاحق",
   }),
   signIn,
 );
@@ -39,7 +39,7 @@ router.post(
   simpleRateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10,
-    message: "محاولات تحقق كتير، حاول بعد شوية",
+    message: "هناك محاولات تحقق كثيرة ، حاول في وقت لاحق",
   }),
   verifyEmail,
 );
@@ -49,7 +49,7 @@ router.post(
   simpleRateLimiter({
     windowMs: 5 * 60 * 1000,
     max: 5,
-    message: "محاولات إعادة إرسال كتير، حاول بعد شوية",
+    message: "هناك محاولات إعادة إرسال كثيرة ، حاول في وقت لاحق",
   }),
   resendVerification,
 );
@@ -61,7 +61,7 @@ router.post(
   simpleRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 8,
-    message: "محاولات كتير، حاول بعد شوية",
+    message: "هناك محاولات كثيرة ، حاول في وقت لاحق",
   }),
   forgotPassword,
 );
@@ -71,7 +71,7 @@ router.post(
   simpleRateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10,
-    message: "محاولات كتير، حاول بعد شوية",
+    message: "هناك محاولات كثيرة ، حاول في وقت لاحق",
   }),
   resetPassword,
 );

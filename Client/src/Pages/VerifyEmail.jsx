@@ -28,7 +28,6 @@ const VerifyEmail = () => {
 
   const inputsRef = useRef([]);
 
-  // عدّاد الـ cooldown بتاع إعادة الإرسال — بيتحدّث كل ثانية لحد ما يوصل صفر.
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setInterval(
@@ -237,7 +236,7 @@ const VerifyEmail = () => {
                 letterSpacing="2"
               >
                 <textPath href="#verifySealCircle" startOffset="0%">
-                  مَسكَن ★ توثيق البريد الإلكتروني ★
+                  عقاركس ★ توثيق البريد الإلكتروني ★
                 </textPath>
               </text>
             </svg>

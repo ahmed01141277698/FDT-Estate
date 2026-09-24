@@ -1,6 +1,5 @@
 import express from "express";
 const router = express.Router();
-import { verifyToken } from "../Middleware/authMiddleware.js";
 
 import { signUp, signIn, google } from "../Controllers/auth_controll.js";
 import {
@@ -33,7 +32,7 @@ router.post(
   signIn,
 );
 
-router.post("/google", verifyToken, google);
+router.post("/google", google);
 
 router.post(
   "/verify-email",

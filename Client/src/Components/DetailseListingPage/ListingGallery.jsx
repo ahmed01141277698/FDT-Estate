@@ -50,26 +50,26 @@ export default function ListingGallery({ images = [], title }) {
     );
   }
 
-  const shown = images.slice(0, 5);
-  const extraCount = images.length - 5;
+  const shown = images.slice(0, 7);
+  const extraCount = images.length - 7;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="mx-auto max-w-7xl px-4 pt-6 md:px-8"
+      className="mx-auto max-w-7xl px-6 pt-12 md:px-8"
     >
-      <div className="grid h-[300px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-3xl shadow-sm md:h-[500px] md:gap-3">
+      <div className="grid h-[350px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-3xl shadow-sm md:h-[550px] md:gap-3">
         <GalleryImage
           src={shown[0]}
           alt={`${title} - الصورة الرئيسية`}
           priority
           onClick={() => openViewer(0)}
-          className="col-span-4 row-span-2 rounded-2xl md:col-span-2 md:rounded-r-3xl"
+          className="col-span-4 row-span-2 rounded-2xl md:col-span-3 md:rounded-r-3xl"
         />
 
-        {shown.slice(1, 5).map((img, i) => {
+        {shown.slice(1, 7).map((img, i) => {
           const realIndex = i + 1;
           const isLast = realIndex === 4 && extraCount > 0;
           return (

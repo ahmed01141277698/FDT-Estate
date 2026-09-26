@@ -17,8 +17,7 @@ import {
   PASSWORD_MIN_LENGTH,
 } from "../../config/passwordResetConfig.js";
 
-// نفس الرد دايمًا — موجود الحساب أو لأ، حساب جوجل أو لأ — عشان محدش
-// يقدر يستكشف إيميلات مسجّلة عندنا (User Enumeration).
+// this is a generic response to avoid revealing whether the email exists in the system or not, for security reasons.
 const GENERIC_RESPONSE = {
   success: true,
   message:
@@ -182,8 +181,7 @@ export const resetPassword = async (req, res, next) => {
         message: "كلمة المرور الجديدة لازم تكون مختلفة عن الحالية",
       });
     }
-
-    // كل حاجة سليمة — نغيّر الباسورد فعليًا.
+    // this is the point where the password is actually updated in the database after all validations have passed.
     user.password = await bcrypt.hash(newPassword, 10);
     user.passwordChangedAt = new Date(); // بيلغي أي JWT قديم صادر قبل اللحظة دي.
     await user.save();
@@ -208,7 +206,7 @@ export const resetPassword = async (req, res, next) => {
       );
     }
 
-    // إشعار داخلي كمان — لكن مش بديل عن الإيميل، دعم إضافي بس.
+    // this is a notification that will be created in the system to inform the user that their password has been changed successfully. It includes a link to the profile page and a unique deduplication key to prevent duplicate notifications.
     await createNotification({
       recipient: user._id,
       type: NOTIFICATION_TYPES.PASSWORD_CHANGE,

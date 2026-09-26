@@ -1,6 +1,5 @@
 import Review from "../Models/reviewModel.js";
-
-// مراجعة المستخدم الحالي (لو موجودة) — تُستخدم لتعبئة الفورم مسبقًا عند التعديل.
+// get the current user's review, if it exists, and return it in the response. If no review is found, return null.
 export const getMyReview = async (req, res, next) => {
   try {
     const review = await Review.findOne({ userRef: req.userId });
@@ -9,8 +8,7 @@ export const getMyReview = async (req, res, next) => {
     next(error);
   }
 };
-
-// كتابة أو تعديل مراجعة المستخدم الحالي — مراجعة واحدة فعّالة لكل شخص.
+// create or update a review for the current user. If a review already exists, it will be updated; otherwise, a new review will be created. The response will contain the newly created or updated review.
 export const createReview = async (req, res, next) => {
   try {
     const { rating, text, role, city } = req.body;
@@ -22,7 +20,12 @@ export const createReview = async (req, res, next) => {
     const review = await Review.findOneAndUpdate(
       { userRef: req.userId },
       { rating, text: text.trim(), role, city },
-      { returnDocument: "after", upsert: true, setDefaultsOnInsert: true, runValidators: true },
+      {
+        returnDocument: "after",
+        upsert: true,
+        setDefaultsOnInsert: true,
+        runValidators: true,
+      },
     ).populate("userRef", "username avatar isVerified");
 
     res.status(201).json(review);

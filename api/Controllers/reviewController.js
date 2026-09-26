@@ -34,10 +34,11 @@ export const createReview = async (req, res, next) => {
   }
 };
 
-// المراجعات المنشورة + متوسط التقييم والعدد الكلي — تُستخدم في سيكشن آراء العملاء.
+// get all approved reviews, along with the average rating and total number of reviews. The response will contain the reviews, average rating, and total reviews count.
+//  this function is used in section 4 of the home page to display reviews and ratings from users.
 export const getReviews = async (req, res, next) => {
   try {
-    const { limit = 10 } = req.query;
+    const { limit = 20 } = req.query;
 
     const [reviews, stats] = await Promise.all([
       Review.find({ approved: true })

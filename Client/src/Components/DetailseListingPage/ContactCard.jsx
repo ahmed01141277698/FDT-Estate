@@ -8,11 +8,13 @@ import {
   Globe,
 } from "lucide-react";
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa";
-
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ShareButtons from "./ShareButtons";
+import { toggleFavoriteLocal } from "../../../redux/favoriteSlice/favoriteSlice";
 
 // Converts a local Egyptian number (01xxxxxxxxx) or an already-international
 // number into the digits-only format WhatsApp's wa.me links expect.
@@ -37,19 +39,28 @@ const SOCIAL_ICONS = {
 export default function ContactCard({
   listing,
   owner,
-  saved,
-  onToggleSave,
   onCopied,
+  property = {},
 }) {
   const [messageOpen, setMessageOpen] = useState(false);
   const [message, setMessage] = useState("");
   const ownerData = owner || {};
-
   const whatsappNumber = toWhatsAppNumber(ownerData.phone);
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [favoritesCount, setFavoritesCount] = useState(
+    property?.favoritesCount || 0,
+  );
+  const { _id } = property;
+
   const socialEntries = Object.entries(ownerData.socialLinks || {}).filter(
     ([, url]) => Boolean(url),
   );
 
+  const saved = useSelector((state) =>
+    state.favorites.favoritesIds.includes(_id),
+  );
   const handleSendWhatsApp = () => {
     if (!message.trim() || !whatsappNumber) return;
     const intro = `مرحبًا، أنا مهتم بعقار "${listing?.name || ""}" المعروض على عقاركس.\n\n`;
@@ -61,6 +72,42 @@ export default function ContactCard({
     setMessageOpen(false);
   };
 
+  const handleFavorite = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
+    dispatch(toggleFavoriteLocal(_id));
+
+    const previousCount = favoritesCount;
+
+    setFavoritesCount((prev) => (saved ? Math.max(prev - 1, 0) : prev + 1));
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`/api/listing/favorites/${_id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        dispatch(toggleFavoriteLocal(_id));
+        setFavoritesCount(previousCount);
+      }
+    } catch (error) {
+      dispatch(toggleFavoriteLocal(_id));
+      setFavoritesCount(previousCount);
+      console.log(error);
+    }
+  };
   return (
     <motion.aside
       initial={{ opacity: 0, y: 16 }}
@@ -192,19 +239,22 @@ export default function ContactCard({
           <div className="flex items-center justify-between border-t border-[#e7e2d7] pt-1">
             <ShareButtons title={listing.name} onCopied={onCopied} />
 
-            <motion.button
-              whileTap={{ scale: 0.85 }}
-              onClick={onToggleSave}
+            <button
+              onClick={handleFavorite}
               aria-label="حفظ العقار"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#183d37]/5 hover:bg-[#183d37]/10"
+              className={`absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-sm transition-colors ${
+                saved
+                  ? "border-rose-400 bg-rose-500"
+                  : "border-white/40 bg-black/35"
+              }`}
             >
               <Heart
-                className={`h-4 w-4 transition-colors ${
-                  saved ? "text-rose-500" : "text-[#6b7d76]"
-                }`}
-                fill={saved ? "currentColor" : "none"}
+                size={16}
+                fill={saved ? "#fff" : "none"}
+                stroke="#fff"
+                strokeWidth={2}
               />
-            </motion.button>
+            </button>
           </div>
         </div>
       </div>

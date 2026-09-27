@@ -126,6 +126,10 @@ export default function ListingDetailsPage() {
           listing={listing}
           owner={owner}
           saved={saved}
+          property={{
+            _id: listing._id,
+            favoritesCount: listing.favoritesCount,
+          }}
           onToggleSave={handleToggleSave}
           onCopied={handleCopied}
         />

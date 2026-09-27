@@ -13,6 +13,3 @@ ReviewRouter.get("/me", verifyToken, getMyReview);
 ReviewRouter.post("/", verifyToken, createReview);
 
 export default ReviewRouter;
-
-// في ملف الـ app الرئيسي، ضيف السطر ده جنب باقي الراوترز:
-// app.use("/api/reviews", ReviewRouter);

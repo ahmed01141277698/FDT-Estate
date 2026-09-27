@@ -108,9 +108,9 @@ function buildPasswordResetText({ username, otp, expirationMinutes }) {
 ${otp}
 
 هذا الرمز صالح لمدة ${expirationMinutes} دقائق.
-
-لو ماطلبتش استعادة كلمة المرور دي، تجاهل الرسالة دي — حسابك آمن ولن يتغير شيء.
-لا تشارك هذا الرمز مع أي شخص.`;
+إذا لم تطلب استعادة كلمة المرور، فتجاهل هذه الرسالة؛ حسابك آمن ولن يطرأ أي تغيير عليه.
+يُرجى عدم مشاركة هذا الرمز مع أي شخص.
+`;
 }
 
 function buildPasswordResetHtml({ username, otp, expirationMinutes }) {
@@ -124,10 +124,11 @@ function buildPasswordResetHtml({ username, otp, expirationMinutes }) {
       </div>
       <p style="color:#a08a5f;font-size:13px;font-weight:700;margin:0 0 24px;">هذا الرمز صالح لمدة ${expirationMinutes} دقائق فقط.</p>
       <div style="background-color:#fff8f0;border-radius:12px;padding:14px 16px;text-align:right;">
-        <p style="color:#8a7a3f;font-size:12px;line-height:1.8;margin:0;">
-          🔒 لو ماطلبتش استعادة كلمة المرور دي، تجاهل الرسالة — حسابك آمن.<br />
-          لا تشارك هذا الرمز مع أي شخص.
-        </p>
+      <p style="color:#8a7a3f;font-size:12px;line-height:1.8;margin:0;">
+  🔒 إذا لم تطلب استعادة كلمة المرور، فتجاهل هذه الرسالة؛ فحسابك آمن.<br />
+  يُرجى عدم مشاركة هذا الرمز مع أي شخص.
+</p>
+
       </div>`,
   });
 }
@@ -151,12 +152,10 @@ export async function sendPasswordResetEmail({
 
 function buildPasswordChangedText({ username, changedAt }) {
   return `تم تغيير كلمة المرور - عقاركس
-
 مرحبًا يا ${username}，
-
 تم تغيير كلمة مرور حسابك بنجاح في ${changedAt}.
-
-لو ماكنتش أنت اللي عملت الإجراء ده، تواصل مع الدعم فورًا وغيّر بياناتك.`;
+⚠️ إذا لم تكن أنت من قام بهذا الإجراء، فيُرجى التواصل مع الدعم فورًا واتخاذ الإجراءات الأمنية اللازمة.
+`;
 }
 
 function buildPasswordChangedHtml({ username, changedAt }) {
@@ -170,7 +169,8 @@ function buildPasswordChangedHtml({ username, changedAt }) {
       </div>
       <div style="background-color:#fdf2f2;border-radius:12px;padding:14px 16px;text-align:right;">
         <p style="color:#b23b3b;font-size:12px;line-height:1.8;margin:0;">
-          ⚠️ لو ماكنتش أنت اللي عملت الإجراء ده، تواصل مع الدعم فورًا واتخذ إجراء أمني.
+       ⚠️ إذا لم تكن أنت من قام بهذا الإجراء، فيُرجى التواصل مع الدعم فورًا واتخاذ الإجراءات الأمنية اللازمة.
+
         </p>
       </div>`,
   });

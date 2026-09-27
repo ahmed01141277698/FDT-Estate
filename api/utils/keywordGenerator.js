@@ -1,35 +1,36 @@
-/**
- * keywordGenerator.js
- *
- * Builds the `searchKeywords` array stored on each Listing automatically -
- * no manual keyword entry required. Sources: name, description, address,
- * plus two "expansions":
- *
- *  1. Location expansion: if a location is detected in address/name, every
- *     alias of that location (AR + EN) is added, so "زايد" finds a listing
- *     whose address only ever said "الشيخ زايد".
- *
- *  2. Property type expansion: since your schema has no `propertyType`
- *     field, the same trick is applied here - if "فيلا" or "villa" is
- *     detected in name/description, ALL aliases of that property type are
- *     added to searchKeywords. This is what lets a search for "Villa" match
- *     a listing whose title only says "فيلا", and vice versa.
- */
-
-import { cleanAndNormalize } from '../searchEngine/normalize/textCleaner.js';
-import { tokenize } from './tokenizer.js';
-import { resolveLocation } from '../searchEngine/resolvers/locationResolver.js';
-import { getLocationById } from '../searchEngine/dictionary/locationDictionary.js';
-import { resolvePropertyType } from '../searchEngine/resolvers/propertyResolver.js';
+import { cleanAndNormalize } from "../searchEngine/normalize/textCleaner.js";
+import { tokenize } from "./tokenizer.js";
+import { resolveLocation } from "../searchEngine/resolvers/locationResolver.js";
+import { getLocationById } from "../searchEngine/dictionary/locationDictionary.js";
+import { resolvePropertyType } from "../searchEngine/resolvers/propertyResolver.js";
 
 const STOPWORDS = new Set([
-  'في', 'من', 'الى', 'إلى', 'على', 'مع', 'او', 'أو', 'و',
-  'the', 'a', 'an', 'in', 'on', 'at', 'for', 'and', 'or', 'with',
+  "في",
+  "من",
+  "الى",
+  "إلى",
+  "على",
+  "مع",
+  "او",
+  "أو",
+  "و",
+  "the",
+  "a",
+  "an",
+  "in",
+  "on",
+  "at",
+  "for",
+  "and",
+  "or",
+  "with",
 ]);
 
 function extractKeywordsFromText(text) {
   const normalized = cleanAndNormalize(text);
-  return tokenize(normalized).filter((tok) => tok.length > 1 && !STOPWORDS.has(tok));
+  return tokenize(normalized).filter(
+    (tok) => tok.length > 1 && !STOPWORDS.has(tok),
+  );
 }
 
 /**
@@ -40,7 +41,6 @@ function extractKeywordsFromText(text) {
  * @returns {{ searchKeywords: string[], resolvedLocation: string|null }}
  */
 export function generateListingSearchData(listing) {
-
   const { name, description, address } = listing;
 
   const keywordSet = new Set();
@@ -51,7 +51,9 @@ export function generateListingSearchData(listing) {
   });
 
   // --- Location expansion ---
-  const addressTokens = tokenize(cleanAndNormalize(`${address || ''} ${name || ''} ${description ||''}`));
+  const addressTokens = tokenize(
+    cleanAndNormalize(`${address || ""} ${name || ""} ${description || ""}`),
+  );
   const locationMatch = resolveLocation(addressTokens);
 
   let resolvedLocation = null;
@@ -59,12 +61,14 @@ export function generateListingSearchData(listing) {
     resolvedLocation = locationMatch.locationId;
     const location = getLocationById(resolvedLocation);
     location.normalizedAliases.forEach((alias) => {
-      alias.split(' ').forEach((word) => keywordSet.add(word));
+      alias.split(" ").forEach((word) => keywordSet.add(word));
     });
   }
 
   // --- Property type expansion (no dedicated field, so this matters more) ---
-  const nameDescTokens = tokenize(cleanAndNormalize(`${name || ''} ${description || ''}`));
+  const nameDescTokens = tokenize(
+    cleanAndNormalize(`${name || ""} ${description || ""}`),
+  );
   const propertyTypeMatch = resolvePropertyType(nameDescTokens);
   if (propertyTypeMatch && propertyTypeMatch.confidence >= 0.8) {
     propertyTypeMatch.keywords.forEach((word) => keywordSet.add(word));

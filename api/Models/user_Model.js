@@ -13,8 +13,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     phone: {
-      // مش required على مستوى الاسكيما لأن حسابات جوجل مبيرجعش منها رقم
-      // تليفون. فورم التسجيل العادي لسه بيطلبه إجباري في auth_controll.js.
       type: String,
       unique: true,
       sparse: true,
@@ -71,7 +69,6 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    // استبدل حقل accountType القديم (individual/agency) بالنسخة الموسّعة دي:
 
     accountType: {
       type: String,
@@ -83,30 +80,21 @@ const userSchema = new mongoose.Schema(
       default: "individual",
     },
 
-    // مكان جاهز لنظام الخطط المدفوعة لاحقًا (من غير ما نبنيه دلوقتي) — كل
-    // أنواع الحسابات غير "individual" غالبًا هتحتاج خطة اشتراك مختلفة السعر.
     subscriptionPlan: {
       type: String,
       enum: ["free", "basic", "pro", "enterprise"],
       default: "free",
     },
 
-    // أضِف الحقلين دول جوه userSchema:
-
     authProvider: {
       type: String,
       enum: ["local", "google"],
       default: "local",
-      // بيتحدد "google" وقت إنشاء الحساب عبر Google OAuth بس — بيستخدمه
-      // Forgot Password عشان يمنع محاولة إعادة تعيين باسورد لحساب مالوش
-      // باسورد حقيقي أصلاً.
     },
 
     passwordChangedAt: {
       type: Date,
       default: null,
-      // بيتحدّث فورًا مع أي تغيير باسورد (تسجيل عادي، أو reset). بيستخدمه
-      // verifyToken عشان يلغي أي JWT قديم صادر قبل التغيير ده.
     },
     role: {
       type: String,

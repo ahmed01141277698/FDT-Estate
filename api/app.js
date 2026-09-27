@@ -1,9 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import path from "path";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import path, { dirname, join } from "path";
 import net from "net";
 import connectLivereload from "connect-livereload";
 import livereload from "livereload";
@@ -35,7 +34,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
@@ -44,7 +43,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Serve uploaded avatars
 app.use("/uploads", express.static(join(__dirname, "uploads")));
-
+// check if the uploads directory exists, if not create it
 const checkPortAvailable = (port) =>
   new Promise((resolve) => {
     const tester = net.createServer();
@@ -133,22 +132,24 @@ app.use((req, res) => {
   });
 });
 
-// Error Handling
+// Error handling middleware
 // app.use((err, req, res, next) => {
-//   console.error('✗ Error:', { message: err.message, statusCode: err.statusCode });
-//   const statusCode = err.statusCode || 500;
-//   const message = err.message || 'حدث خطأ في الخادم';
-//   res.status(statusCode).json({ success: false, statusCode, message });
+//   console.error(err.stack);
+
+//   res.status(500).json({
+//     message: err.message,
+//   });
 // });
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-
-  res.status(500).json({
-    message: err.message,
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message: err.message || "حدث خطأ في الخادم",
   });
 });
-
 // Graceful shutdown
 process.on("SIGINT", () => {
   console.log("\n✓ Server shutting down gracefully...");

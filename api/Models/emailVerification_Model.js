@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-// سجل واحد فعّال لكل يوزر — بيتحدّث في مكانه (upsert) عند كل إرسال أو
-// إعادة إرسال، بدل ما نراكم سجلات قديمة. بيتمسح فورًا بعد نجاح التحقق.
 const EmailVerificationSchema = new mongoose.Schema(
   {
     userId: {
@@ -42,9 +40,10 @@ const EmailVerificationSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// TTL index: MongoDB بيمسح السجل تلقائيًا لما expiresAt يوصل — دفاع إضافي
-// حتى لو حصل أي خطأ في تنظيف السجلات يدويًا في الكود.
 EmailVerificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-const EmailVerification = mongoose.model("EmailVerification", EmailVerificationSchema);
+const EmailVerification = mongoose.model(
+  "EmailVerification",
+  EmailVerificationSchema,
+);
 export default EmailVerification;

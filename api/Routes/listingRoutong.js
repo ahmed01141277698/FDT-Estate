@@ -24,8 +24,7 @@ const ListingRouter = express.Router();
 
 ListingRouter.post("/createListing", verifyToken, createListing);
 
-// ⚠️ الترتيب مهم في Express: أي مسار ثابت (زي /categories) لازم يتسجّل
-// قبل /:id، وإلا هيتفهم "categories" على إنها قيمة الـ id.
+// Public routes
 ListingRouter.get("/", getAllListings);
 ListingRouter.get("/categories", getListingCategories);
 ListingRouter.get("/category-counts", getCategoryCounts);
@@ -33,13 +32,12 @@ ListingRouter.get("/search", smartSearchListings);
 ListingRouter.get("/market-insights", getMarketInsights);
 // Favorites
 ListingRouter.post("/favorites/:listingId", verifyToken, toggleFavorite);
-
 ListingRouter.get("/favorites", verifyToken, getUserFavorites);
-
 ListingRouter.get("/top-favorites/:userId", getTopFavoritedListings);
 ListingRouter.post("/:id/interest", notifyListingInterest);
-// شيلت verifyToken من هنا عشان أي زائر (من غير تسجيل دخول) يقدر يفتح تفاصيل
-// العقار — لو ده مش المطلوب وعايزها تفضل تتطلب تسجيل دخول، رجّعها زي ما كانت.
+
+//  details route should be placed before the /:id route to avoid conflicts
+
 ListingRouter.get("/details/:id", detailsListing);
 
 ListingRouter.get("/user/:id", verifyToken, getUserListings);

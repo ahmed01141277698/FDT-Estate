@@ -1,7 +1,3 @@
-// Rate limiter بسيط في الذاكرة (in-memory) — كافي لسيرفر واحد (instance واحد).
-// لو المشروع اتوسّع لأكتر من سيرفر خلف Load Balancer لاحقًا، هيحتاج ينتقل
-// لحل مركزي زي Redis عشان العدّادات تتشارك بين كل السيرفرات.
-
 const buckets = new Map();
 
 export function simpleRateLimiter({ windowMs, max, message }) {
@@ -22,7 +18,7 @@ export function simpleRateLimiter({ windowMs, max, message }) {
       return res.status(429).json({
         success: false,
         code: "TOO_MANY_REQUESTS",
-        message: message || "محاولات كتير أوي، حاول تاني بعد شوية",
+        message: message || "هناك الكثير من المحاولات ، حاول مرة اخري لاحقا",
         retryAfterSeconds: Math.ceil((bucket.resetAt - now) / 1000),
       });
     }

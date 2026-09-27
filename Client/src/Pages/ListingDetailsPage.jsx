@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
 import ListingGallery from "../Components/DetailseListingPage/ListingGallery";
 import ListingHeader from "../Components/DetailseListingPage/ListingHeader";
 import ListingStats from "../Components/DetailseListingPage/ListingStats";
@@ -9,7 +8,6 @@ import ListingFeatures from "../Components/DetailseListingPage/ListingFeatures";
 import ListingLocation from "../Components/DetailseListingPage/ListingLocation";
 import ContactCard from "../Components/DetailseListingPage/ContactCard";
 import RelatedListings from "../Components/DetailseListingPage/RelatedListings";
-import FloatingActions from "../Components/DetailseListingPage/FloatingActions";
 import LoadingSkeleton from "../Components/DetailseListingPage/LoadingSkeleton";
 import ErrorState from "../Components/DetailseListingPage/ErrorState";
 import Toast from "../Components/DetailseListingPage/Toast";
@@ -17,7 +15,6 @@ import Toast from "../Components/DetailseListingPage/Toast";
 export default function ListingDetailsPage() {
   const params = useParams();
   const listingId = params.listingId || params.id;
-
   const [listing, setListing] = useState(null);
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,10 +28,7 @@ export default function ListingDetailsPage() {
       try {
         setLoading(true);
         setError(false);
-
-        // ⚠️ /details/:id عام (public) على مستوى الراوتر — من غير verifyToken —
-        // فمفيش داعي لإرسال Authorization هنا. بنبعتها بس لو فعلاً فيه توكن،
-        // بدل ما نبعت "Bearer null" لأي زائر مش مسجل دخول.
+        //  public route, no token needed for fetching listing details
         const token = localStorage.getItem("token");
         const res = await fetch(`/api/listing/details/${listingId}`, {
           headers: {
@@ -44,7 +38,6 @@ export default function ListingDetailsPage() {
         });
 
         const data = await res.json();
-
         if (data.success === false) {
           setError(true);
           setLoading(false);
@@ -53,11 +46,6 @@ export default function ListingDetailsPage() {
         setListing(data);
         setLoading(false);
 
-        // userRef راجع من الباك إند بالفعل معبّى بفضل populate() في detailsListing.
-        // ⚠️ حاليًا الـ populate بيجيب username/avatar/accountType بس — لازم يتضاف
-        // phone و isVerified و socialLinks كمان عشان زرار الاتصال والواتساب
-        // وبادچ التوثيق في ContactCard تشتغل فعليًا:
-        // .populate("userRef", "username avatar accountType phone isVerified socialLinks")
         if (data.userRef) {
           setOwner(data.userRef);
         }
@@ -78,21 +66,21 @@ export default function ListingDetailsPage() {
 
   const handleCopied = () => fireToast("تم نسخ الرابط بنجاح");
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: listing?.name,
-          url: window.location.href,
-        });
-      } catch {
-        return;
-      }
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      handleCopied();
-    }
-  };
+  // const handleShare = async () => {
+  //   if (navigator.share) {
+  //     try {
+  //       await navigator.share({
+  //         title: listing?.name,
+  //         url: window.location.href,
+  //       });
+  //     } catch {
+  //       return;
+  //     }
+  //   } else {
+  //     await navigator.clipboard.writeText(window.location.href);
+  //     handleCopied();
+  //   }
+  // };
 
   const handleToggleSave = () => {
     setSaved((v) => !v);
@@ -134,12 +122,6 @@ export default function ListingDetailsPage() {
           onCopied={handleCopied}
         />
       </div>
-
-      <FloatingActions
-        saved={saved}
-        onToggleSave={handleToggleSave}
-        onShare={handleShare}
-      />
 
       <Toast message={toastMessage} show={showToast} />
     </div>

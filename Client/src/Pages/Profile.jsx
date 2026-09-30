@@ -139,6 +139,7 @@ const Profile = () => {
         body: JSON.stringify({
           username: formData.username.trim(),
           email: formData.email.trim(),
+          phone: formData.phone.trim() || null,
           ...(formData.phone && { phone: formData.phone.trim() }),
           ...(formData.password && { password: formData.password }),
         }),

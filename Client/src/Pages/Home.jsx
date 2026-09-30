@@ -5,11 +5,11 @@ import React from "react";
 // import HeroContent from "../components/Hero/HeroContent";
 import Hero from "../Components/HomeSections/Hero.jsx";
 import FeaturedProperties from "../Components/HomeSections/FeaturedProperties.jsx";
-import PropertyTypes from "../components/HomeSections/PropertyTypes";
-import WhyUs from "../components/HomeSections/WhyUs";
-import MarketInsights from "../components/HomeSections/MarketInsights";
-import Testimonials from "../components/HomeSections/Testimonials";
-import CTA from "../components/HomeSections/CTA";
+import PropertyTypes from "../Components/HomeSections/PropertyTypes";
+import WhyUs from "../Components/HomeSections/WhyUs";
+import MarketInsights from "../Components/HomeSections/MarketInsights";
+import Testimonials from "../Components/HomeSections/Testimonials";
+import CTA from "../Components/HomeSections/CTA";
 
 export default function Home() {
   return (

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import PropertyCard from "./PropertyCard";
-import AdvancedFiltersModal from "./AdvancedFiltersModal";
+import AdvancedFiltersModal from "./Advancedfiltersmodal.jsx";
 
 export default function Discover() {
   const [categories, setCategories] = useState([]);

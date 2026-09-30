@@ -31,7 +31,7 @@ import CareerApplicationPage from "./Pages/CareerApplicationPage.jsx";
 import BlogPage from "./Pages/BlogPage.jsx";
 import ArticlePage from "./Pages/ArticlePage.jsx";
 import ContactPage from "./Pages/ContactPage.jsx";
-
+import NotFound from "./Pages/NotFound.jsx";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -105,6 +105,7 @@ const App = () => {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<ArticlePage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <Footer />

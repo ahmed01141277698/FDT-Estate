@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { signUp, signIn, google } from "../Controllers/auth_controll.js";
+import { signUp, signIn, google } from "../Controllers/authControll.js";
 import {
   verifyEmail,
   resendVerification,

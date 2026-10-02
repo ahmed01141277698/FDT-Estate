@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 import { createNotification } from "./notificationController.js";
 import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
 import { issueNewOtp } from "./verificationController.js";
-
+import crypto from "crypto";
+import { firebaseAuth } from "../../config/firebaseAdmin.js"; // Import Firebase Admin SDK
 // Validate email format
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -123,46 +124,178 @@ export const signIn = async (req, res, next) => {
   }
 };
 // Google Sign In Controller
+// export const google = async (req, res, next) => {
+//   try {
+//     const { email, name, avatar } = req.body;
+
+//     if (!email || !name)
+//       return next(errorHandler(400, "البريد والاسم مطلوبان"));
+//     if (!validateEmail(email))
+//       return next(errorHandler(400, "البريد الإلكتروني غير صحيح"));
+
+//     let user = await User.findOne({ email });
+
+//     if (user) {
+//       const defaultAvatar =
+//         "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423";
+//       if (avatar && (!user.avatar || user.avatar === defaultAvatar)) {
+//         user.avatar = avatar;
+//       }
+//       if (!user.isVerified) user.isVerified = true;
+//       await user.save();
+
+//       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+//         expiresIn: "10d",
+//       });
+//       const { password: pass, ...rest } = user._doc;
+
+//       return res.cookie("access_token", token, cookieOptions).status(200).json({
+//         success: true,
+//         message: "تم تسجيل الدخول بنجاح",
+//         token,
+//         user: rest,
+//       });
+//     }
+
+//     const generatedPassword =
+//       Math.random().toString(36).slice(-8) +
+//       Math.random().toString(36).slice(-8);
+//     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+//     const emailPrefix = email.split("@")[0];
+//     const rawBase = (name && name.split(" ")[0]) || emailPrefix || "user";
+//     let baseUsername =
+//       rawBase
+//         .toString()
+//         .trim()
+//         .toLowerCase()
+//         .replace(/[^a-z0-9\-]/g, "")
+//         .slice(0, 20) || "user";
+
+//     let username = baseUsername;
+//     let counter = 0;
+//     while (await User.findOne({ username })) {
+//       counter += 1;
+//       username = `${baseUsername}${counter}`;
+//       if (counter > 1000) break;
+//     }
+
+//     const newUser = new User({
+//       username,
+//       email,
+//       password: hashedPassword,
+//       avatar:
+//         avatar ||
+//         "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423",
+//       isVerified: true,
+//       authProvider: "google", // Marking the user as registered via Google OAuth
+//     });
+
+//     const savedUser = await newUser.save();
+
+//     await createNotification({
+//       recipient: savedUser._id,
+//       type: NOTIFICATION_TYPES.SYSTEM,
+//       title: `أهلاً بيك في عقاركس يا ${username}`,
+//       body: "ابدأ استكشاف العقارات أو أضف أول إعلان ليك الان!",
+//       link: "/",
+//       deduplicationKey: `welcome:${savedUser._id}`,
+//     });
+
+//     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+//       expiresIn: "10d",
+//     });
+//     const { password: pass, ...rest } = savedUser._doc;
+
+//     res.cookie("access_token", token, cookieOptions).status(201).json({
+//       success: true,
+//       message: "تم إنشاء الحساب وتسجيل الدخول بنجاح",
+//       token,
+//       user: rest,
+//     });
+//   } catch (error) {
+//     console.error("خطأ في Google OAuth:", error);
+//     next(errorHandler(500, "حدث خطأ في تسجيل الدخول عبر Google"));
+//   }
+// };
+
 export const google = async (req, res, next) => {
   try {
-    const { email, name, avatar } = req.body;
+    const { idToken } = req.body;
 
-    if (!email || !name)
-      return next(errorHandler(400, "البريد والاسم مطلوبان"));
-    if (!validateEmail(email))
-      return next(errorHandler(400, "البريد الإلكتروني غير صحيح"));
+    if (!idToken) {
+      return next(errorHandler(400, "رمز Google مطلوب"));
+    }
+
+    // Verify Firebase ID Token
+    let decodedToken;
+
+    try {
+      decodedToken = await firebaseAuth.verifyIdToken(idToken);
+    } catch (firebaseError) {
+      console.error("Firebase token verification failed:", firebaseError);
+
+      return next(
+        errorHandler(
+          401,
+          "رمز تسجيل الدخول عبر Google غير صالح أو منتهي الصلاحية",
+        ),
+      );
+    }
+
+    const {
+      uid,
+      email,
+      name,
+      picture,
+      email_verified: emailVerified,
+    } = decodedToken;
+
+    if (!uid || !email) {
+      return next(errorHandler(401, "بيانات حساب Google غير صالحة"));
+    }
+
+    if (!emailVerified) {
+      return next(
+        errorHandler(403, "يجب توثيق البريد الإلكتروني في Google أولاً"),
+      );
+    }
 
     let user = await User.findOne({ email });
 
+    // Existing user
     if (user) {
-      const defaultAvatar =
-        "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423";
-      if (avatar && (!user.avatar || user.avatar === defaultAvatar)) {
-        user.avatar = avatar;
+      // لا نثق في email/name/avatar القادم من req.body
+      // كل البيانات الأساسية هنا جاية من Firebase token
+
+      if (picture && (!user.avatar || user.avatar === "")) {
+        user.avatar = picture;
       }
-      if (!user.isVerified) user.isVerified = true;
+
+      if (!user.isVerified) {
+        user.isVerified = true;
+      }
+
       await user.save();
 
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "10d",
       });
+
       const { password: pass, ...rest } = user._doc;
 
       return res.cookie("access_token", token, cookieOptions).status(200).json({
         success: true,
         message: "تم تسجيل الدخول بنجاح",
-        token,
         user: rest,
       });
     }
 
-    const generatedPassword =
-      Math.random().toString(36).slice(-8) +
-      Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
-
+    // Generate username for new Google user
     const emailPrefix = email.split("@")[0];
+
     const rawBase = (name && name.split(" ")[0]) || emailPrefix || "user";
+
     let baseUsername =
       rawBase
         .toString()
@@ -173,21 +306,28 @@ export const google = async (req, res, next) => {
 
     let username = baseUsername;
     let counter = 0;
+
     while (await User.findOne({ username })) {
       counter += 1;
       username = `${baseUsername}${counter}`;
-      if (counter > 1000) break;
+
+      if (counter > 1000) {
+        return next(errorHandler(500, "تعذر إنشاء اسم مستخدم فريد"));
+      }
     }
+
+    // Random password because Google users don't use local password
+    const generatedPassword = crypto.randomUUID() + crypto.randomUUID();
+
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
-      avatar:
-        avatar ||
-        "https://www.istockphoto.com/photo/mountain-landscape-gm517188688-89380423",
+      avatar: picture || "",
       isVerified: true,
-      authProvider: "google", // Marking the user as registered via Google OAuth
+      authProvider: "google",
     });
 
     const savedUser = await newUser.save();
@@ -204,16 +344,17 @@ export const google = async (req, res, next) => {
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
       expiresIn: "10d",
     });
+
     const { password: pass, ...rest } = savedUser._doc;
 
-    res.cookie("access_token", token, cookieOptions).status(201).json({
+    return res.cookie("access_token", token, cookieOptions).status(201).json({
       success: true,
       message: "تم إنشاء الحساب وتسجيل الدخول بنجاح",
-      token,
       user: rest,
     });
   } catch (error) {
     console.error("خطأ في Google OAuth:", error);
-    next(errorHandler(500, "حدث خطأ في تسجيل الدخول عبر Google"));
+
+    return next(errorHandler(500, "حدث خطأ في تسجيل الدخول عبر Google"));
   }
 };

@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
@@ -23,6 +24,7 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const app = express();
+app.use(cookieParser());
 const port = process.env.PORT || 3000;
 
 // Middleware

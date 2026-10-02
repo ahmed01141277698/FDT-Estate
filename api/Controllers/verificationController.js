@@ -110,7 +110,7 @@ export const verifyEmail = async (req, res, next) => {
       return res.status(429).json({
         success: false,
         code: "VERIFICATION_ATTEMPTS_EXCEEDED",
-        message: "محاولات كتير غير صحيحة، اطلب رمزًا جديدًا",
+        message: "محاولات كتير غير صحيحة، اطلب رمزًا جديدًا هناك ",
       });
     }
 

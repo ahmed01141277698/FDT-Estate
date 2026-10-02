@@ -112,6 +112,10 @@ const Profile = () => {
       showToast("يرجى ملء الاسم والبريد الإلكتروني", "error");
       return;
     }
+    if (!/^01[0125][0-9]{8}$/.test(formData.phone.trim())) {
+      showToast("رقم الهاتف غير صحيح، يجب أن يكون رقم مصري صالح");
+      return false;
+    }
 
     setLoading(true);
     try {
@@ -462,17 +466,23 @@ const Profile = () => {
                 <div>
                   <label
                     htmlFor="email"
-                    className="mb-2 block text-sm font-bold text-[#183d37]"
+                    className="mb-2 block text-sm font-semibold text-[#183d37]"
                   >
                     البريد الإلكتروني
                   </label>
+
                   <input
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={handleChange}
-                    className="w-full rounded-2xl border border-[#e7e2d7] bg-[#faf9f6] px-4 py-3 text-sm font-semibold text-[#183d37] outline-none transition focus:border-[#e49263] focus:bg-white"
+                    readOnly
+                    disabled
+                    className="w-full cursor-not-allowed rounded-xl border border-[#e5e1d8] bg-[#f3f1ec] px-4 py-3 text-[#8a877f] shadow-sm outline-none"
                   />
+
+                  <p className="mt-1.5 text-xs text-[#a08a5f]">
+                    البريد الإلكتروني مرتبط بحسابك ولا يمكن تغييره
+                  </p>
                 </div>
                 <div>
                   <label

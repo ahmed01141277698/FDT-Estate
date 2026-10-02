@@ -85,19 +85,10 @@ export const uploadAvatar = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const { username, email, password, avatar, phone } = req.body;
+    const { username, avatar, phone } = req.body;
 
-    if (!username && !email && !password && !avatar && !phone)
+    if (!username && !avatar && !phone)
       return next(errorHandler(400, "لا يوجد بيانات للتحديث"));
-
-    if (email) {
-      const existingEmailUser = await User.findOne({
-        email,
-        _id: { $ne: req.userId },
-      });
-      if (existingEmailUser)
-        return next(errorHandler(400, "هذا البريد الإلكتروني مستخدم بالفعل"));
-    }
 
     if (phone) {
       const existingPhoneUser = await User.findOne({
@@ -112,14 +103,11 @@ export const updateProfile = async (req, res, next) => {
     if (!user) return next(errorHandler(404, "المستخدم غير موجود"));
 
     if (username) user.username = username;
-    if (email) user.email = email;
+
     if (avatar) user.avatar = avatar;
     if (phone) user.phone = phone;
-    if (password) user.password = await bcrypt.hash(password, 10);
-
     await user.save();
-
-    const { password: pass, ...rest } = user._doc;
+    const { password, ...rest } = user._doc;
     res.status(200).json({ success: true, user: rest });
   } catch (error) {
     console.error("Error updating profile:", error);

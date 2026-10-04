@@ -85,7 +85,9 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="mb-4 flex items-center gap-2.5">
-              <img src={aqarxLogo} alt="عقاركس" className="h-13 w-20" />
+              <Link to="/" className="text-2xl font-black text-white">
+                <img src={aqarxLogo} alt="عقاركس" className="h-20 w-30" />
+              </Link>
             </div>
 
             <p className="mb-6 text-sm leading-relaxed text-[#c6d3ce]">

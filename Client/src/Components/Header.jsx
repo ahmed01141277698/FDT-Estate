@@ -7,7 +7,9 @@ import aqarxLogo from "../assets/aqarx-header-logo.png";
 const NAV_LINKS = [
   { to: "/", label: "الرئيسية" },
   { to: "/AllListings", label: "العقارات" },
-  { to: "/about", label: "حول" },
+  { to: "/about", label: "من نحن" },
+  { to: "/contact", label: "اتصل بنا" },
+  { to: "/blog", label: "المدونة" },
 ];
 
 const Header = () => {
@@ -142,7 +144,7 @@ const Header = () => {
               <img
                 src={aqarxLogo}
                 alt="Aqarx"
-                className="h-11 w-auto object-contain sm:h-12"
+                className="h-12 w-auto object-contain sm:h-14"
               />
             </Link>
           </div>
@@ -233,9 +235,9 @@ const Header = () => {
             >
               <Link
                 to="/signin"
-                className="text-sm font-bold transition hover:text-[#f2b17e]"
+                className="text-sm font-bold hover:text-[#f2b17e]"
               >
-                دخول
+                تسجيل الدخول
               </Link>
               <Link
                 to="/signup"
@@ -279,19 +281,12 @@ const Header = () => {
           mobileMenu ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between border-b border-white/10 p-5">
+        <div className="flex w-full items-center justify-between border-b border-white/10 p-5">
           <img
             src={aqarxLogo}
             alt="Aqarx"
-            className="h-9 w-auto object-contain"
+            className="h-15 w-20  object-contain"
           />
-          <button
-            onClick={closeMenu}
-            aria-label="إغلاق"
-            className="grid size-9 place-items-center rounded-full bg-white/10"
-          >
-            <X size={18} />
-          </button>
         </div>
 
         {isAuthenticated && (
@@ -385,9 +380,9 @@ const Header = () => {
               <Link
                 to="/signin"
                 onClick={closeMenu}
-                className="rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-[#f2b17e]"
+                className="rounded-xl px-4 py-3 border border-white/10 transition hover:bg-white/10 hover:text-[#f2b17e]"
               >
-                دخول
+                تسجيل الدخول
               </Link>
               <Link
                 to="/signup"

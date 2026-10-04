@@ -10,7 +10,6 @@ import WhyUs from "../Components/HomeSections/WhyUs";
 import MarketInsights from "../Components/HomeSections/MarketInsights";
 import Testimonials from "../Components/HomeSections/Testimonials";
 import CTA from "../Components/HomeSections/CTA";
-
 export default function Home() {
   return (
     <div
@@ -25,6 +24,7 @@ export default function Home() {
       <WhyUs />
       <MarketInsights />
       <Testimonials />
+
       <CTA />
     </div>
   );

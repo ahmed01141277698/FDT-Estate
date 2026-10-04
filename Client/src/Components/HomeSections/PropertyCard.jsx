@@ -129,7 +129,11 @@ export default function PropertyCard({ property = {}, index = 0 }) {
           transition={{ duration: 0.5 }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
+        <Link
+          to={_id ? `/listing/${_id}` : "#"}
+          className="absolute inset-0"
+          aria-label={`عرض تفاصيل العقار: ${name}`}
+        />
         <div className="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
           {featured && (
             <span className="rounded-full bg-gradient-to-r from-[#e8c56d] to-[#c9a227] px-2.5 py-1 text-xs font-extrabold text-[#173d36]">

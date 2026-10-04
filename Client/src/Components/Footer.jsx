@@ -116,7 +116,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-sm text-[#c6d3ce] transition-colors hover:text-[#f2b17e]"
               >
                 <Mail size={14} className="text-[#f1b184]" />
-                <span dir="ltr">ahmedalfaod230@gmail.com</span>
+                <span dir="ltr">aqraks.platform@gmail.com</span>
               </a>
             </div>
           </div>

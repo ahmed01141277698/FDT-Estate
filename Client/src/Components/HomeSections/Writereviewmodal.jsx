@@ -3,11 +3,6 @@ import { Star, X } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
-/**
- * مودال كتابة/تعديل رأي — قابل للاستدعاء من أي مكان في الموقع
- * (الفوتر، صفحة البروفايل، سيكشن الآراء في الهوم).
- * بيجيب رأي المستخدم الحالي تلقائي لو موجود ويعبّي بيه الفورم للتعديل.
- */
 export default function WriteReviewModal({ onClose, onSuccess }) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -18,7 +13,6 @@ export default function WriteReviewModal({ onClose, onSuccess }) {
   const [fetchingExisting, setFetchingExisting] = useState(true);
   const [error, setError] = useState("");
 
-  // تحميل رأي المستخدم السابق (لو موجود) عشان يعدّل عليه بدل ما يبدأ من الصفر.
   useEffect(() => {
     fetch(`${API_BASE}/reviews/me`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -139,7 +133,7 @@ export default function WriteReviewModal({ onClose, onSuccess }) {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={4}
-                maxLength={500}
+                maxLength={250}
                 placeholder="احكيلنا عن تجربتك مع مَسكَن..."
                 className="w-full rounded-2xl px-4 py-3 text-sm outline-none"
                 style={{

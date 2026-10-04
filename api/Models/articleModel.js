@@ -95,7 +95,7 @@ const articleSchema = new mongoose.Schema(
   },
 );
 
-articleSchema.index({ slug: 1 }, { unique: true });
+articleSchema.index({ unique: true });
 articleSchema.index({ status: 1, publishedAt: -1 });
 articleSchema.index({ category: 1, publishedAt: -1 });
 articleSchema.index({ featured: 1, publishedAt: -1 });

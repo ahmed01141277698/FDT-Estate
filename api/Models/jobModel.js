@@ -127,7 +127,7 @@ const jobSchema = new mongoose.Schema(
   },
 );
 
-jobSchema.index({ slug: 1 }, { unique: true });
+jobSchema.index({ unique: true });
 jobSchema.index({ status: 1, publishedAt: -1 });
 jobSchema.index({ department: 1, location: 1 });
 jobSchema.index({ isFeatured: 1, publishedAt: -1 });

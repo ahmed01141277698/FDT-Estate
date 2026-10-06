@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Building2, KeyRound, Mail, ShieldCheck } from "lucide-react";
+import logo from "../assets/aqarx-header-logo.png";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -67,28 +68,11 @@ const ForgotPassword = () => {
             aria-label="الصفحة الرئيسية"
             className="relative flex size-full items-center justify-center rounded-full border-[3px] border-[#f8f8f3] bg-gradient-to-br from-[#e8c56d] to-[#c9a227] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)]"
           >
-            <svg
-              viewBox="0 0 100 100"
-              className="absolute inset-1.5 motion-safe:animate-[spin_26s_linear_infinite]"
-            >
-              <defs>
-                <path
-                  id="forgotSealCircle"
-                  d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
-                />
-              </defs>
-              <text
-                fill="#173d36"
-                fontSize="9"
-                fontWeight="800"
-                letterSpacing="2"
-              >
-                <textPath href="#forgotSealCircle" startOffset="0%">
-                  مَسكَن ★ استعادة كلمة المرور ★
-                </textPath>
-              </text>
-            </svg>
-            <Building2 size={26} strokeWidth={2.5} className="text-[#173d36]" />
+            <img
+              src={logo}
+              alt="شعار الموقع"
+              className="absolute inset-0  m-auto h-13 w-13 rounded-full object-cover"
+            />
           </Link>
         </motion.div>
 

@@ -509,11 +509,11 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6 flex  items-center gap-3 justify-between">
                 <button
                   onClick={handleUpdate}
                   disabled={loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#e49263] px-5 py-3 text-sm font-extrabold text-[#173d36] shadow-lg shadow-[#e49263]/20 transition hover:translate-y-[-1px] hover:bg-[#f1b68b] disabled:opacity-70"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#e49263] px-3 py-2 text-sm font-extrabold text-[#173d36] shadow-lg shadow-[#e49263]/20 transition hover:translate-y-[-1px] hover:bg-[#f1b68b] disabled:opacity-70"
                 >
                   {loading ? (
                     <Upload size={16} className="animate-pulse" />
@@ -524,41 +524,11 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={handleSignOut}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#e7e2d7] bg-white px-5 py-3 text-sm font-extrabold text-[#183d37] transition hover:bg-[#f7f5f0]"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#e7e2d7] bg-white px-3 py-2 text-sm font-extrabold text-[#183d37] transition hover:bg-[#f7f5f0]"
                 >
                   <LogOut size={18} />
                   تسجيل الخروج
                 </button>
-              </div>
-            </motion.section>
-
-            {/* Danger zone — delete account */}
-            <motion.section
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.14 }}
-              className="rounded-[28px] border border-red-200 bg-red-50/50 p-6"
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600">
-                  <AlertTriangle size={18} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-black text-red-700">
-                    منطقة الخطر
-                  </h3>
-                  <p className="mt-1 text-sm leading-6 text-red-700/80">
-                    حذف حسابك إجراء نهائي، وسيؤدي إلى فقدان بياناتك وعقاراتك
-                    المنشورة بشكل كامل ولا يمكن التراجع عنه.
-                  </p>
-                  <button
-                    onClick={() => setShowDeleteAccount(true)}
-                    className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-red-300 bg-white px-4 py-2.5 text-sm font-bold text-red-600 transition hover:bg-red-100"
-                  >
-                    <Trash2 size={15} />
-                    حذف الحساب نهائيًا
-                  </button>
-                </div>
               </div>
             </motion.section>
           </div>
@@ -596,18 +566,18 @@ const Profile = () => {
               transition={{ delay: 0.12 }}
               className="rounded-[28px] border border-[#e7e2d7] bg-white p-6 shadow-sm"
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-nowrap items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-[#a08a5f]">
                     عقاراتي
                   </p>
-                  <h2 className="mt-1 text-xl font-black text-[#183d37]">
+                  <h2 className="mt-1 text-[18px] sm:text-xl font-black text-[#183d37]">
                     العقارات الخاصة بي
                   </h2>
                 </div>
                 <Link
                   to="/create-listing"
-                  className="inline-flex items-center gap-2 rounded-2xl bg-[#183d37] px-4 py-2.5 text-sm font-extrabold text-white shadow-lg transition hover:translate-y-[-1px] hover:bg-[#0f2622]"
+                  className="flex items-center gap-2 rounded-2xl bg-[#183d37] px-3 py-2 text-[14px] font-extrabold text-white shadow-lg transition hover:translate-y-[-1px] hover:bg-[#0f2622]"
                 >
                   <Plus size={16} />
                   إنشاء عقار
@@ -726,10 +696,6 @@ const Profile = () => {
                                 </div>
                                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                                   <div className="flex items-center gap-2 text-lg font-black text-[#183d37]">
-                                    <DollarSign
-                                      size={18}
-                                      className="text-[#e49263]"
-                                    />
                                     {listing.price?.toLocaleString("ar-EG")} ج.م
                                   </div>
                                   <div className="flex gap-2">
@@ -766,6 +732,35 @@ const Profile = () => {
               </AnimatePresence>
             </motion.section>
           </div>
+          {/* Danger zone — delete account */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.14 }}
+            className="rounded-[28px] border border-red-200 bg-red-50/50 p-6"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+                <AlertTriangle size={18} />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-black text-red-700">
+                  منطقة الخطر
+                </h3>
+                <p className="mt-1 text-sm leading-6 text-red-700/80">
+                  حذف حسابك إجراء نهائي، وسيؤدي إلى فقدان بياناتك وعقاراتك
+                  المنشورة بشكل كامل ولا يمكن التراجع عنه.
+                </p>
+                <button
+                  onClick={() => setShowDeleteAccount(true)}
+                  className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-red-300 bg-white px-4 py-2.5 text-sm font-bold text-red-600 transition hover:bg-red-100"
+                >
+                  <Trash2 size={15} />
+                  حذف الحساب نهائيًا
+                </button>
+              </div>
+            </div>
+          </motion.section>
         </div>
       </div>
 

@@ -17,7 +17,7 @@ export const deleteImage = async (publicId) => {
 // حذف أكثر من صورة
 export const deleteImages = async (publicIds) => {
   return await Promise.all(
-    publicIds.map((id) => cloudinary.uploader.destroy(id))
+    publicIds.map((id) => cloudinary.uploader.destroy(id)),
   );
 };
 

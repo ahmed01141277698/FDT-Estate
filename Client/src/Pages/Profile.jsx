@@ -82,7 +82,7 @@ const Profile = () => {
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
-    window.setTimeout(() => setToast({ message: "", type: "" }), 3200);
+    window.setTimeout(() => setToast({ message: "", type: "" }), 3500);
   };
 
   const handleAvatarChange = (e) => {
@@ -291,7 +291,7 @@ const Profile = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={`fixed left-1/2 top-5 z-50 flex min-w-[280px] -translate-x-1/2 items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold shadow-lg backdrop-blur ${
+            className={`fixed left-1/2 top-5 z-50 flex min-w-[200px] -translate-x-1/2 items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold shadow-lg backdrop-blur ${
               toast.type === "error"
                 ? "border-red-200 bg-red-50 text-red-700"
                 : toast.type === "warning"

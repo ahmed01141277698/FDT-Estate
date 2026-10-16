@@ -1,4 +1,4 @@
-import { DollarSign, BadgePercent } from "lucide-react";
+import { BadgePercent } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PricingSection({ form, handleChange, errors = {} }) {
@@ -23,11 +23,6 @@ export default function PricingSection({ form, handleChange, errors = {} }) {
           </label>
 
           <div className="relative">
-            <DollarSign
-              size={18}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a988f]"
-            />
-
             <input
               type="number"
               name="price"
@@ -82,11 +77,6 @@ export default function PricingSection({ form, handleChange, errors = {} }) {
             </label>
 
             <div className="relative">
-              <DollarSign
-                size={18}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a988f]"
-              />
-
               <input
                 type="number"
                 name="discountPrice"

@@ -23,7 +23,7 @@ export default function PropertyTypeSection({ form, setForm }) {
         <button
           type="button"
           onClick={() => handleTypeChange("sell")}
-          className={`rounded-2xl border p-6 transition-all duration-200 ${
+          className={`rounded-2xl border p-2 transition-all duration-200 ${
             form.type === "sell"
               ? "border-emerald-600 bg-emerald-600 text-white shadow-lg"
               : "border-[#183d37]/15 hover:border-[#c9a227] hover:bg-[#f8f6f2]"

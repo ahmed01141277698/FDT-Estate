@@ -21,7 +21,6 @@ import {
   UserCircle2,
   AlertTriangle,
 } from "lucide-react";
-
 const TYPE_CONFIG = {
   message: { icon: MessageCircle, color: "#e49263" },
   listing_liked: { icon: Heart, color: "#e11d48" },
@@ -301,18 +300,41 @@ export default function NotificationsPage() {
 
   const hasNotifications = notifications.length > 0;
 
+  function Reveal({ children, className = "", delay = 0 }) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 26 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: "easeOut", delay }}
+        className={className}
+      >
+        {children}
+      </motion.div>
+    );
+  }
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-[#f7f5f0] px-5 py-12 sm:px-8 lg:px-12"
+      className="min-h-screen bg-[#f7f5f0] px-2 py-12 sm:px-2 lg:px-4"
     >
-      <div className="mx-auto max-w-3xl">
+      <div>
         {/* العنوان */}
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[#183d37] sm:text-4xl">
-            الإشعارات
-          </h1>
-          <p className="mt-2 text-sm font-semibold text-[#6b7d76]">
+        <div className="relative overflow-hidden bg-[#183d37] py-10 text-[#f8f8f3]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(241,182,139,0.18),transparent_35%)]" />
+          <div className="absolute text-[7rem] -bottom-6 -left-6 sm:-bottom-12 sm:text-[15rem] font-black text-[#f8f8f3]/5">
+            Aqarx
+          </div>
+
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-5">
+            <Reveal className="max-w-4xl">
+              <h1 className="text-4xl font-black tracking-tightsm:text-4xl">
+                الإشعارات
+              </h1>
+            </Reveal>
+          </div>
+
+          <p className="mt-3 pr-6 text-[18px] font-semibold text-[#b2c2bc]">
             {unreadCount > 0
               ? `لديك ${unreadCount} ${unreadCount === 1 ? "إشعار" : "إشعارات"} غير مقروءة`
               : "جميع إشعاراتك مقروءة"}

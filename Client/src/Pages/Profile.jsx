@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  DollarSign,
   Eye,
   Home,
   LogOut,

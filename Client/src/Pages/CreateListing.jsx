@@ -71,6 +71,7 @@ export default function CreateListing() {
                 uploading={listing.uploading}
                 uploadProgress={listing.uploadProgress}
                 uploadError={listing.uploadError}
+                editId={editId}
               />
             </div>
           </div>

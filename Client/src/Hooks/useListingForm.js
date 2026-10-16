@@ -151,8 +151,9 @@ export default function useListingForm({
 
     if (!files.length) return;
 
-    if (imageFiles.length + files.length > 7) {
+    if (existingImages.length + imageFiles.length + files.length > 7) {
       setUploadError("يمكنك رفع 7 صور كحد أقصى");
+      e.target.value = "";
       return;
     }
 
@@ -160,32 +161,54 @@ export default function useListingForm({
 
     if (validFiles.length !== files.length) {
       setUploadError("يسمح برفع الصور فقط");
+      e.target.value = "";
       return;
     }
 
     setUploadError("");
-    setImageFiles((prev) => [...prev, ...validFiles]);
+
+    const newFiles = validFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setImageFiles((prev) => [...prev, ...newFiles.map((item) => item.file)]);
+
     setImagePreviews((prev) => [
       ...prev,
-      ...validFiles.map((file) => URL.createObjectURL(file)),
+      ...newFiles.map((item) => item.preview),
     ]);
+
     e.target.value = "";
   };
 
   const removeImage = (index) => {
-    if (index >= 0 && index < imagePreviews.length) {
-      const item = imagePreviews[index];
-      if (typeof item === "string" && item.startsWith("blob:")) {
-        URL.revokeObjectURL(item);
-      }
+    if (index < 0 || index >= imagePreviews.length) return;
+
+    const removedPreview = imagePreviews[index];
+
+    if (
+      typeof removedPreview === "string" &&
+      removedPreview.startsWith("blob:")
+    ) {
+      URL.revokeObjectURL(removedPreview);
+    }
+
+    const existingIndex = existingImages.findIndex(
+      (image) => image.url === removedPreview,
+    );
+
+    if (existingIndex !== -1) {
+      setExistingImages((prev) => prev.filter((_, i) => i !== existingIndex));
+    } else {
+      const newImageIndex = imagePreviews
+        .slice(0, index)
+        .filter((preview) => preview.startsWith("blob:")).length;
+
+      setImageFiles((prev) => prev.filter((_, i) => i !== newImageIndex));
     }
 
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-    setImageFiles((prev) => prev.filter((_, i) => i !== index));
-
-    if (index >= 0 && index < existingImages.length) {
-      setExistingImages((prev) => prev.filter((_, i) => i !== index));
-    }
   };
 
   const resetForm = () => {
@@ -207,8 +230,10 @@ export default function useListingForm({
   };
 
   const uploadImages = async () => {
+    // لو مفيش صور جديدة، نحتفظ بالصور القديمة المتبقية.
     if (imageFiles.length === 0) {
       if (existingImages.length > 0) return existingImages;
+
       throw new Error("يرجى اختيار صورة واحدة على الأقل");
     }
 
@@ -216,6 +241,7 @@ export default function useListingForm({
     setUploadProgress(0);
 
     const formData = new FormData();
+
     imageFiles.forEach((file) => {
       formData.append("images", file);
     });
@@ -228,22 +254,27 @@ export default function useListingForm({
         },
         withCredentials: true,
         onUploadProgress: (progressEvent) => {
-          const percent = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total,
-          );
-          setUploadProgress(percent);
+          if (progressEvent.total) {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total,
+            );
+
+            setUploadProgress(percent);
+          }
         },
       });
 
-      setUploading(false);
-      return (data.images || []).map((image) => ({
+      const uploadedImages = (data.images || []).map((image) => ({
         url: image.url,
         public_id: image.public_id,
       }));
+
+      // نجمع الصور القديمة المتبقية مع الصور الجديدة.
+      return [...existingImages, ...uploadedImages];
     } catch (err) {
-      setUploading(false);
-      setUploadProgress(0);
       throw new Error(err.response?.data?.message || "حدث خطأ أثناء رفع الصور");
+    } finally {
+      setUploading(false);
     }
   };
 

@@ -21,6 +21,7 @@ export default function ImageUploader({
   imagePreviews,
   setImageFiles,
   setImagePreviews,
+  removeImage,
   uploading,
   uploadProgress,
   uploadError,
@@ -47,16 +48,19 @@ export default function ImageUploader({
     setImagePreviews((prev) => [...prev, ...previews]);
   };
 
-  const removeImage = (index) => {
-    URL.revokeObjectURL(imagePreviews[index]);
-
-    setImageFiles((prev) => prev.filter((_, i) => i !== index));
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const reorderImages = (fromIndex, toIndex) => {
-    if (fromIndex === null || toIndex === null || fromIndex === toIndex) return;
-    setImageFiles((prev) => moveItem(prev, fromIndex, toIndex));
+    if (
+      fromIndex === null ||
+      toIndex === null ||
+      fromIndex === toIndex ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= imagePreviews.length ||
+      toIndex >= imagePreviews.length
+    ) {
+      return;
+    }
+
     setImagePreviews((prev) => moveItem(prev, fromIndex, toIndex));
   };
 
@@ -69,12 +73,21 @@ export default function ImageUploader({
   const handleDragOver = (index) => (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    if (index !== dragOverIndex) setDragOverIndex(index);
+
+    if (index !== dragOverIndex) {
+      setDragOverIndex(index);
+    }
   };
 
   const handleDrop = (index) => (e) => {
     e.preventDefault();
-    reorderImages(draggedIndex, index);
+
+    const fromIndex = Number(e.dataTransfer.getData("text/plain"));
+
+    if (Number.isInteger(fromIndex)) {
+      reorderImages(fromIndex, index);
+    }
+
     setDraggedIndex(null);
     setDragOverIndex(null);
   };
@@ -84,6 +97,67 @@ export default function ImageUploader({
     setDragOverIndex(null);
   };
 
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const activePointerId = useRef(null);
+  const imageRefs = useRef([]);
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+
+  const handlePointerDown = (index) => (e) => {
+    // نفعّل السحب باللمس على الموبايل فقط
+    if (e.pointerType !== "touch") return;
+
+    activePointerId.current = e.pointerId;
+    touchStartX.current = e.clientX;
+    touchStartY.current = e.clientY;
+
+    setDraggedIndex(index);
+    setIsTouchDragging(false);
+  };
+
+  const handlePointerMove = (e) => {
+    if (
+      activePointerId.current === null ||
+      activePointerId.current !== e.pointerId
+    ) {
+      return;
+    }
+
+    const deltaX = Math.abs(e.clientX - touchStartX.current);
+    const deltaY = Math.abs(e.clientY - touchStartY.current);
+
+    // لا نبدأ السحب إلا بعد تحريك الإصبع مسافة بسيطة
+    if (!isTouchDragging && Math.max(deltaX, deltaY) > 8) {
+      setIsTouchDragging(true);
+    }
+
+    if (!isTouchDragging && Math.max(deltaX, deltaY) <= 8) {
+      return;
+    }
+
+    const element = document.elementFromPoint(e.clientX, e.clientY);
+    const targetImage = element?.closest("[data-image-index]");
+
+    if (!targetImage) return;
+
+    const targetIndex = Number(targetImage.dataset.imageIndex);
+
+    if (Number.isInteger(targetIndex) && targetIndex !== draggedIndex) {
+      reorderImages(draggedIndex, targetIndex);
+
+      touchStartX.current = e.clientX;
+      touchStartY.current = e.clientY;
+
+      setDraggedIndex(targetIndex);
+    }
+  };
+
+  const handlePointerUp = () => {
+    activePointerId.current = null;
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+    setIsTouchDragging(false);
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 25 }}
@@ -155,16 +229,24 @@ export default function ImageUploader({
           {imagePreviews.map((image, index) => (
             <div
               key={image}
+              data-image-index={index}
+              ref={(el) => {
+                imageRefs.current[index] = el;
+              }}
               draggable
               onDragStart={handleDragStart(index)}
               onDragOver={handleDragOver(index)}
               onDrop={handleDrop(index)}
               onDragEnd={handleDragEnd}
-              className={`group relative cursor-grab overflow-hidden rounded-2xl border transition active:cursor-grabbing ${
-                dragOverIndex === index && draggedIndex !== index
-                  ? "border-[#e49263] ring-2 ring-[#e49263] ring-offset-2"
+              onPointerDown={handlePointerDown(index)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              className={`group relative overflow-hidden rounded-2xl border transition ${
+                isTouchDragging && draggedIndex === index
+                  ? "z-10 scale-[0.97] border-[#e49263] ring-2 ring-[#e49263]"
                   : "border-[#e7e2d7]"
-              } ${draggedIndex === index ? "opacity-40" : "opacity-100"}`}
+              } ${draggedIndex === index ? "opacity-80" : "opacity-100"}`}
             >
               <img
                 src={image}

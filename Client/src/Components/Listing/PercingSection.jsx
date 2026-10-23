@@ -1,14 +1,53 @@
 import { BadgePercent } from "lucide-react";
 import { motion } from "framer-motion";
 
+const numberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+});
+
+const formatPrice = (value) => {
+  if (value === "" || value === null || value === undefined) {
+    return "";
+  }
+
+  const number = Number(String(value).replace(/,/g, ""));
+
+  if (!Number.isFinite(number)) {
+    return "";
+  }
+
+  return numberFormatter.format(number);
+};
+
 export default function PricingSection({ form, handleChange, errors = {} }) {
+  const handlePriceChange = (event) => {
+    const { name, value } = event.target;
+
+    // السماح بالأرقام فقط
+    const rawValue = value.replace(/[^\d]/g, "");
+
+    // إرسال الرقم بدون فواصل إلى الفورم الأصلي
+    handleChange({
+      ...event,
+      target: {
+        ...event.target,
+        name,
+        value: rawValue,
+        type: "text",
+      },
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 25 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
       className="rounded-2xl border p-6 shadow-sm"
-      style={{ background: "#fff", borderColor: "rgba(24,61,55,0.1)" }}
+      style={{
+        background: "#fff",
+        borderColor: "rgba(24,61,55,0.1)",
+      }}
     >
       <h2 className="mb-6 text-2xl font-black text-[#183d37]">السعر</h2>
 
@@ -24,13 +63,14 @@ export default function PricingSection({ form, handleChange, errors = {} }) {
 
           <div className="relative">
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               name="price"
-              min="0"
-              value={form.price}
-              onChange={handleChange}
+              value={formatPrice(form.price)}
+              onChange={handlePriceChange}
               placeholder="0"
-              className={`w-full rounded-xl border py-3 pl-16 pr-11 outline-none transition ${
+              dir="ltr"
+              className={`w-full rounded-xl border py-3 pl-16 pr-11 text-right outline-none transition ${
                 errors.price
                   ? "border-red-500"
                   : "border-[#183d37]/15 focus:border-[#c9a227]"
@@ -54,6 +94,7 @@ export default function PricingSection({ form, handleChange, errors = {} }) {
         >
           <div className="flex items-center gap-3">
             <BadgePercent size={20} className="text-[#c9a227]" />
+
             <span className="font-semibold text-[#183d37]">يوجد خصم</span>
           </div>
 
@@ -78,13 +119,14 @@ export default function PricingSection({ form, handleChange, errors = {} }) {
 
             <div className="relative">
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 name="discountPrice"
-                min="0"
-                value={form.discountPrice}
-                onChange={handleChange}
+                value={formatPrice(form.discountPrice)}
+                onChange={handlePriceChange}
                 placeholder="0"
-                className={`w-full rounded-xl border py-3 pl-16 pr-11 outline-none transition ${
+                dir="ltr"
+                className={`w-full rounded-xl border py-3 pl-16 pr-11 text-right outline-none transition ${
                   errors.discountPrice
                     ? "border-red-500"
                     : "border-[#183d37]/15 focus:border-[#c9a227]"

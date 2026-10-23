@@ -508,11 +508,11 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex  items-center gap-3 justify-between">
+              <div className="mt-6 flex  items-center gap-6 justify-between">
                 <button
                   onClick={handleUpdate}
                   disabled={loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#e49263] px-3 py-2 text-sm font-extrabold text-[#173d36] shadow-lg shadow-[#e49263]/20 transition hover:translate-y-[-1px] hover:bg-[#f1b68b] disabled:opacity-70"
+                  className="flex flex-nowrap items-center gap-2 rounded-2xl bg-[#e49263] px-3 py-2 sm:text-sm text-xs font-extrabold text-[#173d36] shadow-lg shadow-[#e49263]/20 transition hover:translate-y-[-1px] hover:bg-[#f1b68b] disabled:opacity-70"
                 >
                   {loading ? (
                     <Upload size={16} className="animate-pulse" />
@@ -523,7 +523,7 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={handleSignOut}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#e7e2d7] bg-white px-3 py-2 text-sm font-extrabold text-[#183d37] transition hover:bg-[#f7f5f0]"
+                  className="flex flex-nowrap items-center text-xs  gap-2 rounded-2xl border border-[#e7e2d7] bg-white px-3 py-2 sm:text-sm font-extrabold text-[#183d37] transition hover:bg-[#f7f5f0]"
                 >
                   <LogOut size={18} />
                   تسجيل الخروج

@@ -48,6 +48,16 @@ const SignIn = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === "EMAIL_NOT_VERIFIED") {
+          dispatch(signInFailure("من فضلك وثّق بريدك الإلكتروني أولًا"));
+
+          navigate("/verify-email", {
+            state: { email: data.email || formData.email.trim() },
+          });
+
+          return;
+        }
+
         dispatch(signInFailure(data.message || "حدث خطأ أثناء تسجيل الدخول"));
         return;
       }

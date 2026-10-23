@@ -2,19 +2,6 @@ import { Building2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ListingHeader({ isEdit = false }) {
-  function Reveal({ children, className = "", delay = 0 }) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 26 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    );
-  }
   return (
     <div className="relative overflow-hidden mb-3 bg-[#183d37] py-10 text-[#f8f8f3]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(241,182,139,0.18),transparent_35%)]" />
@@ -22,11 +9,9 @@ export default function ListingHeader({ isEdit = false }) {
         Aqarx
       </div>
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Reveal className="max-w-4xl">
-          <h1 className="text-3xl font-black text-[#dae3e1] md:text-4xl">
-            {isEdit ? "تحديث العقار" : "إضافة عقار جديد"}
-          </h1>
-        </Reveal>
+        <h1 className="text-3xl font-black text-[#dae3e1] md:text-4xl">
+          {isEdit ? "تحديث العقار" : "إضافة عقار جديد"}
+        </h1>
       </div>
 
       <div className="flex items-start gap-2">

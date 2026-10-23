@@ -89,6 +89,14 @@ export const updateProfile = async (req, res, next) => {
 
     if (!username && !avatar && !phone)
       return next(errorHandler(400, "لا يوجد بيانات للتحديث"));
+    if (username) {
+      const existingUsernameUser = await User.findOne({
+        username,
+        _id: { $ne: req.userId },
+      });
+      if (existingUsernameUser)
+        return next(errorHandler(400, "اسم المستخدم هذا مستخدم بالفعل"));
+    }
 
     if (phone) {
       const existingPhoneUser = await User.findOne({

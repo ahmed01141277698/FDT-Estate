@@ -115,7 +115,7 @@ export default function Hero() {
         <h1 className="text-wrap  motion-safe:animate-[fadeInUp_0.6s_ease_0.1s_backwards] max-w-4xl text-5xl font-black leading-[1.5] tracking-tight sm:text-6xl lg:text-7xl">
           <span className="block">ابحثْ، قارِنْ، واطمئن</span>
 
-          <span className="text-gold-gradient py-4 block leading-[1.2] sm:mt-4">
+          <span className="text-gold-gradient py-4 block leading-[1.4] sm:mt-4">
             فبيتك الحقيقي في انتظارك.
           </span>
         </h1>

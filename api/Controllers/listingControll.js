@@ -2,6 +2,7 @@ import Listing from "../Models/listingModel.js";
 import Favorite from "../Models/favoriteModel.js";
 import {
   createNotification,
+  markAsSeen,
   upsertGroupedNotification,
 } from "./notificationController.js";
 import { NOTIFICATION_TYPES } from "../Constants/notificationTypes.js";
@@ -110,6 +111,7 @@ export const getUserListings = async (req, res, next) => {
     const listings = await Listing.find({ userRef: req.params.id }).sort({
       createdAt: -1,
     });
+
     res.status(200).json(listings);
   } catch (error) {
     next(error);

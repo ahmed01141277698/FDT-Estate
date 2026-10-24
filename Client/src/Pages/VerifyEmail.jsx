@@ -123,8 +123,8 @@ const VerifyEmail = () => {
       setTimeout(() => {
         navigate("/signin", { state: { email } });
       }, 1400);
-    } catch (err) {
-      setError("حدث خطأ، حاول مرة أخرى");
+    } catch (error) {
+      setError(error.message || "حدث خطأ، حاول مرة أخرى");
     } finally {
       setVerifying(false);
     }
@@ -145,7 +145,7 @@ const VerifyEmail = () => {
       });
 
       const data = await res.json();
-
+      localStorage.setItem("token", data.token);
       if (data.code === "RESEND_COOLDOWN") {
         setCooldown(data.retryAfterSeconds || DEFAULT_RESEND_COOLDOWN);
         setError(data.message);
@@ -162,8 +162,8 @@ const VerifyEmail = () => {
       setSuccess("تم إرسال رمز جديد إلى بريدك الإلكتروني");
       setCooldown(DEFAULT_RESEND_COOLDOWN);
       focusInput(0);
-    } catch (err) {
-      setError("تعذّر إرسال الرمز، حاول مرة أخرى");
+    } catch (error) {
+      setError(error.message || "تعذّر إرسال الرمز، حاول مرة أخرى");
     } finally {
       setResending(false);
     }

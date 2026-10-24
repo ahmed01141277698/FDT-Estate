@@ -334,7 +334,9 @@ export default function useListingForm({
         imageUrl: imageUrls,
         userRef: currentUser?._id,
       };
-
+      if (!currentUser) {
+        throw new Error("يجب تسجيل الدخول قبل نشر العقار");
+      }
       if (editId) {
         await axios.put(`/api/listing/${editId}`, payload, {
           headers: {

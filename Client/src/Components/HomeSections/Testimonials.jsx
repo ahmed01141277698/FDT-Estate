@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   Quote,
 } from "lucide-react";
-import WriteReviewModal from "./WritereviewModal.jsx";
+import WriteReviewModal from "./WriteReviewModal.jsx";
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
 function Stars({ count = 5 }) {

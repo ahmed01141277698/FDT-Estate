@@ -15,7 +15,7 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import aqarxLogo from "../assets/aqarx-header-logo.png";
-import { WriteReviewModal } from "./HomeSections/WritereviewModal.jsx";
+import WritereviewModal from "./HomeSections/WriteReviewModal.jsx";
 
 const PROPERTY_LINKS = [
   { label: "كل العقارات", to: "/AllListings" },
@@ -256,7 +256,7 @@ export default function Footer() {
       </div>
 
       {showReviewModal && (
-        <WriteReviewModal
+        <WritereviewModal
           onClose={() => setShowReviewModal(false)}
           onSuccess={() => setShowReviewModal(false)}
         />

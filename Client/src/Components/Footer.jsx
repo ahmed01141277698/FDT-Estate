@@ -14,8 +14,8 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
-import WriteReviewModal from "./HomeSections/WritereviewModal.jsx";
 import aqarxLogo from "../assets/aqarx-header-logo.png";
+import { WriteReviewModal } from "./HomeSections/WritereviewModal.jsx";
 
 const PROPERTY_LINKS = [
   { label: "كل العقارات", to: "/AllListings" },
